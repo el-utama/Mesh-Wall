@@ -1,0 +1,82 @@
+// Isolated loopback integration; does not enroll devices or contact a real tailnet.
+import assert from "node:assert/strict";
+import {mkdtemp,mkdir,writeFile,cp,rm,readFile} from "node:fs/promises";
+import {tmpdir} from "node:os";
+import {join,resolve} from "node:path";
+import {randomBytes} from "node:crypto";
+import {spawn,execFileSync} from "node:child_process";
+import {chromium} from "playwright";
+const root=await mkdtemp(join(tmpdir(),"meshwall-smoke-"));
+const engine=join(root,"node_modules/meshcentral");
+const port=18443,origin="https://localhost:"+port;
+const password="Lab-"+randomBytes(20).toString("hex");
+let server,browser;
+let logs="";
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+try {
+  execFileSync("npm",["install","--prefix",root,"--omit=dev","--no-audit","--no-fund","meshcentral@1.3.2"],{stdio:"inherit",timeout:180000});
+  const pkg=JSON.parse(await readFile(join(engine,"package.json"),"utf8"));
+  assert.equal(pkg.version,"1.3.2");
+  const data=join(root,"meshcentral-data");await mkdir(data);
+  await mkdir(join(root,"meshcentral-web/public"),{recursive:true});
+  await cp(resolve("apps/web/public"),join(root,"meshcentral-web/public"),{recursive:true});
+  const config={settings:{cert:"localhost",port,portBind:"127.0.0.1",redirPort:0,mpsPort:0,exactPorts:true,WANonly:true,selfUpdate:false,sessionKey:randomBytes(48).toString("hex")},domains:{"":{title:"MeshWall lab",newAccounts:false,localSessionRecording:false,userConsentFlags:{desktopprompt:true,desktopnotify:true}}}};
+  await writeFile(join(data,"config.json"),JSON.stringify(config),{mode:0o600});
+  const cli=(args,env={})=>execFileSync(process.execPath,[engine,...args],{cwd:root,env:{...process.env,...env},encoding:"utf8",timeout:90000});
+  assert.match(cli(["--createaccount","labadmin"],{meshcentral_pass:password}),/^Done\./m);
+  assert.match(cli(["--adminaccount","labadmin"]),/^Done\./m);
+  server=spawn(process.execPath,[engine],{cwd:root,stdio:["ignore","pipe","pipe"]});
+  for(const stream of [server.stdout,server.stderr])stream.on("data",d=>{logs=(logs+d.toString()).slice(-12000)});
+  browser=await chromium.launch({headless:true});
+  // Only the disposable loopback fixture uses an upstream self-signed cert.
+  // This does not change certificate verification in app code or installer.
+  const context=await browser.newContext({ignoreHTTPSErrors:true});
+  const page=await context.newPage();const appErrors=[];
+  page.on("pageerror",e=>appErrors.push(e.message));
+  let ready=false;
+  for(let i=0;i<90;i++){
+    if(server.exitCode!==null)throw Error("Engine exited");
+    try{const r=await page.goto(origin+"/meshwall.html",{timeout:3000,waitUntil:"domcontentloaded"});if(r?.ok()){ready=true;break;}}catch{}
+    await sleep(1000);
+  }
+  assert.ok(ready,"MeshWall page must be served by real MeshCentral");
+  await page.waitForFunction(()=>document.getElementById("connection")?.textContent.includes("Disconnected"),{},{timeout:20000});
+  assert.equal(await page.locator("#total").textContent(),"—","Unauthenticated inventory must be hidden");
+  await page.goto(origin+"/",{waitUntil:"domcontentloaded"});
+  await page.locator("#username").fill("labadmin");await page.locator("#password").fill(password);
+  await page.locator("#loginButton").click();
+  await page.waitForURL(u=>u.origin===origin,{timeout:15000});
+  await page.waitForTimeout(1200);
+  await page.goto(origin+"/meshwall.html",{waitUntil:"domcontentloaded"});
+  await page.waitForFunction(()=>document.getElementById("connection")?.textContent==="Authenticated",{},{timeout:20000});
+  await page.waitForFunction(()=>document.getElementById("total")?.textContent==="0",{},{timeout:20000});
+  await page.locator('nav [data-page="groups"]').click();
+  await page.locator("#groupName").fill("Authorized lab group");
+  await page.locator("#groupForm button").click();
+  await page.waitForFunction(()=>document.getElementById("groupResult")?.textContent==="Group created",{},{timeout:20000});
+  await page.waitForFunction(()=>Array.from(document.getElementById("inviteGroup")?.options||[]).some(o=>o.textContent==="Authorized lab group"),{},{timeout:20000});
+  await page.locator("#inviteGroup").selectOption({label:"Authorized lab group"});
+  await page.locator("#inviteForm button").click();
+  await page.locator("#inviteResult a").waitFor({timeout:20000});
+  const href=await page.locator("#inviteResult a").getAttribute("href");
+  assert.ok(href?.startsWith(origin+"/agentinvite?"),"Invitation must be same-origin");
+  await page.locator('nav [data-page="wall"]').click();
+  await page.locator("#columns").fill("10");await page.locator("#columns").press("Tab");
+  await page.locator("#save").click();
+  await page.reload({waitUntil:"domcontentloaded"});
+  await page.waitForFunction(()=>document.getElementById("connection")?.textContent==="Authenticated",{},{timeout:20000});
+  await page.locator('nav [data-page="wall"]').click();
+  assert.equal(await page.locator("#columns").inputValue(),"10");
+  assert.equal(await page.locator("#streams").textContent(),"0");
+  assert.equal(appErrors.length,0,"Browser JavaScript errors: "+appErrors.join("; "));
+  console.log("PASS: real MeshCentral static serving, unauthenticated denial, login, inventory, create group, invitation and persisted layout; no agent or desktop stream tested.");
+} catch(e) {
+  // Do not print URLs, session cookies, credentials or upstream logs.
+  console.error("Integration failed:",String(e.message).replaceAll(password,"[redacted]"));
+  console.error("Engine state:",server?.exitCode??"running or not started","startup log bytes:",logs.length);
+  process.exitCode=1;
+} finally{
+  await browser?.close();
+  if(server&&server.exitCode===null){server.kill("SIGTERM");await Promise.race([new Promise(r=>server.once("exit",r)),sleep(5000)]);if(server.exitCode===null)server.kill("SIGKILL");}
+  await rm(root,{recursive:true,force:true});
+}
