@@ -7,12 +7,13 @@ import {randomBytes} from "node:crypto";
 import {spawn,execFileSync} from "node:child_process";
 import {chromium} from "playwright";
 import {backup,verify,restore} from "../../scripts/maintenance/lib.mjs";
+import {adopt,adoptionStatus} from "../../installers/adoption.mjs";
 import {checkRenderer} from "./renderer.mjs";
 const root=await mkdtemp(join(tmpdir(),"meshwall-smoke-"));
 const engine=join(root,"node_modules/meshcentral");
 const port=18443,origin="https://localhost:"+port;
 const password="Lab-"+randomBytes(20).toString("hex");
-let server,browser,backupParent;
+let server,browser,backupParent,adoptionBackup;
 let logs="";
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 async function stopEngine(){if(!server||server.exitCode!==null||server.signalCode!==null)return;const exited=new Promise(r=>server.once("exit",r));if(process.platform==="win32"){server.stdin.end();}else server.kill("SIGTERM");await Promise.race([exited,sleep(5000)]);if(server.exitCode===null&&server.signalCode===null){server.kill("SIGKILL");await exited;}}
@@ -27,12 +28,15 @@ try {
   assert.equal(pkg.version,"1.3.2");
   const data=join(root,"meshcentral-data");await mkdir(data);
   await mkdir(join(root,"meshcentral-web/public"),{recursive:true});
-  await cp(resolve("apps/web/public"),join(root,"meshcentral-web/public"),{recursive:true});
+  await writeFile(join(root,"meshcentral-web/public/original-custom.html"),"original custom content");
   const config={settings:{cert:"localhost",port,portBind:"127.0.0.1",redirPort:0,mpsPort:0,exactPorts:true,WANonly:true,selfUpdate:false,sessionKey:randomBytes(48).toString("hex")},domains:{"":{title:"MeshWall lab",newAccounts:false,localSessionRecording:false,userConsentFlags:{desktopprompt:true,desktopnotify:true}}}};
   await writeFile(join(data,"config.json"),JSON.stringify(config),{mode:0o600});
   const cli=(args,env={})=>execFileSync(process.execPath,[engine,...args],{cwd:root,env:{...process.env,...env},encoding:"utf8",timeout:90000});
   assert.match(cli(["--createaccount","labadmin"],{meshcentral_pass:password}),/^Done\./m);
   assert.match(cli(["--adminaccount","labadmin"]),/^Done\./m);
+  adoptionBackup=await mkdtemp(join(tmpdir(),"meshwall-adoption-smoke-"));
+  const adoption=await adopt(root,resolve("apps/web/public"),adoptionBackup);await verify(adoption.snapshot);assert.equal((await adoptionStatus(root)).state,"complete");assert.equal(await readFile(join(root,"meshcentral-web/public/original-custom.html"),"utf8"),"original custom content");
+  console.log("PASS: existing engine offline adoption with verified backup; original custom file retained.");
   startEngine();
   browser=await chromium.launch({headless:true});
   // Only the disposable loopback fixture uses an upstream self-signed cert.
@@ -110,6 +114,7 @@ try {
 } finally{
   await browser?.close();
   await stopEngine();
+  if(adoptionBackup)await rm(adoptionBackup,{recursive:true,force:true});
   if(backupParent)await rm(backupParent,{recursive:true,force:true});
   await rm(root,{recursive:true,force:true,maxRetries:5,retryDelay:300});
 }
