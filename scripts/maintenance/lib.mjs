@@ -1,6 +1,6 @@
 import {createHash,randomBytes} from "node:crypto";
 import {createReadStream} from "node:fs";
-import {lstat,readdir,mkdir,copyFile,readFile,writeFile,rename,rm,realpath,chmod} from "node:fs/promises";
+import {lstat,readdir,mkdir,copyFile,readFile,writeFile,rename,rm,realpath,chmod,rmdir} from "node:fs/promises";
 import {join,resolve,relative,isAbsolute,dirname,basename} from "node:path";
 import {constants} from "node:fs";
 const VERSION="1.3.2";
@@ -24,7 +24,7 @@ async function checkLocalDatabase(base){
 async function privateDir(path){await mkdir(path,{mode:0o700});}
 async function copyEntries(src,dest,entries){for(const entry of entries){const a=join(src,...entry.path.split("/")),b=join(dest,...entry.path.split("/"));if(entry.type==="directory"){await privateDir(b);}else{await copyFile(a,b,constants.COPYFILE_EXCL);if(process.platform!=="win32")await chmod(b,0o600);}}}
 function same(a,b){return JSON.stringify(a)===JSON.stringify(b);}
-async function lock(root,fn){const path=join(root,".meshwall-maintenance-lock");await privateDir(path);try{return await fn();}finally{await rm(path,{recursive:false,force:true}).catch(()=>{});/* rm directory is platform-dependent */ await import("node:fs/promises").then(m=>m.rmdir(path)).catch(()=>{});}}
+async function lock(root,fn){const path=join(root,".meshwall-maintenance-lock");await privateDir(path);try{return await fn();}finally{await rmdir(path);}}
 export async function backup(rootArg,parentArg){
  const root=await rootPath(rootArg),parent=await rootPath(parentArg);if(inside(root,parent)||inside(parent,root))throw Error("Backup parent must be outside and separate from installation");
  await checkEngine(root);await checkLocalDatabase(root);

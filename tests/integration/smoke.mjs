@@ -15,7 +15,7 @@ let server,browser,backupParent;
 let logs="";
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 async function stopEngine(){if(!server||server.exitCode!==null||server.signalCode!==null)return;const exited=new Promise(r=>server.once("exit",r));server.kill("SIGTERM");await Promise.race([exited,sleep(5000)]);if(server.exitCode===null&&server.signalCode===null){server.kill("SIGKILL");await exited;}}
-function startEngine(){server=spawn(process.execPath,[engine,"--launch"],{cwd:root,stdio:["ignore","pipe","pipe"]});for(const stream of [server.stdout,server.stderr])stream.on("data",d=>{logs=(logs+d.toString()).slice(-12000)});}
+function startEngine(){server=spawn(process.execPath,[engine,"--launch"],{cwd:root,stdio:["pipe","pipe","pipe"]});for(const stream of [server.stdout,server.stderr])stream.on("data",d=>{logs=(logs+d.toString()).slice(-12000)});}
 async function readyPage(page){for(let i=0;i<90;i++){if(server.exitCode!==null||server.signalCode!==null)throw Error("Engine exited");try{const r=await page.goto(origin+"/meshwall.html",{timeout:3000,waitUntil:"domcontentloaded"});if(r?.ok())return;}catch{}await sleep(1000);}throw Error("MeshWall page must be served by real MeshCentral");}
 try {
   execFileSync("npm",["install","--prefix",root,"--omit=dev","--no-audit","--no-fund","meshcentral@1.3.2"],{stdio:"inherit",timeout:180000});
