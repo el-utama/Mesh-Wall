@@ -17,3 +17,6 @@ Before merge: lint, typecheck, tests, production build, architecture boundary ch
 
 ## Mandatory UI/UX skill
 For every user-facing change (HTML, CSS, frontend behavior, setup wizard, dashboard or remote panel), read and apply `.agents/skills/meshwall-ui-ux/SKILL.md` and its relevant references. Use `docs/UI.md` as the product baseline. Inspect actual browser screenshots at relevant viewport sizes, test populated and failure states, fix defects and repeat checks. If visual verification is unavailable, disclose it as pending. Do not claim a design is complete from unit tests alone.
+
+## Platform parity release gate
+Armbian is the resource-optimization priority, not a reason to omit Windows functionality. Every installer, wizard, lifecycle or maintenance change must update [platform parity](docs/PLATFORM-PARITY.md), both OS adapters or an explicit shared implementation, tests for both platforms, README/quickstart, and the audit. Do not call either platform production-ready before physical acceptance. Do not automatically elevate privileges, publish a setup listener or bypass TLS. Document unavoidable OS-specific prerequisites and missing features as blockers.

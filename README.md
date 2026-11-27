@@ -12,7 +12,7 @@ MeshWall aims to replace the native dashboard for everyday administration. MeshC
 - View-only wall with 1–10 desired columns, adjustable individual tiles, drag and keyboard reordering, focus/fullscreen, monitor picker, quality presets and saved layouts. Default four concurrent sessions, configurable up to 100.
 - Standard account creation and verified direct view-only group assignment/removal. Inherited or custom rights remain managed by the official advanced panel.
 - Embedded official authentication, desktop, terminal, files and advanced administration panels; no separate public backend.
-- Linux prerequisite bootstrap, localhost setup wizard, Windows fresh installer candidate and existing installation adoption.
+- Linux prerequisite bootstrap, shared Linux/Windows localhost setup wizard, Windows fresh installer candidate and existing installation adoption.
 - Offline backup/verification/restore and reversible UI-only updates; local CLI, not privileged browser operations.
 
 100 enrolled PCs is a product cap, not a verified Tailscale entitlement or STB streaming capacity.
@@ -56,3 +56,5 @@ If Node.js >=22.21.1 and authenticated Tailscale are already available, use `sud
 Run `npm run check`. See [GitHub Actions](https://github.com/el-utama/Mesh-Wall/actions) for commit-specific checks. Browser fixtures and generated JPEG rendering do not establish actual live agent performance.
 
 Upstream: [MeshCentral](https://github.com/Ylianst/MeshCentral), [documentation](https://docs.meshcentral.com/), [Tailscale](https://tailscale.com/kb). Independent project; licensing decision pending. Only manage devices with authorization.
+
+See [platform parity and release blockers](docs/PLATFORM-PARITY.md).

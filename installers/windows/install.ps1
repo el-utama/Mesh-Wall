@@ -4,6 +4,7 @@
 param([switch]$Wizard,[switch]$Preflight)
 if ($Wizard -and $Preflight) { throw 'Choose one mode.' }
 $ErrorActionPreference = 'Stop'
+. (Join-Path $PSScriptRoot 'service.ps1')
 $root = Join-Path $env:ProgramData 'MeshWall'
 $src = (Resolve-Path (Join-Path $PSScriptRoot '..\..')).Path
 $engine = Join-Path $root 'node_modules\meshcentral'
@@ -91,9 +92,7 @@ try {
    & $node $engine --install
    Require-Success 'Upstream Windows Service installation'
  } finally { Pop-Location }
- $services = @(Get-Service | Where-Object { $_.Name -like 'meshcentral*' -or $_.DisplayName -eq 'MeshCentral' })
- if ($services.Count -ne 1) { throw 'Windows service registration not confirmed.' }
- $service = $services[0]
+ $service = Get-MeshWallService -Root $root
  if ($service.Status -ne 'Running') { Start-Service -Name $service.Name }
  $url = "https://${dnsName}:${port}/meshwall.html"
  [Console]::WriteLine('MW_STAGE verification')

@@ -28,3 +28,5 @@ Gunakan sistem 64-bit yang didukung. Login Tailscale dan aktivasi HTTPS/MagicDNS
 ## Dokumentasi
 
 [Panduan pengguna Indonesia](docs/USER-GUIDE.md) · [Arsitektur](ARCHITECTURE.md) · [Audit](docs/AUDIT.md) · [Status implementasi](docs/IMPLEMENTATION.md) · [Maintenance](docs/OPERATIONS.md) · [Roadmap](ROADMAP.md) · [Pengujian CI](https://github.com/el-utama/Mesh-Wall/actions) · [README English](README.md).
+
+Windows: jalankan `.\installers\windows\setup.ps1` dari PowerShell Administrator untuk wizard yang sama. Lihat [kesetaraan fitur dan syarat rilis](docs/PLATFORM-PARITY.md).

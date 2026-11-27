@@ -13,3 +13,5 @@
 | M8 Production readiness | Not reached | Physical matrix, security review, operational recovery and release evidence |
 
 Do not assign release dates or stable streaming capacity without measurement. See [audit](docs/AUDIT.md) for requirement-level gates and [testing](docs/TESTING.md) for evidence. CI pass is not production acceptance.
+
+Cross-platform feature parity is mandatory. See [parity matrix](docs/PLATFORM-PARITY.md).

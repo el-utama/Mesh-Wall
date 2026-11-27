@@ -6,7 +6,7 @@ Executable lab scripts now exist. Follow [QUICKSTART-ALPHA.md](QUICKSTART-ALPHA.
 | --- | --- | --- |
 | HG680P / B860H Armbian | 64-bit userspace, supported Debian/Ubuntu base, systemd | Physical hardware pending |
 | Linux ARM64 / x64 | bootstrap.sh, install.sh, localhost setup.mjs | Syntax/unit/loopback only; actual provisioning pending |
-| Windows x64 | elevated PowerShell install.ps1, upstream Windows Service | Windows CI parser/unit checks, real service pending |
+| Windows x64 | elevated PowerShell setup.ps1 / install.ps1, shared wizard, upstream Windows Service | Windows CI parser/unit checks, real service pending |
 | Existing Linux/Windows | adopt.mjs, version guard 1.3.2 | Copy/update tests; real adoption pending |
 | ARM32 | Unsupported in current installer | Do not bypass architecture guard |
 
@@ -16,4 +16,4 @@ Linux uses /opt/meshwall/engine and systemd service meshwall-engine under a dedi
 
 Fresh install refuses existing or partial directories/services. Do not delete a partial installation blindly. Adoption preserves existing engine configuration; stop engine, back up, check ownership and TLS. Existing installations may have different exposure and consent settings; validate before use.
 
-HTTPS readiness checks only establish serving, not successful enrollment or streaming. Verify login, agent and local consent before expanding use. Certificate renewal, safe partial-install rollback, Windows service privilege hardening and physical end-to-end verification remain pending. See [operations](OPERATIONS.md).
+HTTPS readiness checks only establish serving, not successful enrollment or streaming. Verify login, agent and local consent before expanding use. Actual certificate renewal verification, unattended scheduling, safe partial-install rollback, Windows service privilege hardening and physical end-to-end verification remain pending. See [operations](OPERATIONS.md).
