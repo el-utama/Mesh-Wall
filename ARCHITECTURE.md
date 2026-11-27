@@ -29,7 +29,7 @@ flowchart TD
 | panels.mjs | Official same-origin compatibility panels |
 | ui.mjs / style.css | Shared DOM helpers and design tokens |
 
-`installers/linux/` owns bootstrap, config generation, install and one-time local wizard. `installers/windows/` owns Windows provisioning. `installers/adopt.mjs` copies only the owned static files into a supported existing installation. `scripts/maintenance/` owns verified offline backup/restore and UI release swaps. Tests are split into unit and integration/browser fixtures.
+`installers/linux/` owns bootstrap, config generation, install and one-time local wizard. `installers/windows/` owns Windows provisioning, optional WinGet bootstrap, service identity and TLS renewal. `installers/setup/` owns the shared temporary loopback server, validation, child-process runner and UI assets; OS entrypoints supply only preflight and installer adapters. `installers/adopt.mjs` copies only the owned static files into a supported existing installation. `scripts/maintenance/` owns verified offline backup/restore and UI release swaps. Tests are split into unit and integration/browser fixtures.
 
 ## Ownership and trust
 

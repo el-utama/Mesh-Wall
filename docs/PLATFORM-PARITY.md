@@ -7,7 +7,7 @@ Same browser application, upstream engine and access control across both OS fami
 | Core dashboard and 100-tile layout | Shared | Shared | Browser fixtures; real agent benchmark on each |
 | Setup browser | Shared loopback server and assets, Bash adapter | Shared loopback server and assets, PowerShell adapter | Windows and Linux wizard fixture CI; real fresh install |
 | CLI install | install.sh | install.ps1 | Real private HTTPS, agent enrollment |
-| Prerequisites | bootstrap.sh | Official Node/Tailscale installers manually | Automated Windows dependency bootstrap still absent |
+| Prerequisites | bootstrap.sh | bootstrap.ps1 (WinGet official packages, manual fallback) | Actual dependency installation and login validation pending |
 | Native service | systemd, dedicated account | Upstream Windows Service, default account | Windows least-privilege service and lifecycle tests pending |
 | Adopt existing | Shared adopt.mjs | Shared adopt.mjs / PowerShell | Actual host validation |
 | Backup/restore, UI update/rollback | Shared offline CLI, private permissions | Shared offline CLI, restricted ACLs | Real Linux loopback restore; actual Windows restore and ACL review pending |

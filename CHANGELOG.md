@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- Optional Windows prerequisite bootstrap via exact WinGet package IDs and explicit consent; installer requires official system-wide executable locations. Physical validation pending.
 - Shared localhost setup wizard on Linux/Windows, Windows TLS rotation adapter, service identity checks and platform parity release gate. Physical provisioning remains pending.
 - Local Linux TLS renewal with expiry check, hostname/key validation, offline certificate swap and readiness rollback; corrected quickstart formatting. No unattended timer or real tailnet validation yet.
 - Synchronized bilingual README, architecture, installation, API/data, roadmap and test evidence; added Indonesian user guide. Fixed create-account action remaining disabled after a successful submission.

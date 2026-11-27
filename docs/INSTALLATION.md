@@ -6,7 +6,7 @@ Executable lab scripts now exist. Follow [QUICKSTART-ALPHA.md](QUICKSTART-ALPHA.
 | --- | --- | --- |
 | HG680P / B860H Armbian | 64-bit userspace, supported Debian/Ubuntu base, systemd | Physical hardware pending |
 | Linux ARM64 / x64 | bootstrap.sh, install.sh, localhost setup.mjs | Syntax/unit/loopback only; actual provisioning pending |
-| Windows x64 | elevated PowerShell setup.ps1 / install.ps1, shared wizard, upstream Windows Service | Windows CI parser/unit checks, real service pending |
+| Windows x64 | elevated PowerShell bootstrap.ps1 / setup.ps1 / install.ps1, shared wizard, upstream Windows Service | Windows CI parser/unit checks, real service pending |
 | Existing Linux/Windows | adopt.mjs, version guard 1.3.2 | Copy/update tests; real adoption pending |
 | ARM32 | Unsupported in current installer | Do not bypass architecture guard |
 

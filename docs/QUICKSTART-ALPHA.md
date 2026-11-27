@@ -51,7 +51,7 @@ bash -n installers/linux/install.sh
 The local checks are not a live acceptance test. See TESTING.md and IMPLEMENTATION.md.
 
 ## Fresh Windows x64 (alpha; not yet run on a Windows host)
-Install system-wide Node.js >=22.21.1, Git and Tailscale from their official installers, sign in to Tailscale and enable MagicDNS/HTTPS certificates. Open an elevated PowerShell in a trusted checkout and run the shared browser wizard:
+On Windows x64, clone the repository using Git, open elevated PowerShell and optionally run ` .\installers\windows\bootstrap.ps1 ` to install missing official Node.js LTS and Tailscale packages via WinGet (explicit confirmation), guide login and start the wizard. If WinGet is unavailable or an existing Node installation is incompatible, install or upgrade the official packages manually. Node.js >=22.21.1, MagicDNS and HTTPS certificates are required. If prerequisites already exist, run the shared browser wizard from an elevated PowerShell in a trusted checkout:
 
 ```powershell
 .\installers\windows\setup.ps1

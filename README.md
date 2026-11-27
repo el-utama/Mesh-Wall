@@ -12,7 +12,7 @@ MeshWall aims to replace the native dashboard for everyday administration. MeshC
 - View-only wall with 1–10 desired columns, adjustable individual tiles, drag and keyboard reordering, focus/fullscreen, monitor picker, quality presets and saved layouts. Default four concurrent sessions, configurable up to 100.
 - Standard account creation and verified direct view-only group assignment/removal. Inherited or custom rights remain managed by the official advanced panel.
 - Embedded official authentication, desktop, terminal, files and advanced administration panels; no separate public backend.
-- Linux prerequisite bootstrap, shared Linux/Windows localhost setup wizard, Windows fresh installer candidate and existing installation adoption.
+- Linux and Windows prerequisite bootstrap, shared localhost setup wizard, Windows fresh installer candidate and existing installation adoption.
 - Offline backup/verification/restore and reversible UI-only updates; local CLI, not privileged browser operations.
 
 100 enrolled PCs is a product cap, not a verified Tailscale entitlement or STB streaming capacity.
@@ -58,3 +58,5 @@ Run `npm run check`. See [GitHub Actions](https://github.com/el-utama/Mesh-Wall/
 Upstream: [MeshCentral](https://github.com/Ylianst/MeshCentral), [documentation](https://docs.meshcentral.com/), [Tailscale](https://tailscale.com/kb). Independent project; licensing decision pending. Only manage devices with authorization.
 
 See [platform parity and release blockers](docs/PLATFORM-PARITY.md).
+
+Windows x64 (elevated PowerShell, WinGet optional): `.\installers\windows\bootstrap.ps1`; see quickstart for prerequisites and manual fallback.

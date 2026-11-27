@@ -3,7 +3,7 @@
 | Requirement | Current alpha state | Gate before ready |
 | --- | --- | --- |
 | Full native replacement | Partial: custom UI, native standard-account creation and restricted direct group membership; same-origin upstream advanced panels | Verify each embedded panel and session; fully custom advanced controls remain pending |
-| Automated initial configuration | Linux prerequisite bootstrap; shared authenticated localhost GUI wizard and CLI installers on both OS | Real fresh STB setup, safe retry/rollback; Tailscale prerequisite |
+| Automated initial configuration | Linux/Windows prerequisite bootstrap; shared authenticated localhost GUI wizard and CLI installers on both OS | Real fresh STB setup, safe retry/rollback; Tailscale prerequisite |
 | Armbian HG680P/B860H | ARM64 target, runtime guard, low-resource architecture | Actual board OS/kernel/userspace, install and soak test |
 | Windows | PowerShell installer, shared setup wizard, local TLS renewal and adoption | Actual Windows service, TLS and agent validation |
 | 100 PC live wall | 100-tile cap and adjustable 1–100 session limit; default 4 | Actual 1/10/25/50/75/100 session benchmark, acceptable frame age/resources |

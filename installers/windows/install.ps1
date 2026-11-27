@@ -12,10 +12,11 @@ $port = 8443
 function Require-Success([string]$step) { if ($LASTEXITCODE -ne 0) { throw "$step failed (exit $LASTEXITCODE)." } }
 if (Test-Path -LiteralPath $root) { throw 'Existing or partial MeshWall installation; refuse overwrite.' }
 if (Get-Service | Where-Object { $_.Name -like 'meshcentral*' -or $_.DisplayName -eq 'MeshCentral' }) { throw 'Existing MeshCentral service; use adoption instead.' }
-$node = (Get-Command node.exe -CommandType Application).Source
-$npm = (Get-Command npm.cmd -CommandType Application).Source
-$ts = (Get-Command tailscale.exe -CommandType Application -ErrorAction SilentlyContinue)
-if ($null -eq $ts) { $tsPath = Join-Path $env:ProgramFiles 'Tailscale\tailscale.exe'; if (!(Test-Path -LiteralPath $tsPath)) { throw 'Install and authenticate Tailscale first.' } } else { $tsPath = $ts.Source }
+$node = Join-Path $env:ProgramFiles 'nodejs\node.exe'
+$npm = Join-Path $env:ProgramFiles 'nodejs\npm.cmd'
+$tsPath = Join-Path $env:ProgramFiles 'Tailscale\tailscale.exe'
+foreach ($p in @($node,$npm,$tsPath)) { if (!(Test-Path -LiteralPath $p -PathType Leaf)) { throw "Missing official system-wide prerequisite: $p" } }
+$env:Path=(Split-Path $node)+';'+(Split-Path $tsPath)+';'+$env:Path
 # Do not install a persistent system service using a user-writable Node installation.
 if (!$node.StartsWith($env:ProgramFiles + '\',[StringComparison]::OrdinalIgnoreCase)) { throw 'Install system-wide Node.js under Program Files before proceeding.' }
 & $node -e 'const [a,b,c]=process.versions.node.split(".").map(Number);process.exit(process.arch==="x64"&&(a>22||(a===22&&(b>21||(b===21&&c>=1))))?0:1)'
