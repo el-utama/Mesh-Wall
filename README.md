@@ -44,7 +44,7 @@ If Node.js >=22.21.1 and authenticated Tailscale are already available, use `sud
 | [UI](docs/UI.md) / [UI audit](docs/UI-AUDIT.md) | UX and validation |
 | [UI/UX skill](.agents/skills/meshwall-ui-ux/SKILL.md) | Agent design and visual QA |
 | [API and data](docs/API-DATA.md) | Actual data ownership and future design |
-| [Testing](docs/TESTING.md) | CI and physical acceptance gates |
+| [Testing](docs/TESTING.md) / [Hardware acceptance](docs/HARDWARE-ACCEPTANCE.md) | CI and physical acceptance gates |
 | [Operations](docs/OPERATIONS.md) | Backup, restore, updates |
 | [Security](SECURITY.md) | Security boundaries |
 | [Implementation](docs/IMPLEMENTATION.md) / [Audit](docs/AUDIT.md) | Evidence and remaining gaps |

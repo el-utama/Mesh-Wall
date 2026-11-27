@@ -29,17 +29,25 @@ tailscale cert --cert-file "$TMP/fullchain.pem" --key-file "$TMP/key.pem" "$HOST
 install -d -o meshwall -g meshwall -m 0700 "$TMP/input"
 install -o meshwall -g meshwall -m 0600 "$TMP/fullchain.pem" "$TMP/input/chain.pem"
 install -o meshwall -g meshwall -m 0600 "$TMP/key.pem" "$TMP/input/key.pem"
+# Validate candidate before interrupting service, including whether it actually extends validity.
+CANDIDATE="$(as_engine inspect "$ROOT" "$TMP/input/chain.pem" "$TMP/input/key.pem")"
+parse_fingerprint(){ "$NODE" -e 'let s="";process.stdin.on("data",c=>s+=c);process.stdin.on("end",()=>{let x=JSON.parse(s);if(!/^([A-F0-9]{2}:){31}[A-F0-9]{2}$/.test(x.fingerprint))process.exit(1);console.log(x.fingerprint)})'; }
+OLD_FP="$(printf '%s' "$STATUS" | parse_fingerprint)"
+NEW_FP="$(printf '%s' "$CANDIDATE" | parse_fingerprint)"
+if [[ "$OLD_FP" == "$NEW_FP" ]]; then printf 'Tailscale returned the existing certificate; no service restart. Check again before expiry.\n'; exit 0; fi
 URL="https://$HOST:8443/meshwall.html"
-ready(){ for _ in $(seq 1 30); do if curl --silent --fail --max-time 3 --resolve "$HOST:8443:$IP" "$URL" | grep -q '<title>MeshWall</title>'; then return 0; fi; sleep 2; done; return 1; }
+# Both HTTPS content and the actual TLS peer fingerprint must match.
+peer(){ "$NODE" -e 'const tls=require("node:tls");const [ip,host]=process.argv.slice(1);const s=tls.connect({host:ip,port:8443,servername:host,rejectUnauthorized:true},()=>{console.log(s.getPeerCertificate().fingerprint256);s.end()});s.setTimeout(3000,()=>s.destroy(Error("timeout")));s.on("error",()=>{process.exitCode=1});' "$IP" "$HOST"; }
+ready(){ local expected="$1" body; for _ in $(seq 1 30); do if body="$(curl --silent --fail --max-time 3 --resolve "$HOST:8443:$IP" "$URL")" && [[ "$body" == *'<title>MeshWall</title>'* ]] && [[ "$(peer)" == "$expected" ]]; then return 0; fi; sleep 2; done; return 1; }
 printf 'Certificate renewal requires a brief service interruption.\n'
 systemctl stop "$SERVICE"
 if systemctl is-active --quiet "$SERVICE"; then die "Engine did not stop."; fi
 if ! RECOVERY="$(as_engine rotate "$ROOT" "$TMP/input/chain.pem" "$TMP/input/key.pem" --engine-stopped)"; then
  printf 'Rotation failed. Inspect certificate state before restarting.\n' >&2; exit 1
 fi
-if [[ "$RECOVERY" == UNCHANGED ]]; then systemctl start "$SERVICE"; ready || die "HTTPS readiness failed."; printf 'Tailscale returned the existing certificate; check again before expiry.\n'; exit 0; fi
+if [[ "$RECOVERY" == UNCHANGED ]]; then systemctl start "$SERVICE"; ready "$OLD_FP" || die "HTTPS readiness failed."; printf 'Tailscale returned the existing certificate; check again before expiry.\n'; exit 0; fi
 [[ "$RECOVERY" =~ ^/opt/meshwall/engine/meshwall-tls-recovery-[a-f0-9]{24}$ ]] || die "Unexpected recovery path; inspect before restarting."
-if systemctl start "$SERVICE" && ready; then
+if systemctl start "$SERVICE" && ready "$NEW_FP"; then
  printf 'Renewed HTTPS certificate; previous certificate retained in %s\n' "$RECOVERY"; exit 0
 fi
 printf 'HTTPS readiness failed; attempting offline certificate rollback.\n' >&2
@@ -47,5 +55,5 @@ systemctl stop "$SERVICE"
 if systemctl is-active --quiet "$SERVICE"; then die "Engine did not stop for rollback."; fi
 as_engine rollback "$ROOT" "$RECOVERY" --engine-stopped
 systemctl start "$SERVICE"
-ready || die "Rollback HTTPS verification failed; inspect service and recovery directories."
+ready "$OLD_FP" || die "Rollback HTTPS verification failed; inspect service and recovery directories."
 die "Renewal failed; previous certificate restored and HTTPS verified."
