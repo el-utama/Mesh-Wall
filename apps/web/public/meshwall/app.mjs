@@ -32,7 +32,7 @@ async function refresh(){
     devices=result.slice(0,100);lastInventory=Date.now();$("lastRefresh").textContent=new Date(lastInventory).toLocaleTimeString();
     wall.reconcile(new Set(devices.filter(d=>d.online).map(d=>d.id)));control.send({action:"authcookie"});render();
   }catch{if(control.socket===session){wall.stopAll();devices=[];groups=[];lastInventory=0;render();notice("Inventory unavailable. All live sessions stopped. Check login, engine version and connectivity.");}}
-  finally{refreshing=false;}
+  finally{refreshing=false;if(control.authenticated&&control.socket!==session)refresh();}
 }
 function stats(){$("total").textContent=user?devices.length:"—";$("online").textContent=user?devices.filter(d=>d.online).length:"—";$("offline").textContent=user?devices.filter(d=>!d.online).length:"—";$("streams").textContent=wall.count();}
 function render(){stats();if(page==="wall")wall.render();if(page==="devices")management.renderDevices();if(page==="groups")management.renderGroups();}

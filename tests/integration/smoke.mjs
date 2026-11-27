@@ -42,14 +42,13 @@ try {
   assert.ok(ready,"MeshWall page must be served by real MeshCentral");
   await page.waitForFunction(()=>document.getElementById("connection")?.textContent.includes("Disconnected"),{},{timeout:20000});
   assert.equal(await page.locator("#total").textContent(),"—","Unauthenticated inventory must be hidden");
-  await page.goto(origin+"/",{waitUntil:"domcontentloaded"});
-  await page.locator("#username").fill("labadmin");await page.locator("#password").fill(password);
-  await page.locator("#loginButton").click();
-  await page.waitForURL(u=>u.origin===origin,{timeout:15000});
-  await page.waitForTimeout(1200);
-  await page.goto(origin+"/meshwall.html",{waitUntil:"domcontentloaded"});
+  await page.locator("#login").click();
+  const login=page.frameLocator("#panelFrame");
+  await login.locator("#username").fill("labadmin");await login.locator("#password").fill(password);
+  await login.locator("#loginButton").click();
   await page.waitForFunction(()=>document.getElementById("connection")?.textContent==="Authenticated",{},{timeout:20000});
   await page.waitForFunction(()=>document.getElementById("total")?.textContent==="0",{},{timeout:20000});
+  await page.locator("#panelDialog").waitFor({state:"hidden",timeout:20000});
   await page.locator('nav [data-page="groups"]').click();
   await page.locator("#groupName").fill("Authorized lab group");
   await page.locator("#groupForm button").click();
@@ -60,16 +59,19 @@ try {
   await page.locator("#inviteResult a").waitFor({timeout:20000});
   const href=await page.locator("#inviteResult a").getAttribute("href");
   assert.ok(href?.startsWith(origin+"/agentinvite?"),"Invitation must be same-origin");
+  await page.locator("#groupList button").first().click();await page.locator("#editInput").fill("Renamed lab group");await page.locator("#editSubmit").click();await page.waitForFunction(()=>document.getElementById("groupList").textContent.includes("Renamed lab group"),{},{timeout:20000});
+  await page.locator('nav [data-page="users"]').click();await page.waitForFunction(()=>document.getElementById("userRows").textContent.includes("labadmin"),{},{timeout:20000});
+  await page.locator('nav [data-page="activity"]').click();await page.waitForFunction(()=>document.getElementById("eventStatus").textContent.includes("recent authorized events"),{},{timeout:20000});
   await page.locator('nav [data-page="wall"]').click();
   await page.locator("#columns").fill("10");await page.locator("#columns").press("Tab");
-  await page.locator("#save").click();
+  await page.locator("#presetName").fill("Ten columns");await page.locator("#save").click();
   await page.reload({waitUntil:"domcontentloaded"});
   await page.waitForFunction(()=>document.getElementById("connection")?.textContent==="Authenticated",{},{timeout:20000});
   await page.locator('nav [data-page="wall"]').click();
-  assert.equal(await page.locator("#columns").inputValue(),"10");
+  assert.equal(await page.locator("#columns").inputValue(),"10");assert.equal(await page.locator("#preset").inputValue(),"Ten columns");
   assert.equal(await page.locator("#streams").textContent(),"0");
   assert.equal(appErrors.length,0,"Browser JavaScript errors: "+appErrors.join("; "));
-  console.log("PASS: real MeshCentral static serving, unauthenticated denial, login, inventory, create group, invitation and persisted layout; no agent or desktop stream tested.");
+  console.log("PASS: real MeshCentral static serving, unauthenticated denial, embedded login, inventory, create/rename group, invitation, users, events and persisted preset; no agent or desktop stream tested.");
 } catch(e) {
   // Do not print URLs, session cookies, credentials or upstream logs.
   console.error("Integration failed:",String(e.message).replaceAll(password,"[redacted]"));
