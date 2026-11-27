@@ -5,7 +5,7 @@ Not a production release. Test only on authorized machines and an isolated tailn
 ## Fresh Linux / Armbian
 Prerequisites: supported 64-bit Armbian/Debian with systemd, wired network, system-wide Node >=22.21.1 and npm, Tailscale installed and signed in, MagicDNS and HTTPS certificates enabled, port 8443 free, adequate disk/RAM, curl, openssl and standard Linux utilities. Check Node userspace architecture; a 64-bit kernel alone is insufficient. Do not use deprecated Node or disable TLS. Tailscale HTTPS name appears in certificate transparency logs; review privacy implications. The installer does not change tailnet ACLs.
 
-Clone this repository on the target and review the installer. Choose the temporary browser setup wizard (recommended for lab evaluation):
+Clone this repository on the target and review the installer. On a fresh supported 64-bit Debian/Ubuntu-based Armbian system, an optional bootstrap prepares dependencies, installs a compatible Node.js release if needed, installs Tailscale from its official signed APT repository, guides Tailscale login and starts the wizard:\n\n```bash\nsudo bash installers/linux/bootstrap.sh\n```\n\nIt checks the official SHA-256 manifest over HTTPS before extracting Node.js; this is not independent GPG verification. It refuses conflicts and existing MeshWall installs. It does not change tailnet ACLs or enable public ingress. User login and enabling MagicDNS/HTTPS certificates still require the tailnet owner. The script has not been run on STB hardware. If prerequisites are already present, use the temporary browser setup wizard directly:
 
 ```bash
 sudo node installers/linux/setup.mjs
