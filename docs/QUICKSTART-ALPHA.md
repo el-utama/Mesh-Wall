@@ -31,7 +31,7 @@ Open the exact URL printed by installer. Click Sign in within MeshWall; the same
 
 ## Existing MeshCentral (Linux or Windows)
 
-Open the same local setup wizard and select **Review existing MeshCentral**. Pick a detected installation or type the absolute installation root. After preview, match the service to the root and verify its effective paths. Choose **Check backup path** with an existing private directory and follow the local terminal instructions. A detected installation blocks fresh provisioning in that wizard session. The wizard only reviews the plan. [Linux and Windows service checks and recovery](ADOPTION.md).
+Open the same local setup wizard and select **Review existing MeshCentral**. Pick a detected installation or type the absolute installation root. After preview, enter the registered service name and select **Check service** to compare its registered launch, account and state. Review custom or unsupported services locally. Choose **Check backup path** with an existing private directory and follow the local terminal instructions. A detected installation blocks fresh provisioning in that wizard session. The wizard only reviews the plan. [Linux and Windows service checks and recovery](ADOPTION.md).
 
 For terminal-only review, run `node scripts/doctor.mjs` for bounded discovery or enter the actual paths from the trusted checkout:
 ```bash

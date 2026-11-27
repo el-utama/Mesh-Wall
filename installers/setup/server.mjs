@@ -6,7 +6,7 @@ import {discover as defaultDiscover} from "../support/discovery.mjs";
 import {planAdoption} from "./adoption-plan.mjs";
 const dir=new URL("./",import.meta.url);
 const assets=new Map([["/",["setup.html","text/html; charset=utf-8"]],["/setup.js",["setup.js","text/javascript; charset=utf-8"]],["/setup-adoption.js",["setup-adoption.js","text/javascript; charset=utf-8"]],["/setup.css",["setup.css","text/css; charset=utf-8"]]]);
-export function createSetupServer({token,preflight,install,complete=()=>{},discover=defaultDiscover}){
+export function createSetupServer({token,preflight,install,complete=()=>{},discover=defaultDiscover,inspectService}){
   let state={status:"idle",stage:"preflight",message:"Ready for preflight",url:null};
   let reviewingAdoption=false,existingCandidate=false;
   const data=new Map([...assets].map(([path,[name,type]])=>[path,{type,body:readFileSync(new URL(name,dir))}]));
@@ -35,7 +35,7 @@ export function createSetupServer({token,preflight,install,complete=()=>{},disco
       reviewingAdoption=true;
       state={...state,stage:"adoption"};
       try{
-        const plan=await planAdoption(input,()=>{existingCandidate=true;});
+        const plan=await planAdoption(input,()=>{existingCandidate=true;},inspectService);
         return json(res,plan.error?422:200,{...plan,existingCandidate,help:guidance("adoption"),platform:process.platform==="win32"?"windows":"linux"});
       }catch{return json(res,500,{error:"Could not preview adoption. Inspect the local terminal.",existingCandidate,help:guidance("adoption")});}
       finally{reviewingAdoption=false;}

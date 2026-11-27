@@ -22,8 +22,8 @@ export function validAdoptionPath(value,platform=process.platform){
 }
 
 export function validateAdoptionPreview(body){
- if(!body||typeof body!=="object"||Array.isArray(body)||Object.keys(body).some(key=>!["root","backupParent"].includes(key)))throw Error("Invalid preview request.");
+ if(!body||typeof body!=="object"||Array.isArray(body)||Object.keys(body).some(key=>!["root","backupParent","serviceName"].includes(key)))throw Error("Invalid preview request.");
  for(const key of Object.keys(body))if(typeof body[key]!=="string"||body[key].length>1024)throw Error("Invalid preview path.");
  if(typeof body.root!=="string"||!body.root.length)throw Error("An installation root is required.");
- return {root:body.root,backupParent:body.backupParent};
+ return {root:body.root,backupParent:body.backupParent,serviceName:body.serviceName};
 }

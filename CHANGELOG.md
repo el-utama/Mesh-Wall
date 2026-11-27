@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- Added read-only registered service inspection for existing MeshCentral on systemd and Windows CIM/WinSW. Setup can check a service before backup-path review and recheck it while preparing the terminal handoff.
 - Added the shared existing-server review in setup, including manual roots, config and collision checks, a verified backup-directory location, service confirmation guidance and a terminal handoff. Added interrupted adoption and native login after rollback regression coverage.
 - Added model-neutral project memory and mandatory session bootstrap/update rules, with exact CI evidence, prioritized remaining work and bilingual onboarding. No runtime behavior changed.
 - Separated Windows fresh static UI installation from existing-server adoption command; shared read-only fresh-install guard and pre-Node Linux service detection reduce accidental duplicate installations.

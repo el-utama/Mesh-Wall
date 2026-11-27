@@ -5,6 +5,7 @@ import {fileURLToPath} from "node:url";
 import {promisify} from "node:util";
 import {previewAdoption} from "../adoption.mjs";
 import {inspectRoot} from "../support/discovery.mjs";
+import {inspectAdoptionService} from "../support/adoption-service.mjs";
 import {validAdoptionPath} from "./model.mjs";
 
 const exec = promisify(execFile);
@@ -39,7 +40,15 @@ async function checkDirectory(input) {
  return path;
 }
 
-export async function planAdoption({root,backupParent},onCandidate) {
+export async function reviewAdoptionService(root,name,inspectService=inspectAdoptionService){
+ try{root=await checkDirectory(root);}
+ catch{return {status:"invalid-root"};}
+ const candidate=await inspectRoot(root);
+ if(!candidate?.compatible)return {status:"invalid-root"};
+ return inspectService(candidate.root,name);
+}
+
+export async function planAdoption({root,backupParent,serviceName},onCandidate,inspectService=inspectAdoptionService) {
  try{root=await checkDirectory(root);}
  catch{return {error:"MW-ADOPT-ROOT · Enter an existing absolute local installation directory without symbolic links or junctions."};}
  const candidate=await inspectRoot(root);
@@ -52,7 +61,9 @@ export async function planAdoption({root,backupParent},onCandidate) {
  }
  try{
   const {root:canonicalRoot,version,files,backupDirectory}=await previewAdoption(root,source,backupParent,{maxConfigBytes:1024*1024});
-  return {preview:{root:canonicalRoot,version,files,backupDirectory}};
+  const service=serviceName===undefined?null:await inspectService(canonicalRoot,serviceName);
+  if(backupParent!==undefined&&service&&service.status!=="verified")return {error:"MW-ADOPT-SERVICE · Service verification changed. Check the service again before continuing.",service};
+  return {preview:{root:canonicalRoot,version,files,backupDirectory,service}};
  }catch(error){
   return {error:blocked[error.code]??"MW-ADOPT-REVIEW · Preview could not validate the layout or release files. Run local preview for details and preserve the installation."};
  }

@@ -49,6 +49,14 @@
         </details>
         <h3>Confirm the existing service</h3>
         <p id="service-guide"></p>
+        <form id="service-form">
+          <label>Registered service name
+            <input id="service-name" required maxlength="128" autocomplete="off" spellcheck="false" aria-describedby="service-hint">
+          </label>
+          <p class="hint" id="service-hint">Leave blank only if you have reviewed a custom service or manual launcher in the local terminal.</p>
+          <button type="submit" id="check-service">Check service</button>
+        </form>
+        <p id="service-state" role="status"></p>
         <label class="check"><input id="service-confirmed" type="checkbox">
           I administer this server and matched the service or launch process to this installation and its default paths.
         </label>
@@ -62,6 +70,7 @@
         <div id="handoff" hidden>
           <h3>Continue in the local terminal</h3>
           <p id="handoff-backup"></p>
+          <p id="handoff-service" hidden>Recheck the registered service after stopping it and after restarting it with <code>node installers/adopt.mjs service &lt;root&gt; &lt;service-name&gt;</code>.</p>
           <ol>
             <li>In an authorized maintenance window, stop the confirmed service and verify that no engine process uses this directory.</li>
             <li>From the reviewed checkout, run the following command with the actual paths. The apply command creates and verifies the backup before copying the UI.</li>

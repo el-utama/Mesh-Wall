@@ -19,7 +19,9 @@ test("adoption preview requires an authenticated same-origin request and never c
  const backups=join(base,"private backups");
  const token="c".repeat(64);
  let installs=0;
- const server=createSetupServer({token,preflight:()=>({ready:true}),discover:async()=>[],install:async()=>{installs++;}});
+ const server=createSetupServer({token,preflight:()=>({ready:true}),discover:async()=>[],install:async()=>{installs++;},
+  inspectService:async(_,name)=>({status:"verified",name,state:"stopped",account:"local-fixture-operator"})
+ });
  try{
   await mkdir(engine,{recursive:true});
   await mkdir(join(root,"meshcentral-data"));
@@ -45,6 +47,9 @@ test("adoption preview requires an authenticated same-origin request and never c
   assert.equal(data.preview.backupDirectory,await realpath(backups));
   assert.equal(data.preview.files.length,14);
   assert.equal(data.existingCandidate,true);
+  const serviceResponse=await post(preview,{root,serviceName:"fixture-meshcentral.service"});
+  assert.equal(serviceResponse.status,200);
+  assert.equal((await serviceResponse.json()).preview.service.account,"local-fixture-operator");
   assert.equal((await post("/api/adoption/apply",{root})).status,404);
   assert.equal((await post("/api/install",{username:"labadmin",password:"Fixture-Safe-Password",confirmation:"Fixture-Safe-Password",authorized:true})).status,409);
   assert.equal(installs,0);
@@ -59,6 +64,8 @@ test("adoption preview requires an authenticated same-origin request and never c
   assert.match(reportText,/MW-ADOPT/);
   assert.ok(!reportText.includes(data.preview.root));
   assert.ok(!reportText.includes(privateValue));
+  assert.ok(!reportText.includes("local-fixture-operator"));
+  assert.ok(!reportText.includes("fixture-meshcentral.service"));
   assert.deepEqual((await readdir(root)).sort(),["meshcentral-data","node_modules"]);
   assert.deepEqual(await readdir(backups),[]);
  }finally{

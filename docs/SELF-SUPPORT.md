@@ -4,7 +4,7 @@ MeshWall must support users even without ChatGPT, Codex, cloud AI or a running M
 
 ## Available in current source
 - Bootstrap terminal help and stage labels, including failures before Node is available; read this local Markdown file from the checkout.
-- Shared temporary setup wizard: bounded common-path/service/process discovery, manual adoption preview, service confirmation guidance, separate backup path check, fresh install guard, local terminal handoff and safe diagnostic report. Setup server requires the one-time token; reports exclude raw logs, installation paths, account data and secrets. Candidate roots shown locally may be sensitive.
+- Shared temporary setup wizard: bounded common-path/service/process discovery, manual adoption preview, registered service inspection on both OSes, manual confirmation guidance for custom launchers, separate backup path check, fresh install guard, local terminal handoff and safe diagnostic report. Setup server requires the one-time token; reports exclude raw logs, installation paths, account data and secrets. Candidate roots shown locally may be sensitive.
 - Contextual read-only help in overview, wall, devices, groups, users, activity and settings; no privileged action is exposed.
 - Independent read-only CLI (requires Node, not a running MeshCentral):
 ```bash

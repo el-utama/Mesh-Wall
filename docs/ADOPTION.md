@@ -5,7 +5,7 @@ The Alpha workflow supports a local npm installation of MeshCentral 1.3.2. The r
 ## Review in the wizard or terminal
 
 1. Launch the local setup wizard from the reviewed checkout according to [Quickstart](QUICKSTART-ALPHA.md). Choose **Review existing MeshCentral**, select a detected installation or type its absolute local path, then choose **Preview adoption**. Discovery checks a bounded set of common paths, service names and processes. It can miss custom launchers, quoted or relative paths, containers and unreadable processes. The same discovery is available via `node scripts/doctor.mjs`.
-2. Review the installation version and the files to be added under `meshcentral-web/public`. On Linux, use `systemctl list-units --type=service --all` and inspect the actual unit with `systemctl show` for `ExecStart`, `WorkingDirectory` and `User`. On Windows, use `Get-CimInstance Win32_Service | Select-Object Name, PathName, StartName, State` in PowerShell and compare the actual service path and account. If the engine was started manually, inspect the actual process and launch options locally. Confirm that the root and effective paths match before proceeding.
+2. Review the installation version and planned UI files. Find the registered service name through `systemctl list-units --type=service --all` on Linux or `Get-CimInstance Win32_Service | Select-Object Name, PathName, StartName, State` in PowerShell. Enter the name and choose **Check service**. The wizard reports the registered account and whether the service is running, stopped or transitioning. For a custom service or manual launch, compare its effective configuration, process and account in the terminal before proceeding with manual confirmation.
 3. Select **Check backup path** with an existing private directory that is neither inside the installation nor its ancestor. The wizard checks path structure and previews the files again. The operator must check free space, permissions or Windows ACLs, and that the service account can access the directory. The wizard accepts plain local directory paths, checks fixed drives on Windows, and refuses symlinks and junctions along submitted paths. It can review configuration files up to 1 MiB. The terminal preview is available if the wizard cannot review a large configuration.
 
 Terminal-only preview takes the root and an optional existing backup directory. Use your own quoted paths. In PowerShell you can also use `installers/windows/adopt.ps1 -Mode preview` with `-MeshCentralRoot` and optional `-BackupParent`.
@@ -14,11 +14,17 @@ Terminal-only preview takes the root and an optional existing backup directory. 
 node installers/adopt.mjs preview "/path/to/install-root" "/path/to/private-backups"
 ```
 
-When either discovery or manual inspection identifies a package, the current wizard session blocks fresh installation. Preview only reads files and shows a terminal handoff. The wizard does not authenticate to MeshCentral or manipulate a service.
+Use the same read-only service check during maintenance from the terminal. The PowerShell wrapper also accepts `-Mode service -ServiceName <name>`.
+
+```bash
+node installers/adopt.mjs service "/path/to/install-root" meshcentral.service
+```
+
+Linux inspection reads the system systemd registry through `systemctl` and JSON-capable `busctl`. It recognizes direct Node launches of the pinned npm package, with standard paths and no custom launch hooks or environment files. Windows inspection reads the registered CIM service and the pinned upstream WinSW launcher and XML for the nominated root. A result of `verified` means the registered configuration matches the supported launch. The status is a snapshot for the nominated service. Check other processes, runtime readiness, permissions and access independently. Custom scripts, extra arguments or missing tools require manual review. The wizard blocks a named service with a failed check from proceeding to backup review, and rechecks verified service registration before the handoff. Clear the service field only when using the documented manual workflow.
 
 ## Apply, verify and recover locally
 
-1. In an authorized maintenance window, stop the identified engine using its service manager or original launcher. Check its stopped state and verify no other process is using the root. The `--engine-stopped` flag records the operator's confirmation.
+1. In an authorized maintenance window, stop the identified engine using its service manager or original launcher. Recheck its stopped state with the `service` command or the local service manager. Verify that no other process is using the root. The `--engine-stopped` flag records the operator's confirmation.
 2. From the reviewed checkout, run apply as the existing engine service account on Linux. On Windows use an authorized operator and a separate ACL-restricted backup directory. Apply revalidates the layout and configuration. It creates and verifies the offline snapshot before staging and publishing the 14 owned UI files through exclusive hard links. Existing accounts, devices, data, configuration, certificates and unrelated UI assets stay in place.
 
 ```bash
@@ -40,6 +46,7 @@ node installers/adopt.mjs rollback "/path/to/install-root" --engine-stopped
 | `MW-ADOPT-BACKUP` | Select an existing private sibling or another separate directory. Verify space and permissions under the actual operator account. |
 | `MW-ADOPT-COLLISION` / `MW-ADOPT-JOURNAL` | Keep existing files. Use `status` and review [Operations](OPERATIONS.md) for update or recovery. |
 | `MW-ADOPT-REVIEW` | Run the local `preview` command for details about unsupported layout, file permissions or release files. |
+| `MW-ADOPT-SERVICE` | Confirm the registered name and root. `mismatch` means the launch points elsewhere. For `unsupported` or `unavailable`, compare the registered launch and effective paths locally before proceeding. |
 | `MW-ADOPT-LOCK`, `interrupted` or `inconsistent` | Preserve the verified backup, journal and files. Check actual operation and service state locally before a retry. Never clear a lock blindly. |
 
 An interruption can leave an incomplete journal or a lock. Automatic rollback on in-process placement failure only removes files verified as owned by that transaction. Power-loss durability and service recovery require physical validation. The stage shares file identity with the initial UI. Treat the separate verified snapshot as the backup and keep it private because it can contain secrets. A full restore can discard later changes, so review [Operations](OPERATIONS.md) first.
@@ -47,7 +54,7 @@ An interruption can leave an incomplete journal or a lock. Automatic rollback on
 ## Ringkasan langkah dalam Bahasa Indonesia
 
 1. Di wizard lokal, buka **Review existing MeshCentral**. Pilih hasil deteksi atau masukkan direktori instalasi absolut, lalu klik **Preview adoption**. Cek versi 1.3.2 dan daftar file UI yang akan ditambahkan.
-2. Cocokkan unit/proses dan akun service dengan direktori itu. Di Armbian cek properti unit lewat `systemctl show`. Di Windows cek `Name`, `PathName`, dan `StartName` lewat `Get-CimInstance Win32_Service`. Lanjutkan hanya jika Anda berwenang dan service memakai lokasi data serta konfigurasi yang didukung.
+2. Masukkan nama service yang terdaftar, lalu klik **Check service**. Di Armbian lihat nama unit lewat `systemctl list-units --type=service --all`. Di Windows lihat kolom `Name` lewat `Get-CimInstance Win32_Service`. Wizard menampilkan akun dan status untuk konfigurasi yang didukung. Untuk service khusus atau proses manual, cocokkan lokasi dan akun lewat terminal. Jika konfigurasi menunjuk ke direktori lain, periksa pilihan root sebelum melanjutkan.
 3. Pilih folder backup privat yang sudah ada di luar pohon instalasi. Cek ruang dan izin, lalu klik **Check backup path**. Wizard menampilkan langkah terminal. Saat jadwal maintenance, hentikan service yang telah dikonfirmasi, pastikan proses engine berhenti, lalu jalankan `apply` seperti contoh di atas.
 4. Cek `status`, nyalakan kembali service yang sama, dan buka alamat HTTPS lama dengan `/meshwall.html`. Uji login lama, grup, dan perangkat berizin. Jika ada konflik, status terputus, atau lock tertinggal, simpan backup dan jurnal untuk pemeriksaan. Gunakan `rollback` hanya setelah memverifikasi kondisi pada bagian sebelumnya.
 

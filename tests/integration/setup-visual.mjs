@@ -52,10 +52,14 @@ await mkdir(backupParent);
 await writeFile(join(packageDir,"package.json"),'{"name":"meshcentral","version":"1.3.2"}');
 await writeFile(config,"{}");
 let detected=false;
+let serviceStatus="running";
+let serviceMatched=true;
+const serviceName=process.platform==="win32"?"MeshCentral":"meshcentral.service";
 const adoptionServer=createSetupServer({
  token:adoptionToken,
  discover:async()=>detected?[{root,version:"1.3.2",compatible:true}]:[],
  preflight:()=>({ready:true,checks:[],note:"UI TEST FIXTURE — disposable local files; no service will run."}),
+ inspectService:async(_,name)=>serviceMatched&&name===serviceName?{status:"verified",name,state:serviceStatus,account:"fixture-operator"}:{status:"mismatch"},
  install:async()=>assert.fail("Existing candidate must block installation")
 });
 await new Promise(resolve=>adoptionServer.listen(0,"127.0.0.1",resolve));
@@ -81,6 +85,13 @@ try{
  assert.ok(await page.locator("#backup-form").isHidden());
  const filesDisclosure = page.locator("#file-summary");
  await filesDisclosure.click();
+ await page.locator("#service-name").fill("unrelated.service");
+ await page.locator("#service-name").press("Enter");
+ await page.getByText(/points to a different installation/).waitFor();
+ assert.ok(await page.locator("#service-confirmed").isDisabled());
+ await page.locator("#service-name").fill(serviceName);
+ await page.locator("#service-name").press("Enter");
+ await page.getByText(/running · Account fixture-operator/).waitFor();
  assert.ok(await page.locator("#preview-files").isVisible());
  await filesDisclosure.click();
  await page.locator("#service-confirmed").focus();
@@ -89,19 +100,27 @@ try{
  await page.locator("#backup-parent").press("Enter");
  await page.getByText(/MW-ADOPT-BACKUP/).waitFor();
  assert.ok(await page.locator("#handoff").isHidden());
+ serviceStatus="stopped";
  await page.locator("#backup-parent").fill(backupParent);
  await page.locator("#backup-parent").press("Enter");
  await page.locator("#handoff").waitFor();
  assert.match(await page.locator("#service-guide").textContent(),process.platform==="win32"?/Get-CimInstance/:/systemctl/);
  assert.match(await page.locator("#handoff").textContent(),/verify original login/i);
+ assert.match(await page.locator("#service-state").textContent(),/stopped/);
+ assert.ok(await page.locator("#handoff-service").isVisible());
  for(const [width,height] of [[1920,1080],[1440,900],[1280,720],[768,1024],[390,844]]){
   await page.setViewportSize({width,height});
   const dimensions=await page.evaluate(()=>[document.documentElement.clientWidth,document.documentElement.scrollWidth]);
   assert.ok(dimensions[1]<=dimensions[0]+1,"Adoption overflow at "+width);
   await page.screenshot({path:join(out,"setup-adoption-"+width+".jpg"),fullPage:true,type:"jpeg",quality:75});
  }
- await page.locator("#backup-parent").fill(root);
+ serviceMatched=false;
+ await page.locator("#check-backup").click();
+ await page.getByText(/Service verification changed/).waitFor();
  assert.ok(await page.locator("#handoff").isHidden());
+ assert.ok(await page.locator("#service-confirmed").isDisabled());
+ assert.equal(await page.locator("#check-service").evaluate(button=>button===document.activeElement),true);
+ await page.screenshot({path:join(out,"setup-adoption-service-changed.jpg"),fullPage:true,type:"jpeg",quality:75});
  await page.locator("#root").fill(root+"-changed");
  assert.ok(await page.locator("#adoption-review").isHidden());
  detected=true;
