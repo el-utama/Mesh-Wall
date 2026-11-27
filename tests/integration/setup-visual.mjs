@@ -117,6 +117,7 @@ try{
  serviceMatched=false;
  await page.locator("#check-backup").click();
  await page.getByText(/Service verification changed/).waitFor();
+ assert.equal(await page.locator("#adoption-status").textContent(),"");
  assert.ok(await page.locator("#handoff").isHidden());
  assert.ok(await page.locator("#service-confirmed").isDisabled());
  assert.equal(await page.locator("#check-service").evaluate(button=>button===document.activeElement),true);

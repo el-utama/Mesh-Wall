@@ -71,6 +71,7 @@ export function connectAdoption({api,help,onCandidate}) {
       if(checkingBackup) {
         if(reviewedService&&(reviewedService.name!==service?.name||reviewedService.account!==service?.account)){
           invalidateService();
+          serviceChanged=true;
           $("adoption-status").textContent="The service or account changed. Verify it again.";
           return;
         }
@@ -103,6 +104,7 @@ export function connectAdoption({api,help,onCandidate}) {
       help(error.detail?.help);
       if(error.detail?.service){
         invalidateService();
+        $("adoption-status").textContent="";
         service=error.detail.service;
         serviceChanged=true;
       }else{
