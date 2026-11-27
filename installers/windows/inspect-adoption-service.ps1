@@ -23,7 +23,11 @@ if ($MyInvocation.InvocationName -eq '.') { return }
 $ErrorActionPreference = 'Stop'
 $serviceName = $env:MESHWALL_INSPECT_SERVICE
 $root = $env:MESHWALL_INSPECT_ROOT
-$service = Get-CimInstance Win32_Service | Where-Object { $_.Name -eq $serviceName } | Select-Object -First 1
+if ($serviceName -cnotmatch '\A[A-Za-z0-9][A-Za-z0-9_. -]{0,127}\z' -or $serviceName.Trim() -ne $serviceName) {
+  throw 'Invalid registered service name.'
+}
+$filter = "Name = '$serviceName'"
+$service = Get-CimInstance -ClassName Win32_Service -Filter $filter -Property Name,PathName,State,ProcessId,StartName
 if (!$service) { 'null'; exit 0 }
 
 $record = $service | Select-Object Name, PathName, State, ProcessId, StartName

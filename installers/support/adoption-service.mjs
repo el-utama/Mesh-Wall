@@ -46,7 +46,7 @@ async function readWindows(root,name){
   const powershell=join(process.env.SystemRoot,"System32","WindowsPowerShell","v1.0","powershell.exe");
   const stdout=await run(powershell,["-NoProfile","-NonInteractive","-File",windowsProbe],{
     ...process.env,MESHWALL_INSPECT_ROOT:root,MESHWALL_INSPECT_SERVICE:name
-  },8000);
+  },15000);
   return JSON.parse(stdout);
 }
 
