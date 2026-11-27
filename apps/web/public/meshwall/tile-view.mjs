@@ -1,7 +1,9 @@
 import {el} from "./ui.mjs";
 export function tileState(text){
  if(text.startsWith("Live"))return ["live","Live","Viewing only"];
- if(text.startsWith("Disconnected")||text.startsWith("No session")||text.startsWith("Renderer error"))return ["error","Error","Session ended"];
+ if(text.startsWith("Disconnected"))return ["error","Ended","Disconnected / denied"];
+ if(text.startsWith("No session"))return ["error","No session","No screen received"];
+ if(text.startsWith("Renderer error"))return ["error","Error","Renderer error"];
  if(text==="Offline")return ["offline","Offline","Agent offline"];
  if(text==="Stopped")return ["stopped","Stopped","Viewing stopped"];
  if(text==="Ready")return ["ready","Ready","Select to view"];

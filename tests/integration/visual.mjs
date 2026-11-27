@@ -27,11 +27,12 @@ await page.routeWebSocket("wss://meshwall.test/control.ashx",ws=>{
 });
 async function ready(n){count=n;await page.goto(origin+"/meshwall.html");await page.waitForFunction(n=>document.querySelector("#total")?.textContent===String(n),n,{timeout:15000});await page.locator('nav [data-page="wall"]').click();await page.locator("#notice").evaluate(e=>e.textContent="UI TEST FIXTURE · synthetic devices only · no agents or live streams");}
 async function columns(n){await page.locator("#columns").fill(String(n));await page.locator("#columns").press("Tab");}
-async function snap(name){await page.screenshot({path:join(out,name+".jpg"),type:"jpeg",quality:78,animations:"disabled"});}
+async function labelFixture(){await page.locator("#notice").evaluate(e=>e.textContent="UI TEST FIXTURE · synthetic devices only · no agents or live streams");}
+async function snap(name){await labelFixture();await page.screenshot({path:join(out,name+".jpg"),type:"jpeg",quality:78,animations:"disabled"});}
 async function noOverflow(label){const v=await page.evaluate(()=>({width:document.documentElement.clientWidth,scroll:document.documentElement.scrollWidth}));assert.ok(v.scroll<=v.width+1,label+" document overflow "+JSON.stringify(v));}
 async function tileCheck(n,label){assert.equal(await page.locator(".tile").count(),n);await noOverflow(label);const issues=await page.locator(".tile").evaluateAll(ts=>ts.filter(t=>{const r=t.getBoundingClientRect(),s=t.querySelector(".screen").getBoundingClientRect();return r.width<90||s.width<80||s.height<35||s.right>r.right+1||s.bottom>r.bottom+1;}).map(t=>t.dataset.deviceId));assert.deepEqual(issues,[],label+" clipped tiles");}
 try{
- if(baseline){await ready(100);await columns(10);await snap("before-1440-wall");console.log("Baseline screenshot captured (no pass asserted).");}
+ if(baseline){await ready(100);await columns(10);await snap("before-1440-wall");const jpg=await page.screenshot({type:"jpeg",quality:30});const b64=jpg.toString("base64");for(let i=0;i<b64.length;i+=3000)console.log("MW_VISUAL_BEFORE "+b64.slice(i,i+3000));console.log("Baseline screenshot captured (no pass asserted).");}
  else{
   const views=[[1920,1080],[1440,900],[1280,720],[768,1024],[390,844]];
   for(const [width,height] of views){
@@ -59,6 +60,10 @@ try{
   assert.equal(await page.locator("#streams").textContent(),"0");assert.deepEqual(errors,[]);
   console.log("PASS: 5 viewports, 5 density levels, no page overflow/clipping, filters, keyboard selection, resize/reorder, focus, offline disabled, preset persistence. Synthetic fixture; zero live streams.");
   // Small representative screenshot bytes in CI log for visual review; fixture only.
-  await page.setViewportSize({width:1200,height:760});await columns(4);const jpg=await page.screenshot({type:"jpeg",quality:35});const b64=jpg.toString("base64");for(let i=0;i<b64.length;i+=3000)console.log("MW_VISUAL "+b64.slice(i,i+3000));
+  async function logVisual(name,width,height,cols){await page.setViewportSize({width,height});await columns(cols);await page.waitForTimeout(120);await labelFixture();const jpg=await page.screenshot({type:"jpeg",quality:40});const b64=jpg.toString("base64");for(let i=0;i<b64.length;i+=3000)console.log("MW_VISUAL_"+name+" "+b64.slice(i,i+3000));}
+  if(await page.evaluate(()=>document.fullscreenEnabled)){await page.locator("#wallFullscreen").click();await page.waitForFunction(()=>document.fullscreenElement?.id==="wall");await page.locator("#wallFullscreen").click();await page.waitForFunction(()=>!document.fullscreenElement);}
+  await logVisual("DESKTOP",1200,760,4);
+  await logVisual("DENSE",1440,900,10);
+  await logVisual("MOBILE",390,844,10);
  }
 }finally{await browser.close();}
