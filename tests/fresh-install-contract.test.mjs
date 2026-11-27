@@ -1,0 +1,2 @@
+import test from "node:test";import assert from "node:assert/strict";import {readFile} from "node:fs/promises";
+test("fresh installers use standalone static UI placement and shared discovery guard, not existing adoption CLI",async()=>{for(const path of ["installers/linux/install.sh","installers/windows/install.ps1"]){const s=await readFile(path,"utf8");assert.match(s,/fresh-guard\.mjs/);assert.doesNotMatch(s,/installers[\\/]adopt\.mjs/);assert.match(s,/meshwall\.html/);}});

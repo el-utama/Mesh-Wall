@@ -23,6 +23,8 @@ $env:Path=(Split-Path $node)+';'+(Split-Path $tsPath)+';'+$env:Path
 if (!$node.StartsWith($env:ProgramFiles + '\',[StringComparison]::OrdinalIgnoreCase)) { throw 'Install system-wide Node.js under Program Files before proceeding.' }
 & $node -e 'const [a,b,c]=process.versions.node.split(".").map(Number);process.exit(process.arch==="x64"&&(a>22||(a===22&&(b>21||(b===21&&c>=1))))?0:1)'
 Require-Success 'Node version / architecture'
+& $node (Join-Path $src 'installers\support\fresh-guard.mjs')
+Require-Success 'Existing installation discovery'
 $status = (& $tsPath status --json | Out-String | ConvertFrom-Json); Require-Success 'Tailscale status'
 if ($status.BackendState -ne 'Running' -or !$status.Self.DNSName) { throw 'Tailscale must be running with MagicDNS.' }
 $dnsName = $status.Self.DNSName.TrimEnd('.')
@@ -83,8 +85,14 @@ try {
  $json = & $node (Join-Path $src 'installers\linux\config.mjs') $dnsName $ip $port
  Require-Success 'Private configuration'
  [IO.File]::WriteAllText((Join-Path $data 'config.json'), ($json -join "`n"), [Text.UTF8Encoding]::new($false))
- & $node (Join-Path $src 'installers\adopt.mjs') $root
- Require-Success 'MeshWall static UI'
+ # Fresh root only: install static UI without invoking existing-server adoption.
+ $public=Join-Path $root 'meshcentral-web\public'
+ if (Test-Path -LiteralPath $public) { throw 'Unexpected existing custom web path.' }
+ New-Item -ItemType Directory -Path $public -Force | Out-Null
+ $ui=Join-Path $src 'apps\web\public'
+ Copy-Item -LiteralPath (Join-Path $ui 'meshwall.html') -Destination $public
+ Copy-Item -LiteralPath (Join-Path $ui 'meshwall') -Destination $public -Recurse
+ if (!(Test-Path -LiteralPath (Join-Path $public 'meshwall\app.mjs') -PathType Leaf)) { throw 'MeshWall static UI missing.' }
  $MwStep='administrator'
  [Console]::WriteLine('MW_STAGE administrator')
  Push-Location $root

@@ -21,6 +21,7 @@ node -e 'const [a,b,c]=process.versions.node.split(".").map(Number);process.exit
 NODE="$(command -v node)"; NPM="$(command -v npm)"
 [[ "$NODE" =~ ^/usr/(local/)?bin/node$ && "$NPM" =~ ^/usr/(local/)?bin/npm$ ]] || die "Use system-wide Node/npm, not a user-specific installation."
 [[ -f "$SRC/apps/web/public/meshwall.html" ]] || die "Run from repository checkout."
+"$NODE" "$SRC/installers/support/fresh-guard.mjs" || die "Existing installation discovery blocked fresh setup."
 [[ ! -e "$APP" && ! -e "/etc/systemd/system/$SERVICE.service" ]] || die "Existing or partial installation found. Do not overwrite; see recovery docs."
 ! getent passwd meshwall >/dev/null || die "meshwall service account already exists; inspect before continuing."
 STATUS="$(tailscale status --json)" || die "Tailscale must be installed and authenticated first."

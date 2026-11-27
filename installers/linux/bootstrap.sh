@@ -13,6 +13,9 @@ SRC="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../.." && pwd)"
 [[ -f "$SRC/installers/linux/setup.mjs" ]] || die "Run from a trusted repository checkout."
 [[ ! -e /opt/meshwall && ! -e /etc/systemd/system/meshwall-engine.service ]] || die "Existing or partial install; use maintenance, not bootstrap."
 [[ -d /run/systemd/system ]] || die "systemd required."
+# Detect named services before installing any prerequisites, even without Node.
+units="$(systemctl list-unit-files --type=service --no-legend --no-pager)" || die "Cannot inspect installed services."
+if grep -Eiq '^[^[:space:]]*(meshcentral|meshwall)[^[:space:]]*\.service([[:space:]]|$)' <<< "$units"; then die "Existing MeshCentral/MeshWall service detected. See docs/ADOPTION.md; do not run fresh bootstrap."; fi
 command -v apt-get >/dev/null || die "APT required."
 case "$(uname -m)" in aarch64) ARCH=arm64;; x86_64) ARCH=x64;; *) die "Only 64-bit ARM or x86 systems supported.";; esac
 [[ "$(getconf LONG_BIT)" == 64 ]] || die "64-bit userspace required, not just a 64-bit kernel."
