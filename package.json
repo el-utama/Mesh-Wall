@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "test": "node --test tests/*.test.mjs",
-    "check": "node --check apps/web/public/meshwall/app.mjs && node --check apps/web/public/meshwall/control.mjs && node --check apps/web/public/meshwall/desktop.mjs && node --check apps/web/public/meshwall/model.mjs && node --test tests/*.test.mjs"
+    "check": "node --check apps/web/public/meshwall/app.mjs && node --check apps/web/public/meshwall/control.mjs && node --check apps/web/public/meshwall/desktop.mjs && node --check apps/web/public/meshwall/model.mjs && node --test tests/*.test.mjs && node --check installers/linux/setup.mjs && node --check installers/linux/setup.js && node --check installers/linux/setup-model.mjs"
   },
   "engines": {
     "node": ">=22.21.1"

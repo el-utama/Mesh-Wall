@@ -5,7 +5,15 @@ Not a production release. Test only on authorized machines and an isolated tailn
 ## Fresh Linux / Armbian
 Prerequisites: supported 64-bit Armbian/Debian with systemd, wired network, system-wide Node >=22.21.1 and npm, Tailscale installed and signed in, MagicDNS and HTTPS certificates enabled, port 8443 free, adequate disk/RAM, curl, openssl and standard Linux utilities. Check Node userspace architecture; a 64-bit kernel alone is insufficient. Do not use deprecated Node or disable TLS. Tailscale HTTPS name appears in certificate transparency logs; review privacy implications. The installer does not change tailnet ACLs.
 
-Clone this repository on the target and review installers/linux/install.sh. Run:
+Clone this repository on the target and review the installer. Choose the temporary browser setup wizard (recommended for lab evaluation):
+
+```bash
+sudo node installers/linux/setup.mjs
+```
+
+It prints a one-time localhost URL. If the STB is headless, connect over authorized SSH with a local tunnel, for example `ssh -L 8787:127.0.0.1:8787 user@your-stb`, then open the exact localhost URL on the administrator PC. Never publish the port or token. The helper binds to IPv4 loopback only, expires after 15 minutes if unused, accepts one install, enforces origin/token checks, and exits after completion. It calls the same validated installer. Tailscale client login remains a prerequisite.
+
+For terminal-only setup, run:
 
 ```bash
 sudo bash installers/linux/install.sh
