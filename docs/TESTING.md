@@ -15,3 +15,5 @@ CI target: lint, typecheck, unit/integration tests, production build, dependency
 - windows.yml: Windows unit tests, PowerShell parsing, shared wizard browser fixture and real MeshCentral loopback integration/restore; no privileged installation. Inspect run-specific results before claiming pass.
 
 Evidence: [GitHub Actions](https://github.com/el-utama/Mesh-Wall/actions). Full lint/typecheck/production build, independent accessibility audit, actual MeshAgent/consent, platform installation and live capacity tests are outstanding; do not report them as passed.
+
+For failed checks use [troubleshooting](TROUBLESHOOTING.md) and the [specialist registry](../.agents/skills/README.md). CI distinguishes dependency installation failures from application failures. Registry unit test checks mandatory skill files and metadata.

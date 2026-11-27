@@ -30,3 +30,5 @@ Gunakan sistem 64-bit yang didukung. Login Tailscale dan aktivasi HTTPS/MagicDNS
 [Panduan pengguna Indonesia](docs/USER-GUIDE.md) · [Arsitektur](ARCHITECTURE.md) · [Audit](docs/AUDIT.md) · [Status implementasi](docs/IMPLEMENTATION.md) · [Maintenance](docs/OPERATIONS.md) · [Roadmap](ROADMAP.md) · [Pengujian CI](https://github.com/el-utama/Mesh-Wall/actions) · [README English](README.md).
 
 Windows: jalankan `.\installers\windows\bootstrap.ps1` dari PowerShell Administrator untuk menyiapkan dependensi via WinGet dan membuka wizard; jika dependensi sudah tersedia, gunakan `.\installers\windows\setup.ps1`. Lihat [kesetaraan fitur dan syarat rilis](docs/PLATFORM-PARITY.md).
+
+[Skill teknis coding agent](.agents/skills/README.md) · [Panduan penanganan masalah](docs/TROUBLESHOOTING.md). Skill adalah panduan pengembangan, bukan sistem perbaikan otomatis aplikasi.

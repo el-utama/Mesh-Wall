@@ -1,8 +1,8 @@
 // Isolated loopback integration; does not enroll devices or contact a real tailnet.
 import assert from "node:assert/strict";
-import {mkdtemp,mkdir,writeFile,cp,rm,readFile} from "node:fs/promises";
+import {mkdtemp,mkdir,writeFile,cp,rm,readFile,realpath} from "node:fs/promises";
 import {tmpdir} from "node:os";
-import {join,resolve} from "node:path";
+import {join,resolve,dirname,basename,relative} from "node:path";
 import {randomBytes} from "node:crypto";
 import {spawn,execFileSync} from "node:child_process";
 import {chromium} from "playwright";
@@ -85,7 +85,8 @@ try {
   const snapshot=await backup(root,backupParent);await verify(snapshot);
   assert.match(cli(["--createaccount","afterbackup"],{meshcentral_pass:"Lab-"+randomBytes(20).toString("hex")}),/^Done\./m);
   const recovery=await restore(root,snapshot);
-  assert.ok(recovery.startsWith(root));
+  assert.equal(relative(await realpath(root),dirname(await realpath(recovery))),"","Recovery must be an immediate child of the canonical installation root");
+  assert.match(basename(recovery),/^meshwall-recovery-/);
   startEngine();
   const restored=await browser.newContext({ignoreHTTPSErrors:true});
   const after=await restored.newPage();await readyPage(after);
