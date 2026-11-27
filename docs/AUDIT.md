@@ -5,7 +5,7 @@ Current status: **Alpha / isolated lab evaluation, not production-ready.** Sourc
 | ID | Requirement | Current evidence and scope | Outstanding gate |
 | --- | --- | --- | --- |
 | P01 | Fresh setup | Shared localhost wizard, Linux/Windows bootstrap and CLI; fixture tests | Actual clean install on HG680P/B860H and Windows, safe partial recovery, enrollment end-to-end without native dependency |
-| P02 | Adopt existing | Wizard preview for detected or manual paths, read-only registered service and state checks, backup-directory check and CLI handoff; offline CLI backup, staged placement, journal, rollback and restart coverage | Physical service and permission validation, broader launchers, guided execution/recovery and existing-host acceptance |
+| P02 | Adopt existing | Wizard preview for detected or manual paths, read-only registered service and state checks, backup-directory check and CLI handoff; offline CLI backup, staged placement, journal, rollback and restart coverage; named-service checks before backup, placement and removal | Physical service and permission validation, broader launchers, guided execution/recovery and existing-host acceptance |
 | P03 | Inventory | Grouped/filterable 100-tile inventory and name ordering; synthetic browser and empty real engine | Last-seen/hardware metadata, interactive sort and real enrolled devices |
 | P04 | Live wall | Layout/resize/order/focus/fullscreen/presets tested in browser; upstream generated JPEG decode | Actual agent stream, monitor switching, monitor preset persistence, adaptive quality and safe reconnect |
 | P05 | Remote access | Official embedded desktop/terminal/files panels; wall view-only | Independent native controls, allowed power operations, consent and revocation tests |

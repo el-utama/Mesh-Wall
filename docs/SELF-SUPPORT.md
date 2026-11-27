@@ -31,7 +31,7 @@ The actual one-time fresh setup wizard now records allowlisted stage/status time
 | MW-SERVICE | Actual service, logs, port/dependency failures | Inspect known service locally |
 | MW-VERIFY | Private HTTPS and expected page | Verify login/agent separately; no insecure fallback |
 | MW-READY | First login and authorized test PC | Enroll one PC and verify consent/frame |
-| MW-ADOPT | Version, actual root, verified backup, stopped service | Use preview/status/apply/rollback; verify stopped service and preserve journal/backup |
+| MW-ADOPT | Version, actual root, verified backup, stopped service | Use preview/status/apply/rollback; use the named-service check before applying or rolling back a supported installation; preserve journal and backup |
 | MW-ENROLL | Invite validity, group, agent connection | Regenerate authorized invite if necessary |
 | MW-STREAM | Consent, relay, decoded frame, resources | Stop and explicitly retry with permission; reduce active set |
 | MW-MAINT | Service identity, backup, disk, recovery path | Use supported offline maintenance |

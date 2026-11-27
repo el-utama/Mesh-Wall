@@ -79,6 +79,7 @@ export function connectAdoption({api,help,onCandidate}) {
         $("handoff-backup").textContent = "Backup path checked: " + backupDirectory + ". Verify access, available space and the service state in the terminal.";
         $("handoff-account").textContent = accountGuidance[result.platform];
         $("handoff-service").hidden=!reviewedService;
+        $("handoff-apply").textContent="node installers/adopt.mjs apply <root> <private-backup-parent> --engine-stopped"+(reviewedService?" --service <service-name>":"");
         $("handoff").hidden = false;
         $("adoption-status").textContent = "Backup path checked. No backup or adoption has run.";
         return;

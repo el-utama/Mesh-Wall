@@ -22,3 +22,5 @@ Standard account creation sends the temporary password only to the authenticated
 Existing-server preview requires the setup token and exact loopback origin. It displays authorized local paths, the package version and planned UI filenames. Its diagnostic output excludes paths and configuration contents. The local CLI applies adoption after operator verification of the service, privileges and backup storage. See [adoption](docs/ADOPTION.md).
 
 The named-service probe uses fixed local commands and treats service metadata as data. Supported results expose the service name, account and normalized state to the authenticated local wizard. The safe support report excludes that information, raw command lines, service XML and environment values. The Windows reader forbids DTDs and external resolution. Service control stays with the authorized operator.
+
+Offline `apply` and `rollback` can require a verified stopped state for a named service. The checks are snapshots of the service manager and the maintenance lock serializes MeshWall transactions. The operator keeps the engine stopped and checks for other processes using the root throughout maintenance.

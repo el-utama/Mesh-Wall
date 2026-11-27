@@ -70,12 +70,12 @@
         <div id="handoff" hidden>
           <h3>Continue in the local terminal</h3>
           <p id="handoff-backup"></p>
-          <p id="handoff-service" hidden>Recheck the registered service after stopping it and after restarting it with <code>node installers/adopt.mjs service &lt;root&gt; &lt;service-name&gt;</code>.</p>
+          <p id="handoff-service" hidden>The apply command checks the registered service again. After restarting, check its status with <code>node installers/adopt.mjs service &lt;root&gt; &lt;service-name&gt;</code>.</p>
           <ol>
             <li>In an authorized maintenance window, stop the confirmed service and verify that no engine process uses this directory.</li>
             <li>From the reviewed checkout, run the following command with the actual paths. The apply command creates and verifies the backup before copying the UI.</li>
           </ol>
-          <pre><code>node installers/adopt.mjs apply &lt;root&gt; &lt;private-backup-parent&gt; --engine-stopped</code></pre>
+          <pre><code id="handoff-apply"></code></pre>
           <p id="handoff-account"></p>
           <p>Restart the existing service. Open its trusted HTTPS address with <code>/meshwall.html</code> and verify original login, groups and authorized devices. If anything fails, use <code>node installers/adopt.mjs status &lt;root&gt;</code> and the local <code>docs/ADOPTION.md</code> recovery steps.</p>
         </div>

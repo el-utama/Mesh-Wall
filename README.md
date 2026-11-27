@@ -12,7 +12,7 @@ MeshWall aims to replace the native dashboard for everyday administration. MeshC
 - View-only wall with 1–10 desired columns, adjustable individual tiles, drag and keyboard reordering, focus/fullscreen, monitor picker, quality presets and saved layouts. Default four concurrent sessions, configurable up to 100.
 - Standard account creation and verified direct view-only group assignment/removal. Inherited or custom rights remain managed by the official advanced panel.
 - Embedded official authentication, desktop, terminal, files and advanced administration panels; no separate public backend.
-- Linux and Windows prerequisite bootstrap, shared localhost setup wizard, Windows fresh installer candidate and guided adoption preview and read-only inspection of registered Linux and Windows services, with backup, apply and rollback in the local CLI.
+- Linux and Windows prerequisite bootstrap, shared localhost setup wizard, Windows fresh installer candidate and guided adoption preview and read-only inspection of registered Linux and Windows services, with backup, apply and rollback in the local CLI. Apply and rollback can recheck the named service before touching active UI files.
 - Offline backup/verification/restore, reversible UI-only updates and local TLS renewal on both OSes; local CLI, not privileged browser operations.
 
 100 enrolled PCs is a product cap, not a verified Tailscale entitlement or STB streaming capacity.

@@ -11,7 +11,7 @@ CI target: lint, typecheck, unit/integration tests, production build, dependency
 
 ## Current executable checks
 - `npm run check`: syntax and unit tests; Linux installer shell parsing via check.yml.
-- integration.yml: real pinned engine loopback, browser auth/group/invitation/account direct rights, actual renderer decoding generated frames with fake transport, offline adoption and rollback, native login after restart, and backup/restore.
+- integration.yml: real pinned engine loopback, browser auth/group/invitation/account direct rights, actual renderer decoding generated frames with fake transport, offline adoption and rollback, native login after restart, and backup/restore. The unit suite also exercises a blocked backup, a changed service after backup, a refused rollback, and preserved partial placement when cleanup cannot verify a stopped service.
 - visual.yml: Chromium fixture at five viewports, 1–100 synthetic tiles, layout/filter/keyboard, fresh setup simulated callbacks, guided adoption and service state recheck against disposable fixtures, account dialog. Screenshots are synthetic only.
 - windows.yml: Windows unit tests, PowerShell parsing, a native CIM lookup and safe WinSW XML reader test, shared wizard browser fixture and real MeshCentral loopback integration/restore; no privileged installation. Inspect run-specific results before claiming pass.
 

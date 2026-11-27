@@ -37,7 +37,7 @@ Windows: jalankan `.\installers\windows\bootstrap.ps1` dari PowerShell Administr
 
 Bantuan lokal tanpa AI: `node scripts/doctor.mjs` untuk pencarian lokasi umum dan `node scripts/doctor.mjs help` untuk panduan tahap. Lihat [self-support](docs/SELF-SUPPORT.md); pemulihan otomatis penuh belum tersedia.
 
-Untuk server lama, pilih **Review existing MeshCentral** di wizard lokal. Pilih kandidat atau masukkan direktori sendiri, tinjau perubahan, masukkan nama service untuk melihat akun dan statusnya, lalu periksa lokasi backup. Terapkan adopsi dan verifikasi server dari terminal lokal. [Panduan adopsi dalam Bahasa Indonesia](docs/ADOPTION.md#ringkasan-langkah-dalam-bahasa-indonesia).
+Untuk server lama, pilih **Review existing MeshCentral** di wizard lokal. Pilih kandidat atau masukkan direktori sendiri, tinjau perubahan, masukkan nama service untuk melihat akun dan statusnya, lalu periksa lokasi backup. Setelah menghentikan service, gunakan opsi `--service` pada perintah adopsi atau rollback agar CLI mengecek ulang service sebelum mengubah UI. Verifikasi server dari terminal lokal. [Panduan adopsi dalam Bahasa Indonesia](docs/ADOPTION.md#ringkasan-langkah-dalam-bahasa-indonesia).
 
 Riwayat instalasi wizard: `node scripts/doctor.mjs history` dari akun operator yang sama. Status terakhir bukan bukti proses masih berjalan; jangan ulangi instalasi tanpa pemeriksaan.
 

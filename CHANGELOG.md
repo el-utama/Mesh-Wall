@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- Added a named stopped-service check to local adoption and rollback. Apply rechecks after the backup and retains the verified snapshot if the service resumes. The wizard suggests the checked command for recognized services.
 - Added read-only registered service inspection for existing MeshCentral on systemd and Windows CIM/WinSW. Setup can check a service before backup-path review and recheck it while preparing the terminal handoff.
 - Added the shared existing-server review in setup, including manual roots, config and collision checks, a verified backup-directory location, service confirmation guidance and a terminal handoff. Added interrupted adoption and native login after rollback regression coverage.
 - Added model-neutral project memory and mandatory session bootstrap/update rules, with exact CI evidence, prioritized remaining work and bilingual onboarding. No runtime behavior changed.

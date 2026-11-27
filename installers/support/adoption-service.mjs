@@ -104,3 +104,17 @@ export async function inspectAdoptionService(root,name,{platform=process.platfor
     return {status:"unavailable"};
   }
 }
+
+export async function requireStoppedAdoptionService(root,name,inspect=inspectAdoptionService){
+  const result=await inspect(root,name);
+  if(result.status==="verified"&&result.state==="stopped")return;
+  const next={
+    invalid:"Enter the registered service name.",
+    missing:"Confirm the registered name in the local service manager.",
+    mismatch:"The service points to another installation. Verify the root and service name.",
+    unsupported:"Inspect the effective launch and storage paths in the local service manager.",
+    unavailable:"Check local service manager access and repeat the read-only service check.",
+    verified:"Stop the named service and wait for it to reach stopped state before retrying."
+  };
+  throw Object.assign(Error("MW-ADOPT-SERVICE: "+(next[result.status]??next.unavailable)),{code:"ADOPTION_SERVICE"});
+}

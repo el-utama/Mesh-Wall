@@ -24,20 +24,22 @@ Linux inspection reads the system systemd registry through `systemctl` and JSON-
 
 ## Apply, verify and recover locally
 
-1. In an authorized maintenance window, stop the identified engine using its service manager or original launcher. Recheck its stopped state with the `service` command or the local service manager. Verify that no other process is using the root. The `--engine-stopped` flag records the operator's confirmation.
-2. From the reviewed checkout, run apply as the existing engine service account on Linux. On Windows use an authorized operator and a separate ACL-restricted backup directory. Apply revalidates the layout and configuration. It creates and verifies the offline snapshot before staging and publishing the 14 owned UI files through exclusive hard links. Existing accounts, devices, data, configuration, certificates and unrelated UI assets stay in place.
+1. In an authorized maintenance window, stop the identified engine using its service manager or original launcher. Recheck its stopped state with the `service` command or the local service manager. Verify that no other process is using the root. Pass `--engine-stopped` to record the operator's confirmation. For a supported registered service add `--service <name>` so the local CLI verifies registration and stopped state before proceeding.
+2. From the reviewed checkout, run apply as the existing engine service account on Linux. On Windows use an authorized operator and a separate ACL-restricted backup directory. Apply revalidates the layout and configuration. With a named service, it checks before the backup and again after verifying the backup, before staging and publishing the 14 UI files through exclusive hard links. If the second check fails, apply leaves the verified snapshot available and publishes no UI files. Existing accounts, devices, data, configuration, certificates and unrelated UI assets stay in place.
 
 ```bash
-node installers/adopt.mjs apply "/path/to/install-root" "/path/to/private-backups" --engine-stopped
+node installers/adopt.mjs apply "/path/to/install-root" "/path/to/private-backups" --engine-stopped --service meshcentral.service
 node installers/adopt.mjs status "/path/to/install-root"
 ```
 
 3. Confirm status reports `complete` with all UI files and no maintenance lock. Restart the actual service and open its original trusted HTTPS URL plus `/meshwall.html`. Verify original login, groups and at least one authorized device if available. Keep the verified backup and journal.
-4. If the original adoption needs to be reverted before any UI update or full restore, stop the confirmed service and check the journal before running rollback. Rollback verifies the file hashes and original hard-link identities, removes the owned paths and retains the journal. Restart and verify the original HTTPS/login flow.
+4. If the original adoption needs to be reverted before any UI update or full restore, stop the confirmed service and check the journal before running rollback. Rollback verifies the file hashes and original hard-link identities and, if named, rechecks that the service is stopped before removing the owned paths. It retains the journal. Restart and verify the original HTTPS/login flow.
 
 ```bash
-node installers/adopt.mjs rollback "/path/to/install-root" --engine-stopped
+node installers/adopt.mjs rollback "/path/to/install-root" --engine-stopped --service meshcentral.service
 ```
+
+Use the exact registered name in Windows or pass `-ServiceName <name>` with `-EngineStopped` in the PowerShell wrapper. For a custom or unregistered launcher, verify it locally and use the manual form with `--engine-stopped`. Each check observes one registered service at that moment. Keep the engine offline throughout maintenance and verify that no other process is using the root. The CLI does not control the OS service.
 
 | Code or status | Operator action |
 | --- | --- |
@@ -46,16 +48,16 @@ node installers/adopt.mjs rollback "/path/to/install-root" --engine-stopped
 | `MW-ADOPT-BACKUP` | Select an existing private sibling or another separate directory. Verify space and permissions under the actual operator account. |
 | `MW-ADOPT-COLLISION` / `MW-ADOPT-JOURNAL` | Keep existing files. Use `status` and review [Operations](OPERATIONS.md) for update or recovery. |
 | `MW-ADOPT-REVIEW` | Run the local `preview` command for details about unsupported layout, file permissions or release files. |
-| `MW-ADOPT-SERVICE` | Confirm the registered name and root. `mismatch` means the launch points elsewhere. For `unsupported` or `unavailable`, compare the registered launch and effective paths locally before proceeding. |
+| `MW-ADOPT-SERVICE` | Confirm the registered name and root. `mismatch` means the launch points elsewhere. If a named service cannot be verified or is active, review its launch and state from the local service manager. If a verified backup was already created, use the path printed in the terminal. |
 | `MW-ADOPT-LOCK`, `interrupted` or `inconsistent` | Preserve the verified backup, journal and files. Check actual operation and service state locally before a retry. Never clear a lock blindly. |
 
-An interruption can leave an incomplete journal or a lock. Automatic rollback on in-process placement failure only removes files verified as owned by that transaction. Power-loss durability and service recovery require physical validation. The stage shares file identity with the initial UI. Treat the separate verified snapshot as the backup and keep it private because it can contain secrets. A full restore can discard later changes, so review [Operations](OPERATIONS.md) first.
+An interruption can leave an incomplete journal or a lock. Automatic rollback on in-process placement failure only removes files verified as owned by that transaction. When a named service can no longer be verified as stopped, cleanup leaves the staged and active files for local inspection. Power-loss durability and service recovery require physical validation. The stage shares file identity with the initial UI. Treat the separate verified snapshot as the backup and keep it private because it can contain secrets. A full restore can discard later changes, so review [Operations](OPERATIONS.md) first.
 
 ## Ringkasan langkah dalam Bahasa Indonesia
 
 1. Di wizard lokal, buka **Review existing MeshCentral**. Pilih hasil deteksi atau masukkan direktori instalasi absolut, lalu klik **Preview adoption**. Cek versi 1.3.2 dan daftar file UI yang akan ditambahkan.
 2. Masukkan nama service yang terdaftar, lalu klik **Check service**. Di Armbian lihat nama unit lewat `systemctl list-units --type=service --all`. Di Windows lihat kolom `Name` lewat `Get-CimInstance Win32_Service`. Wizard menampilkan akun dan status untuk konfigurasi yang didukung. Untuk service khusus atau proses manual, cocokkan lokasi dan akun lewat terminal. Jika konfigurasi menunjuk ke direktori lain, periksa pilihan root sebelum melanjutkan.
-3. Pilih folder backup privat yang sudah ada di luar pohon instalasi. Cek ruang dan izin, lalu klik **Check backup path**. Wizard menampilkan langkah terminal. Saat jadwal maintenance, hentikan service yang telah dikonfirmasi, pastikan proses engine berhenti, lalu jalankan `apply` seperti contoh di atas.
-4. Cek `status`, nyalakan kembali service yang sama, dan buka alamat HTTPS lama dengan `/meshwall.html`. Uji login lama, grup, dan perangkat berizin. Jika ada konflik, status terputus, atau lock tertinggal, simpan backup dan jurnal untuk pemeriksaan. Gunakan `rollback` hanya setelah memverifikasi kondisi pada bagian sebelumnya.
+3. Pilih folder backup privat yang sudah ada di luar pohon instalasi. Cek ruang dan izin, lalu klik **Check backup path**. Wizard menampilkan langkah terminal. Saat jadwal maintenance, hentikan service yang telah dikonfirmasi, pastikan proses engine berhenti, lalu jalankan `apply` dengan `--service` untuk service terdaftar. CLI mengecek sebelum backup dan sebelum pemasangan UI. Jika service aktif lagi setelah backup, snapshot tetap tersedia.
+4. Cek `status`, nyalakan kembali service yang sama, dan buka alamat HTTPS lama dengan `/meshwall.html`. Uji login lama, grup, dan perangkat berizin. Jika ada konflik, status terputus, atau lock tertinggal, simpan backup dan jurnal untuk pemeriksaan. Saat menjalankan `rollback`, gunakan `--service` agar CLI mengecek status lagi sebelum menghapus file UI adopsi.
 
 See also [local self-support](SELF-SUPPORT.md) and [platform parity](PLATFORM-PARITY.md).

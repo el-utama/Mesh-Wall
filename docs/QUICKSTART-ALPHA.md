@@ -39,15 +39,15 @@ node installers/adopt.mjs preview "/path/to/install-root" "/path/to/private-back
 ```
 Stop the **identified existing** engine using its own administrative mechanism. Verify no other process uses the files; create a separate private backup parent outside the installation. On Linux run apply as the existing engine account (not root); on Windows use authorized PowerShell with a restricted backup directory:
 ```bash
-node installers/adopt.mjs apply /path/to/install-root /path/to/private-backups --engine-stopped
+node installers/adopt.mjs apply "/path/to/install-root" "/path/to/private-backups" --engine-stopped --service meshcentral.service
 ```
-The command creates and verifies a full supported offline backup, stages only MeshWall files, refuses collisions and retains an adoption journal. It does not change configuration, accounts, agents or TLS. Windows wrapper supports -Mode preview/status/apply/rollback, -MeshCentralRoot, -BackupParent and -EngineStopped. Restart the known engine, open its existing HTTPS origin plus /meshwall.html and verify original login, groups and authorized devices. If the adoption fails, inspect:
+The command creates and verifies a full supported offline backup, stages only MeshWall files, refuses collisions and retains an adoption journal. It does not change configuration, accounts, agents or TLS. Use the actual registered service name. Apply checks it before backup and before UI placement. The PowerShell wrapper accepts `-ServiceName` with `-EngineStopped` for apply and rollback. For a custom launcher, see the manual workflow in [Adoption](ADOPTION.md). Restart the known engine, open its existing HTTPS origin plus /meshwall.html and verify original login, groups and authorized devices. If the adoption fails, inspect:
 ```bash
 node installers/adopt.mjs status /path/to/install-root
 ```
 If the engine is stopped and no other maintenance is active, rollback before UI updates/restore:
 ```bash
-node installers/adopt.mjs rollback /path/to/install-root --engine-stopped
+node installers/adopt.mjs rollback "/path/to/install-root" --engine-stopped --service meshcentral.service
 ```
 Rollback removes only unchanged, verified transaction-owned files; it does not remove the database. A modified file, interrupted lock or ambiguous state requires manual inspection. Keep journal and backup for review before retrying. Hard links must be supported by the installation filesystem (e.g. ext4/NTFS). See [adoption and recovery](ADOPTION.md).
 

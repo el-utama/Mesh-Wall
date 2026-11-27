@@ -64,12 +64,14 @@ async function inspect(c,m){
  return entries;
 }
 async function writeMarker(c,name){await writeFile(join(c.journal,name),"1\n",{flag:"wx",mode:0o600});}
-export async function adopt(root,source,backupParent,{afterCopy=()=>{}}={}){
+export async function adopt(root,source,backupParent,{afterCopy=()=>{},assertStopped}={}){
  const c=await context(root);await previewAdoption(root,source,backupParent);const files=await sourceManifest(source);
+ await assertStopped?.(c.root);
  // backup() uses the same lock, so snapshot before taking adoption lock. Engine must remain stopped.
  const snapshot=await backup(c.root,backupParent);await verify(snapshot);await noCollision(c);
  await mkdir(c.lock,{mode:0o700});let prepared=false,ownsFolder=false;
  try{
+  await assertStopped?.(c.root);
   await mkdir(c.journal,{mode:0o700});const stage=join(c.journal,"stage");await mkdir(stage,{mode:0o700});await mkdir(join(stage,"meshwall"),{mode:0o700});
   for(const {path,sha256} of files){const p=join(stage,path);await copyFile(join(source,path),p,constants.COPYFILE_EXCL);if(await digest(p)!==sha256)throw Error("Stage changed");}
   await writeFile(join(c.journal,"manifest.json"),JSON.stringify({format:1,version:VERSION,files,snapshot},null,2),{flag:"wx",mode:0o600});prepared=true;
@@ -84,19 +86,21 @@ export async function adopt(root,source,backupParent,{afterCopy=()=>{}}={}){
   // Only remove files if they are the exact staged hard links created by this transaction.
   // A pre-stage failure cannot have modified active UI.
   if(prepared&&ownsFolder){
-   try{const m=await manifest(c);await removeOwnedLinks(c,m,{ownsFolder:true});await writeMarker(c,"rolled-back");}
+   try{const m=await manifest(c);await removeOwnedLinks(c,m,{ownsFolder:true,assertStopped});await writeMarker(c,"rolled-back");}
    catch{throw Error("MW-ADOPT-RECOVERY: automatic cleanup refused; inspect journal and backup. "+c.journal);}
   }
+  if(e.code==="ADOPTION_SERVICE"&&!prepared)throw adoptionError(e.code,e.message+" The verified backup was retained at "+snapshot);
   throw Error("MW-ADOPT: adoption failed; backup retained; inspect journal before retry. "+e.message);
  }finally{await rmdir(c.lock);}
 }
-async function removeOwnedLinks(c,m,{ownsFolder=false}={}){
+async function removeOwnedLinks(c,m,{ownsFolder=false,assertStopped}={}){
  const active=(await inspect(c,m)).filter(entry=>entry.active);
  // Matching content alone is not proof of ownership. Verify inode/device against staged hard link.
  for(const {path} of active){
   const actual=await lstat(join(c.pub,path),{bigint:true}),staged=await lstat(join(c.journal,"stage",path),{bigint:true});
   if(actual.ino!==staged.ino||actual.dev!==staged.dev||actual.nlink<2n)throw Error("File identity changed; manual review required");
  }
+ await assertStopped?.(c.root);
  for(const {path} of active.toReversed())await unlink(join(c.pub,path));
  const folder=join(c.pub,"meshwall");
  // An empty folder on disk might belong to a different operation. Remove it only with evidence of ownership.
@@ -111,8 +115,8 @@ export async function adoptionStatus(root){
  const state=(rolledBack&&activeFiles!==0)||(applied&&!rolledBack&&activeFiles!==totalFiles)?"inconsistent":rolledBack?"rolled-back":applied?"complete":"interrupted";
  return {state,activeFiles,totalFiles,maintenanceLocked};
 }
-export async function rollbackAdoption(root){
+export async function rollbackAdoption(root,{assertStopped}={}){
  const c=await context(root);if(await exists(c.lock))throw Error("Maintenance lock exists: verify no other operation, inspect journal locally; do not clear blindly");
  await mkdir(c.lock,{mode:0o700});
- try{const m=await manifest(c);if(await exists(join(c.journal,"rolled-back")))return {removed:0};const removed=await removeOwnedLinks(c,m);await writeMarker(c,"rolled-back");return {removed};}finally{await rmdir(c.lock);}
+ try{const m=await manifest(c);if(await exists(join(c.journal,"rolled-back")))return {removed:0};const removed=await removeOwnedLinks(c,m,{assertStopped});await writeMarker(c,"rolled-back");return {removed};}finally{await rmdir(c.lock);}
 }

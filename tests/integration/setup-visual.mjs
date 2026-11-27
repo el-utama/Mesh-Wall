@@ -108,6 +108,7 @@ try{
  assert.match(await page.locator("#handoff").textContent(),/verify original login/i);
  assert.match(await page.locator("#service-state").textContent(),/stopped/);
  assert.ok(await page.locator("#handoff-service").isVisible());
+ assert.match(await page.locator("#handoff-apply").textContent(),/--engine-stopped --service <service-name>/);
  for(const [width,height] of [[1920,1080],[1440,900],[1280,720],[768,1024],[390,844]]){
   await page.setViewportSize({width,height});
   const dimensions=await page.evaluate(()=>[document.documentElement.clientWidth,document.documentElement.scrollWidth]);
@@ -122,6 +123,12 @@ try{
  assert.ok(await page.locator("#service-confirmed").isDisabled());
  assert.equal(await page.locator("#check-service").evaluate(button=>button===document.activeElement),true);
  await page.screenshot({path:join(out,"setup-adoption-service-changed.jpg"),fullPage:true,type:"jpeg",quality:75});
+ await page.locator("#service-name").clear();
+ await page.locator("#service-confirmed").check();
+ await page.locator("#check-backup").click();
+ await page.locator("#handoff").waitFor();
+ assert.match(await page.locator("#handoff-apply").textContent(),/--engine-stopped$/);
+ assert.ok(await page.locator("#handoff-service").isHidden());
  await page.locator("#root").fill(root+"-changed");
  assert.ok(await page.locator("#adoption-review").isHidden());
  detected=true;
