@@ -1,0 +1,7 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import {readdir,readFile} from "node:fs/promises";
+import {posix} from "node:path";
+// Check exact case using enumerated names even on a case-insensitive Windows filesystem.
+async function walk(dir=""){const files=[];for(const e of await readdir(dir||".",{withFileTypes:true})){if([".git","node_modules","visual-evidence"].includes(e.name))continue;const p=dir?dir+"/"+e.name:e.name;if(e.isDirectory())files.push(...await walk(p));else if(e.isFile())files.push(p);}return files;}
+test("local documentation links resolve with exact filename case",async()=>{const files=await walk(),known=new Set(files),dirs=new Set(files.flatMap(p=>p.split("/").slice(0,-1).map((_,i)=>p.split("/").slice(0,i+1).join("/"))));const broken=[];for(const file of files.filter(p=>p.endsWith(".md"))){const source=(await readFile(file,"utf8")).replace(/\r\n/g,"\n").replace(/^```[^\n]*\n[\s\S]*?^```[^\n]*$/gm,"");for(const m of source.matchAll(/\]\(([^)\s]+)\)/g)){const href=m[1];if(/^(?:[a-z][a-z0-9+.-]*:|#|\/\/)/i.test(href))continue;const clean=href.split("#")[0].split("?")[0];if(!clean)continue;let target;try{target=posix.normalize(posix.join(posix.dirname(file),decodeURIComponent(clean))).replace(/\/$/,"");}catch{broken.push(file+": "+href);continue;}if(!known.has(target)&&!dirs.has(target))broken.push(file+": "+href);}}assert.deepEqual(broken,[]);});

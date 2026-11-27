@@ -1,6 +1,6 @@
 # MeshWall — Bahasa Indonesia
 
-MeshWall adalah dashboard pengelolaan MeshCentral yang ringan dan modular dengan live wall yang dapat dikustomisasi. Engine dan agent tetap menggunakan MeshCentral. Prioritas server: Armbian pada STB HG680P/B860H; Windows x64 sebagai alternatif.
+MeshWall adalah dashboard pengelolaan MeshCentral yang ringan dan modular dengan live wall yang dapat dikustomisasi. Engine dan agent tetap menggunakan MeshCentral. Prioritas server: Armbian pada STB HG680P/B860H; Windows x64 dengan target kesetaraan fitur.
 
 **Status: Alpha untuk pengujian lab, belum production-ready.** Integrasi engine dan pemulihan data sudah diuji di CI. Installer fisik, sesi agent nyata, dan 100 stream simultan masih perlu validasi.
 
@@ -10,8 +10,8 @@ MeshWall adalah dashboard pengelolaan MeshCentral yang ringan dan modular dengan
 - Live wall view-only: ukuran tile individual, drag/keyboard reorder, grid responsif, pilihan monitor, fullscreen, kualitas dan preset layout.
 - Pembuatan akun standar, pemberian dan pencabutan akses view-only langsung per grup.
 - Panel resmi MeshCentral untuk autentikasi, kontrol desktop, terminal, file manager dan pengaturan lanjutan di dalam workspace.
-- Bootstrap Linux, setup wizard lokal, installer Windows kandidat, adopsi server lama.
-- Backup/restore terverifikasi dan update/rollback UI melalui CLI saat engine berhenti.
+- Bootstrap Linux dan Windows, setup wizard lokal bersama, installer kedua OS dan adopsi server lama.
+- Backup/restore, update/rollback UI dan renewal TLS lokal kedua OS melalui CLI; validasi fisik belum dilakukan.
 
 Batas 100 perangkat adalah batas desain aplikasi, bukan jaminan kapasitas Tailscale atau STB. Default streaming empat sesi; naikkan hanya setelah pengujian hardware.
 
@@ -32,3 +32,5 @@ Gunakan sistem 64-bit yang didukung. Login Tailscale dan aktivasi HTTPS/MagicDNS
 Windows: jalankan `.\installers\windows\bootstrap.ps1` dari PowerShell Administrator untuk menyiapkan dependensi via WinGet dan membuka wizard; jika dependensi sudah tersedia, gunakan `.\installers\windows\setup.ps1`. Lihat [kesetaraan fitur dan syarat rilis](docs/PLATFORM-PARITY.md).
 
 [Skill teknis coding agent](.agents/skills/README.md) · [Panduan penanganan masalah](docs/TROUBLESHOOTING.md). Skill adalah panduan pengembangan, bukan sistem perbaikan otomatis aplikasi.
+
+[Audit skill dan dokumentasi](docs/DOCUMENTATION-AUDIT.md).

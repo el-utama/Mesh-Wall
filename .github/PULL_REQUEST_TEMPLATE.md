@@ -14,3 +14,9 @@
 - [ ] Checked loading/empty/error states, keyboard navigation, contrast and layout density
 - [ ] Corrected defects and rechecked; no sensitive screens or tokens in evidence
 - [ ] Reported remaining visual, integration and performance blockers
+
+## Skill / documentation / release gates
+- [ ] Applied relevant specialist skills; listed them with evidence
+- [ ] Checked both OS adapters or documented why unaffected
+- [ ] Updated P01–P14 audit, parity, documentation and changelog as applicable
+- [ ] Listed exact commit/CI results, failed/skipped/pending checks and remaining gates

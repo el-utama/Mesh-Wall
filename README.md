@@ -4,7 +4,7 @@
 
 Status: **Alpha / isolated lab evaluation.** Core browser workflows and offline restore have been tested against MeshCentral 1.3.2 in CI. Actual agent streams, physical HG680P/B860H and Windows installs, and 100 simultaneous live streams are not yet validated. Not a production release.
 
-MeshWall aims to replace the native dashboard for everyday administration. MeshCentral and MeshAgent remain the engine. The primary server target is Armbian on HG680P/B860H; Windows x64 is secondary.
+MeshWall aims to replace the native dashboard for everyday administration. MeshCentral and MeshAgent remain the engine. The primary server target is Armbian on HG680P/B860H; Windows x64 targets feature parity.
 
 ## Available in the current source
 
@@ -13,7 +13,7 @@ MeshWall aims to replace the native dashboard for everyday administration. MeshC
 - Standard account creation and verified direct view-only group assignment/removal. Inherited or custom rights remain managed by the official advanced panel.
 - Embedded official authentication, desktop, terminal, files and advanced administration panels; no separate public backend.
 - Linux and Windows prerequisite bootstrap, shared localhost setup wizard, Windows fresh installer candidate and existing installation adoption.
-- Offline backup/verification/restore and reversible UI-only updates; local CLI, not privileged browser operations.
+- Offline backup/verification/restore, reversible UI-only updates and local TLS renewal on both OSes; local CLI, not privileged browser operations.
 
 100 enrolled PCs is a product cap, not a verified Tailscale entitlement or STB streaming capacity.
 
@@ -49,6 +49,7 @@ If Node.js >=22.21.1 and authenticated Tailscale are already available, use `sud
 | [Operations](docs/OPERATIONS.md) | Backup, restore, updates |
 | [Security](SECURITY.md) | Security boundaries |
 | [Implementation](docs/IMPLEMENTATION.md) / [Audit](docs/AUDIT.md) | Evidence and remaining gaps |
+| [Documentation audit](docs/DOCUMENTATION-AUDIT.md) | Skill/doc review and validation scope |
 | [Roadmap](ROADMAP.md) | Milestones |
 | [Contributing](CONTRIBUTING.md) / [Agent instructions](AGENTS.md) | Development rules |
 | [Repository](docs/REPOSITORY.md) / [Changelog](CHANGELOG.md) | Metadata and history |

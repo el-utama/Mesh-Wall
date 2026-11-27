@@ -2,10 +2,10 @@
 
 | Milestone | Current state | Remaining exit gate |
 | --- | --- | --- |
-| M0 Specification | Product, security, ADR, UI skill and docs available | Keep synchronized with code |
+| M0 Specification | Product, security, ADR, nine specialist skills and docs available | Keep synchronized with code |
 | M1 Compatibility | Pinned engine loopback, real upstream JPEG renderer with fake transport | Real authorized MeshAgent session on target hardware |
 | M2 Foundation | Static modular console, socket/auth, unit/browser CI | Broader boundary and security checks |
-| M3 Setup | Linux bootstrap/wizard, adoption, private TLS config | Clean STB install, safe partial setup recovery, end-to-end enrollment |
+| M3 Setup | Linux/Windows bootstrap and shared wizard, adoption, private TLS config | Clean STB install, safe partial setup recovery, end-to-end enrollment |
 | M4 Management | Inventory, groups, invitations, accounts, direct viewer permissions, events | Advanced roles, effective rights, enrollment revocation and additional management |
 | M5 Wall | Custom size/order/monitor/fullscreen/quality/presets, responsive 100 synthetic tiles | Physical stream, consent, multi-monitor, reconnect, capacity/soak benchmark |
 | M6 Native replacement | Same-origin official advanced panels; offline verified maintenance | Independently usable routine remote workflows, safe GUI maintenance and engine upgrade |

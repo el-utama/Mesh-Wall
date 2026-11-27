@@ -13,10 +13,12 @@ Current architecture: same-origin static modular browser application with pinned
 
 Core inventory, enrollment, device/group edits, account creation/direct viewer grant and revoke, recent events, diagnostics, view-only wall, monitor picker, quality presets, resize/order/focus/fullscreen, per-account local layouts, control reconnect with bounded retry. Sockets stop wall sessions when inventory/authorization is lost; screen reconnect remains explicit. Official upstream login, desktop, terminal, files and advanced administration remain embedded compatibility panels.
 
-Linux and Windows bootstrap and shared local setup, Windows installer candidate, adoption and local maintenance CLI are available. Offline backup/restore is proven in loopback CI; UI update rollback is unit-tested. Neither is yet validated on physical target systems.
+Linux and Windows bootstrap and shared local setup, Windows installer candidate, adoption and local maintenance CLI are available. Offline backup/restore is proven in Linux loopback CI; UI update rollback is unit-tested. Neither is yet validated on physical target systems.
 
 ## Remaining gates
 
 Actual authorized agent desktop transport, consent/denial/revocation, multi-monitor, real setup, physical ARM64 STB and Windows host, simultaneous live capacity and soak tests. Full independent native replacement, effective permission management, GUI maintenance, engine upgrade/rollback and unattended certificate renewal remain incomplete. Local Linux and Windows renewal commands with offline certificate rollback are available in source; actual Tailscale issuance/restart remains unvalidated on both platforms. Do not infer production readiness from CI. See [audit](AUDIT.md).
 
-Shared localhost setup server/assets and Windows TLS renewal adapter are now in source; CI and physical service acceptance are separate gates. See [platform parity](PLATFORM-PARITY.md).
+Shared localhost setup server/assets and Windows TLS renewal adapter are now in source; CI and physical service acceptance are separate gates.
+
+Baseline 393b184: [Linux unit](https://github.com/el-utama/Mesh-Wall/actions/runs/45949105904), [Linux loopback](https://github.com/el-utama/Mesh-Wall/actions/runs/45949105812) and [visual](https://github.com/el-utama/Mesh-Wall/actions/runs/45949105773) passed. [Windows](https://github.com/el-utama/Mesh-Wall/actions/runs/45949105814) failed on skill frontmatter CRLF assertion before loopback; fix normalizes line endings and is subject to new CI. Earlier Windows loopback reached real account management and renderer, but restore restart/login was not verified at that time. Do not treat historical evidence as current HEAD status. See [platform parity](PLATFORM-PARITY.md).

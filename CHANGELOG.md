@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- Audited all nine skills and Markdown docs, clarified actual vs target functionality, added P01–P14 traceability, local documentation link validation and cross-platform skill frontmatter regression coverage.
 - Added eight specialist agent skills, mandatory routing, troubleshooting playbook and registry validation; fixed Windows canonical recovery-path assertion and made Linux browser setup avoid unrelated APT updates when runtime dependencies are already available.
 - Optional Windows prerequisite bootstrap via exact WinGet package IDs and explicit consent; installer requires official system-wide executable locations. Physical validation pending.
 - Shared localhost setup wizard on Linux/Windows, Windows TLS rotation adapter, service identity checks and platform parity release gate. Physical provisioning remains pending.
