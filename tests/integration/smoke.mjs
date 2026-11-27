@@ -64,7 +64,7 @@ try {
   await page.locator('nav [data-page="activity"]').click();await page.waitForFunction(()=>document.getElementById("eventStatus").textContent.includes("recent authorized events"),{},{timeout:20000});
   await page.locator('nav [data-page="wall"]').click();
   await page.locator("#columns").fill("10");await page.locator("#columns").press("Tab");
-  await page.locator("#presetName").fill("Ten columns");await page.locator("#save").click();
+  await page.locator("#layoutOptions summary").click();await page.locator("#presetName").fill("Ten columns");await page.locator("#save").click();
   await page.reload({waitUntil:"domcontentloaded"});
   await page.waitForFunction(()=>document.getElementById("connection")?.textContent==="Authenticated",{},{timeout:20000});
   await page.locator('nav [data-page="wall"]').click();

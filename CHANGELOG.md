@@ -1,7 +1,8 @@
 # Changelog
 
 ## Unreleased
-- Added repository-local MeshWall UI/UX skill, shared design system, visual acceptance checklist and mandatory agent/PR guidance. Existing UI redesign and browser visual verification remain pending.
+- Redesigned dashboard shell, wall toolbar and selected-tile inspector; added group/status filters, responsive density, keyboard ordering and sizing, clearer states and setup styling. Added browser fixture visual acceptance workflow; real agent and hardware tests remain required.
+- Added repository-local MeshWall UI/UX skill, shared design system, visual acceptance checklist and mandatory agent/PR guidance. 
 
 ## 0.1.0-alpha.1 — lab evaluation
 - Same-origin modular static dashboard and upstream session integration.

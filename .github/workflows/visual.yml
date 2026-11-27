@@ -1,0 +1,31 @@
+name: UI visual acceptance
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  visual:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.21.1'
+      - run: npm install --no-save --package-lock=false --no-audit --no-fund playwright@1.56.1
+      - run: npx playwright install --with-deps chromium
+      - name: Baseline screenshot
+        run: |
+          mkdir -p /tmp/meshwall-before
+          git archive 0334dcf22daf1e32372d087b315077d10eba83c3 apps/web/public | tar -x -C /tmp/meshwall-before
+          node tests/integration/visual.mjs /tmp/meshwall-before/apps/web/public visual-evidence --baseline
+      - run: node tests/integration/visual.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: meshwall-visual-evidence
+          path: visual-evidence/
+          retention-days: 14

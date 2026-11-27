@@ -1,12 +1,12 @@
 // Thin compatibility adapter around upstream 1.3.2 browser assets.
 import {qualityProfile} from "./model.mjs";
 globalThis.urlargs={}; // Upstream relay expects this optional page global.
-export function createDesktop({control,device,canvas,cookies,profile,onState,onDisplays,onFrame}){
+export function createDesktop({control,device,canvas,cookies,profile,focused=false,onState,onDisplays,onFrame}){
   if(typeof globalThis.CreateAgentRemoteDesktop!=="function"||typeof globalThis.CreateAgentRedirect!=="function")throw Error("Upstream desktop renderer unavailable");
   if(!control.authenticated||!cookies?.cookie||!cookies?.rcookie)throw Error("Authenticated relay required");
   const module=globalThis.CreateAgentRemoteDesktop(canvas);
   module.stopInput=true; // Do not attach keyboard or mouse handlers in the wall.
-  const q=qualityProfile(profile);module.CompressionLevel=q.quality;module.ScalingLevel=q.scale;module.FrameRateTimer=q.interval;
+  const q=qualityProfile(profile,focused);module.CompressionLevel=q.quality;module.ScalingLevel=q.scale;module.FrameRateTimer=q.interval;
   const relay=globalThis.CreateAgentRedirect(control,module,location.host,cookies.cookie,cookies.rcookie,new URL("./",location.href).pathname);
   relay.attemptWebRTC=false;
   let stopped=false,connected=false,firstFrame=false,lastReported=0;

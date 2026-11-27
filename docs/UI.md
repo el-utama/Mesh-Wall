@@ -8,3 +8,6 @@ Prefer consistent spacing, keyboard navigation, accessible labels, status text n
 
 ## Design quality gate
 All UI work follows the [MeshWall UI/UX skill](../.agents/skills/meshwall-ui-ux/SKILL.md), [design system](../.agents/skills/meshwall-ui-ux/references/design-system.md) and [visual QA checklist](../.agents/skills/meshwall-ui-ux/references/visual-qa.md). These describe the target experience; existing screens must be audited against them. Use compact workstation-style layouts, screen-first tile density, shared CSS tokens and accessible interactions. Do not introduce framework or asset dependencies solely for styling.
+
+## Current UI implementation
+See [UI audit](UI-AUDIT.md). The wall uses an inspector for selected device controls, responsive effective columns, accessible non-drag ordering, group/status filters, and clear no-frame states. Browser fixture tests use synthetic inventory only.
