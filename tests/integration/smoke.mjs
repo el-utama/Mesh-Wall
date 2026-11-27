@@ -59,6 +59,11 @@ try {
   assert.ok(href?.startsWith(origin+"/agentinvite?"),"Invitation must be same-origin");
   await page.locator("#groupList button").first().click();await page.locator("#editInput").fill("Renamed lab group");await page.locator("#editSubmit").click();await page.waitForFunction(()=>document.getElementById("groupList").textContent.includes("Renamed lab group"),{},{timeout:20000});
   await page.locator('nav [data-page="users"]').click();await page.waitForFunction(()=>document.getElementById("userRows").textContent.includes("labadmin"),{},{timeout:20000});
+  await page.locator("#createAccount").click();await page.locator("#newUsername").fill("labviewer");const viewerPassword="Viewer-"+randomBytes(20).toString("hex");await page.locator("#newPassword").fill(viewerPassword);await page.locator("#confirmPassword").fill(viewerPassword);await page.locator("#accountSubmit").click();await page.waitForFunction(()=>document.querySelector("#userRows")?.textContent.includes("labviewer"));await page.locator("#accountDialog").waitFor({state:"hidden"});
+  await page.locator("#grantAccount").selectOption({label:"labviewer"});await page.locator("#grantGroup").selectOption({label:"Renamed lab group"});
+  page.once("dialog",d=>d.accept());await page.locator("#grantSubmit").click();await page.waitForFunction(()=>document.querySelector("#accountResult")?.textContent==="Direct view-only membership verified.");
+  page.once("dialog",d=>d.accept());await page.locator("#revokeSubmit").click();await page.waitForFunction(()=>document.querySelector("#accountResult")?.textContent==="Direct membership removed.");
+  console.log("PASS: native account creation and verified direct group grant/revoke against real engine.");
   await page.locator('nav [data-page="activity"]').click();await page.waitForFunction(()=>document.getElementById("eventStatus").textContent.includes("recent authorized events"),{},{timeout:20000});
   await page.locator('nav [data-page="wall"]').click();
   await page.locator("#columns").fill("10");await page.locator("#columns").press("Tab");

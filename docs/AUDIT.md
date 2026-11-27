@@ -2,7 +2,7 @@
 
 | Requirement | Current alpha state | Gate before ready |
 | --- | --- | --- |
-| Full native replacement | Partial: custom UI and same-origin upstream functional panels embedded in MeshWall | Verify each embedded panel and session; fully custom advanced controls remain pending |
+| Full native replacement | Partial: custom UI, native standard-account creation and restricted direct group membership; same-origin upstream advanced panels | Verify each embedded panel and session; fully custom advanced controls remain pending |
 | Automated initial configuration | Linux prerequisite bootstrap, interactive CLI and authenticated localhost GUI wizard; existing adoption utility | Real fresh STB setup, safe retry/rollback; Tailscale prerequisite |
 | Armbian HG680P/B860H | ARM64 target, runtime guard, low-resource architecture | Actual board OS/kernel/userspace, install and soak test |
 | Windows | Fresh PowerShell installer and existing engine adoption script | Actual Windows service, TLS and agent validation |

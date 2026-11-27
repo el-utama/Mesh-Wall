@@ -20,7 +20,7 @@ export class Control {
       if(m.action==="close"){this.close("revoked");return;}
       if(m.action==="userinfo"&&m.userinfo?._id){this.authenticated=true;clearTimeout(this.connectTimer);this.onStatus("Authenticated");}
       const key=this.pending.has(m.responseid)?m.responseid:m.tag,p=this.pending.get(key);
-      if(p&&p.action===m.action){this.pending.delete(key);clearTimeout(p.timer);if(m.result&&m.result!=="ok")p.reject(Error("Engine rejected "+m.action));else p.resolve(m);}
+      if(p&&p.action===m.action){this.pending.delete(key);clearTimeout(p.timer);if(m.action==="addmeshuser"?m.success!==1||m.failed!==0:m.result&&m.result!=="ok")p.reject(Error("Engine rejected "+m.action));else p.resolve(m);}
       if(this.authenticated)this.onMessage(m);
     };
     ws.onclose=e=>this.finish(ws,e?.code===1008||e?.code===4001||e?.code===4003?"revoked":"network");

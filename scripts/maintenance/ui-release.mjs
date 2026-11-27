@@ -3,7 +3,7 @@ import {join,resolve,dirname,relative,isAbsolute} from "node:path";
 import {randomBytes} from "node:crypto";
 import {constants} from "node:fs";
 const version="1.3.2";
-const allowed=new Set(["meshwall.html","meshwall/app.mjs","meshwall/admin.mjs","meshwall/control.mjs","meshwall/desktop.mjs","meshwall/management.mjs","meshwall/model.mjs","meshwall/panels.mjs","meshwall/style.css","meshwall/tile-view.mjs","meshwall/ui.mjs","meshwall/wall.mjs"]);
+const allowed=new Set(["meshwall.html","meshwall/app.mjs","meshwall/admin.mjs","meshwall/control.mjs","meshwall/desktop.mjs","meshwall/management.mjs","meshwall/model.mjs","meshwall/panels.mjs","meshwall/style.css","meshwall/tile-view.mjs","meshwall/ui.mjs","meshwall/wall.mjs","meshwall/accounts.mjs","meshwall/account-view.mjs"]);
 const exists=async p=>{try{await lstat(p);return true;}catch(e){if(e.code==="ENOENT")return false;throw e;}};
 async function dir(p){const s=await lstat(p);if(!s.isDirectory()||s.isSymbolicLink())throw Error("Unsafe directory: "+p);return await realpath(p);}
 async function list(p){

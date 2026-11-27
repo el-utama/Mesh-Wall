@@ -20,7 +20,7 @@ const control=new Control(onMessage,(status,reason)=>{
 const panels=createPanels({control,onLoginLoad:()=>{if(!control.authenticated){control.close();control.start();}},onClose:()=>{}});
 const wall=createWall({control,getUser:()=>user,getDevices:()=>devices,getCookies:()=>cookies,getLastInventory:()=>lastInventory,isActive:()=>page==="wall",notice,onStats:stats});
 const management=createManagement({control,getDevices:()=>devices,getGroups:()=>groups,refresh,notice,panels});
-const admin=createAdmin({control,panels});
+const admin=createAdmin({control,panels,getUser:()=>user,getGroups:()=>groups});
 function onMessage(m){
   if(m.action==="userinfo"){const changed=user?._id!==m.userinfo._id;user=m.userinfo;if(changed)wall.loadLayout();$("account").textContent=String(user.name||user._id);$("login").hidden=true;$("logout").hidden=false;if(panels.isLogin())panels.close();notice("Authenticated. Inventory is loading; streams are opt-in.");refresh();admin.onPage(page);}
   if(m.action==="serverinfo")$("engine").textContent=String(m.serverinfo?.serverVersion||m.serverinfo?.version||"MeshCentral");

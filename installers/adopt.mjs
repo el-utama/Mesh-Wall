@@ -10,7 +10,7 @@ const version=JSON.parse(await readFile(join(root,"node_modules/meshcentral/pack
 if(version!=="1.3.2")throw Error("Expected MeshCentral 1.3.2. Check compatibility first.");
 if(!(await stat(join(root,"meshcentral-data"))).isDirectory())throw Error("Existing meshcentral-data required.");
 const dest=join(root,"meshcentral-web/public");
-const paths=["meshwall.html","meshwall/app.mjs","meshwall/control.mjs","meshwall/desktop.mjs","meshwall/model.mjs","meshwall/style.css","meshwall/wall.mjs","meshwall/ui.mjs","meshwall/panels.mjs","meshwall/management.mjs","meshwall/admin.mjs","meshwall/tile-view.mjs"];
+const paths=["meshwall.html","meshwall/app.mjs","meshwall/control.mjs","meshwall/desktop.mjs","meshwall/model.mjs","meshwall/style.css","meshwall/wall.mjs","meshwall/ui.mjs","meshwall/panels.mjs","meshwall/management.mjs","meshwall/admin.mjs","meshwall/tile-view.mjs","meshwall/accounts.mjs","meshwall/account-view.mjs"];
 for(const name of paths){try{await stat(join(dest,name));throw Error("Existing file: "+name+"; back up and review before replacing.");}catch(e){if(e.code!=="ENOENT")throw e;}}
 for(const name of paths){await mkdir(dirname(join(dest,name)),{recursive:true});await copyFile(join(source,name),join(dest,name),constants.COPYFILE_EXCL);}
 console.log("Copied MeshWall alpha without changing upstream configuration. Restart engine, open HTTPS /meshwall.html, and sign in. Verify permissions and consent policies.");

@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- Native standard account creation and direct restricted viewer group assignment/revocation; engine validation and readback. Advanced/inherited permissions remain upstream.
 - Added guided Linux prerequisite bootstrap, Windows fresh installer candidate and reversible UI-only updates. Expanded real-engine restore and cross-platform CI coverage.
 - Hardened renderer cleanup, repeated session lifecycle and offline server backup/verification/restore tooling for the pinned engine. Added regression tests. Hardware and real restore validation still pending.
 - Redesigned dashboard shell, wall toolbar and selected-tile inspector; added group/status filters, responsive density, keyboard ordering and sizing, clearer states and setup styling. Added browser fixture visual acceptance workflow; real agent and hardware tests remain required.
