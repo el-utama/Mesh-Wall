@@ -1,23 +1,24 @@
 # Operations and recovery
 
+## Target operations design (not implemented in full)
 Health UI: OS/arch, CPU/RAM/storage/network, service readiness, engine version, TLS expiry, device/session counts, queue depth, recent redacted logs. Distinguish running process from functional readiness.
 
 Service controls: typed start/stop/restart, explicit impact confirmation, bounded timeout and diagnostics. Configuration edits: propose diff, validate, back up, atomic replace, restart only if required, health test and rollback on failure. Never expose a generic root shell in the admin UI.
 
-Backup: consistent MeshWall DB and required MeshCentral state via supported mechanisms; version manifest, checksum, permissions, encrypted secrets only if explicitly included. Restore to staging first, verify compatible engine/identity/certificates, then switch with rollback. Test restoration routinely.
+Backup target: consistent MeshCentral-owned state, version manifest, checksum, restricted storage and eventual encrypted export. There is no separate MeshWall database; current CLI backups include plaintext secrets. Restore to staging first, verify compatible engine/identity/certificates, then switch with rollback. Test restoration routinely.
 
 Upgrade: pinned version matrix; check free space, backup, verify artifacts, stage new release, migrate, readiness test and rollback plan. Prevent simultaneous destructive jobs. Keep previous compatible build. Log maintenance audit metadata, rotate logs and cap retention.
 
 Disaster recovery: retain restricted native MeshCentral recovery access and local console/SSH for trusted administrator; document paths, service state and credentials recovery without exposing secrets. No automatic data purge. Windows and Linux recovery procedures validated separately.
 
-## Offline local maintenance tool (alpha)
+## Implemented offline local maintenance tool (alpha)
 For the default Linux install with embedded local database only, stop `meshwall-engine` and confirm no other MeshCentral process uses the installation. Run the tool as the engine service account, from a trusted checkout readable by that account. Create a separate private backup parent (mode 0700, owned by meshwall; not inside /opt/meshwall/engine), then:
 
 ```bash
 sudo systemctl stop meshwall-engine
 sudo systemctl is-active meshwall-engine # must report inactive
 sudo -u meshwall node scripts/maintenance.mjs backup /opt/meshwall/engine /path/to/private-backups --engine-stopped
-sudo -u meshwall node scripts/maintenance.mjs verify /path/to/private-backups/meshwall-<timestamp>
+sudo -u meshwall node scripts/maintenance.mjs verify '/path/to/private-backups/meshwall-REPLACE_WITH_PRINTED_NAME'
 sudo systemctl start meshwall-engine
 ```
 
@@ -32,4 +33,4 @@ From a trusted reviewed checkout readable by the meshwall service account, run `
 ## Windows local maintenance
 For a fresh Windows installation, use an elevated PowerShell in a reviewed checkout. Run `.\installers\windows\renew-tls.ps1` during an authorized maintenance window. It verifies the known Windows service belongs to the fixed installation root, checks expiry and hostname, validates candidate material before downtime, rotates and verifies the actual TLS peer, and attempts rollback on failed readiness. Recovery files stay in the restricted installation directory. No actual Windows issuance/service test yet.
 
-For backup and restore or UI releases use the same Node CLI as Linux with `$env:ProgramData\MeshWall` as root, after stopping the identified MeshCentral service and confirming no other process uses the files. Use a separately ACL-restricted backup directory (Administrators and SYSTEM only, encrypted storage recommended). Restart and verify login/agent after each operation. The operator stop acknowledgment is not automatic process detection. Windows ACL and real restoration remain acceptance gates.
+For backup and restore or UI releases use the same Node CLI as Linux with `$env:ProgramData\MeshWall` as root, after stopping the identified MeshCentral service and confirming no other process uses the files. Use a separately ACL-restricted backup directory (Administrators and SYSTEM only, encrypted storage recommended). Restart and verify login/agent after each operation. The operator stop acknowledgment is not automatic process detection. Windows ACL and physical service restoration remain acceptance gates. See commit-specific CI status for Windows loopback restore.

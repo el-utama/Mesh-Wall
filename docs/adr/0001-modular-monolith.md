@@ -1,6 +1,6 @@
 # ADR 0001: Modular monolith for STB-first deployment
 
-Status: proposed / accepted design direction, pending compatibility validation.
+Status: **Superseded for alpha by [ADR 0002](0002-same-origin-ui.md).** Historical proposal only; the separate backend and typed adapter design below is not current implementation.
 
 Context: HG680P/B860H with limited RAM and network resources; Windows secondary; up to 100 enrolled PCs; long-term refactoring required.
 

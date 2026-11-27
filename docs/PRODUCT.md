@@ -1,7 +1,7 @@
 # Product requirements
 
 ## Vision
-One browser workspace replaces everyday MeshCentral administration, from guided setup to authorized device monitoring and control. Engine remains MeshCentral. Primary hardware HG680P/B860H running Armbian; Windows secondary. Self-hosted/private network first.
+One browser workspace replaces everyday MeshCentral administration, from guided setup to authorized device monitoring and control. Engine remains MeshCentral. Primary hardware HG680P/B860H running Armbian; Windows x64 must reach equivalent supported functionality; Armbian remains the resource-optimization priority. Self-hosted/private network first.
 
 ## Users
 Owner provisions and maintains server; administrator manages authorized devices/users; viewer sees only permitted screens; operator can perform explicitly granted actions. No covert monitoring or bypass of device consent.
@@ -25,6 +25,12 @@ Owner provisions and maintains server; administrator manages authorized devices/
 
 ## Out of scope initially
 Custom agents/protocol, cloud SaaS, covert surveillance, continuous recording, full mobile client, unsupported platform/engine combinations. Native recovery interface remains private and restricted for emergency use only.
+
+## Additional acceptance gates
+- P11: Consistent UI/UX, responsive, accessible, keyboard-operable; visual evidence and dedicated skill.
+- P12: Cross-platform feature parity (setup, service, TLS, maintenance, updates) and separate physical acceptance.
+- P13: Troubleshooting, specialist skills, current bilingual documentation, and evidence-based release review.
+- P14: 100 simultaneous real authorized screens is the capacity acceptance target, not an inferred guarantee; measure on target platforms without sacrificing permissions or stability.
 
 ## Definition of done
 All routine workflows demonstrated on target hardware with authorized test devices, documented version support and measured performance; no mock-only success, no permission regression, and successful backup/restore.

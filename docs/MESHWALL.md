@@ -1,16 +1,21 @@
 # Live wall and streaming
 
-## Layout
-Grid and free resize per tile; drag and drop; configurable rows/columns, gaps and aspect ratio; group/search/status filters; monitor picker, fullscreen focus, keyboard controls, per-user saved layouts. Persist layout by stable device ID and monitor ID; remove missing entries safely. Handle 100 tiles without mounting heavy hidden canvases.
+## Implemented alpha behavior
+The wall uses stable device IDs, up to 100 authorized inventory tiles, 1–10 desired columns (effective count adapts to viewport), individual width and height, pointer resize/drag and keyboard controls, group/search/status filters, selected-device inspector, focus, individual/full-wall fullscreen and monitor selection. Presets store columns/order/sizes locally per account; monitor choice is not persisted in the preset. Session limit defaults to 4, adjustable 1–100. No server transcoding or recording. The wall is view-only; permitted control is through the official desktop panel.
 
-## Session state
-idle -> connecting -> live -> degraded/paused -> reconnecting -> live; offline, denied and error are explicit terminal or retryable states. Show last frame timestamp on stalled connections, not a misleading live indicator. View-only default, explicit permission-gated control mode on focused screen. No automatic recording.
+A connection is not Live until an actual canvas draw. Ready, queued, connecting, waiting, live, offline, stopped and ended/no-session/error are distinguished; last draw is not proof of failure for a static desktop. Filtering out a device, leaving/hiding the wall or losing authorization stops affected sessions. Dashboard control reconnect attempts after transient loss are bounded (1, 2, 4, 8, 16 seconds); desktop sessions do not auto-resume. Actual denial/revocation and monitor behavior need live-agent tests.
 
-## Adaptive streaming
-Initial STB profile target 1–3 FPS, 320x180 equivalent scaling, subject to upstream capabilities. Balanced 5–10 FPS; focused tile higher quality as capacity permits. Use bounded start queue, visibility-aware pause, per-tile quality and browser rendering; fair allocation across active tiles; exponential backoff with jitter. Allow a deliberate all-visible wall; do not silently replace live streams with snapshots. Limit active sessions based on actual CPU, RAM, network, frame age and browser load. Avoid server-side transcoding.
+| Profile | Requested quality | Scale (1024 = native) | Requested frame interval |
+| --- | --- | --- | --- |
+| Eco | 25 | 256 | 500 ms |
+| Balanced | 40 | 384 | 250 ms |
+| High | 55 | 640 | 125 ms |
+| Focused | 55 | 768 | 100 ms |
 
-## Performance
-100 enrolled devices and 100 simultaneous live tiles are distinct requirements. Test 1, 10, 25, 50, 75, 100 sessions with static and changing desktops; monitor server RSS/CPU, bandwidth, latency/frame age, reconnects and browser memory/CPU. Estimate one-way bandwidth as active streams × average bitrate, then include protocol and relay overhead; measure actual traffic. At 150 kbps × 100 = 15 Mbps nominal per direction. Do not promise throughput on a 100 Mbps STB or assume all streams can run at 30 FPS.
+Values are current model.mjs parameters sent to the pinned upstream renderer, not measured FPS, bitrate or resolution. Scheduling uses a bounded explicit active set, not measured adaptive CPU/RAM control.
 
-## Acceptance
-Layout reload persists; resize/drag/focus works; monitor select is accurate; only authorized tiles stream; revoked access terminates; no memory/session leak after closing wall; quality changes are observable. Publish hardware/version/network results and stable concurrency limit.
+## Remaining target
+Configurable gaps/aspect ratio, monitor-specific saved preference, explicit pause/resume and richer stale/denied status, automatic resource adaptation and safe consent-aware stream reconnect remain incomplete. No silent screenshot substitution or consent bypass.
+
+## Capacity and acceptance
+100 enrolled devices and 100 simultaneous live tiles are distinct requirements. Test 1/10/25/50/75/100 authorized sessions on each target OS using static and changing desktops; record server RSS/CPU/temperature, bandwidth, latency/frame age, browser memory/CPU, reconnects and cleanup. Nominal bitrate example 150 kbps × 100 = 15 Mbps in one direction before overhead; not a measurement. See [hardware acceptance](HARDWARE-ACCEPTANCE.md) and [audit](AUDIT.md). Synthetic 100-tile tests and real upstream JPEG decoding with fake transport do not establish live capacity.
