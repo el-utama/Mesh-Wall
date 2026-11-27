@@ -1,1 +1,106 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>MeshWall setup</title><link rel="stylesheet" href="/setup.css"></head><body><main><header class="setup-header"><span class="brand">Mesh<span>Wall</span></span><span class="local-label">Local setup · Alpha</span></header><div class="intro"><small>FIRST RUN / SERVER</small><h1>Configure your server</h1><p>Install MeshCentral and MeshWall on this authorized test host. This temporary wizard stays on localhost; use an authorized SSH tunnel from another PC.</p></div><ol class="steps" aria-label="Setup stages"><li>01 · Compatibility</li><li>02 · Administrator</li><li>03 · Verification</li></ol><section><div class="section-head"><div><small>STEP 01</small><h2>Compatibility</h2></div><button id="check">Run preflight</button></div><div id="checks"></div><div id="discovery" role="status"></div><p id="note"></p></section><section><small>STEP 02</small><h2>Administrator</h2><p>Use a unique strong password. Credentials are not stored by the setup wizard.</p><form id="setup"><label>Username<input id="user" autocomplete="username" required maxlength="32" value="admin"></label><label>Password<input id="pass" type="password" autocomplete="new-password" minlength="16" maxlength="128" required></label><label>Confirm password<input id="confirm" type="password" autocomplete="new-password" minlength="16" maxlength="128" required></label><label class="check"><input id="authorized" type="checkbox" required> I authorize fresh installation on this test server and understand Tailscale certificate transparency.</label><button class="primary" id="start" disabled>Install and verify</button></form></section><section><small>STEP 03</small><h2>Installation &amp; verification</h2><p id="status" role="status">Not started.</p><div id="result"></div><details id="helpPanel" open><summary>Local help &amp; recovery</summary><p id="helpCode"></p><p id="helpCheck"></p><p id="helpNext"></p><button id="support" type="button">Copy safe diagnostic report</button><p id="supportStatus" role="status"></p></details></section><footer>Alpha / lab evaluation. Physical server, live agent and streaming capacity validation still required.</footer></main><script src="/setup.js" defer></script></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MeshWall setup</title>
+  <link rel="stylesheet" href="/setup.css">
+</head>
+<body>
+<main>
+  <header class="setup-header">
+    <span class="brand">Mesh<span>Wall</span></span>
+    <span class="local-label">Local setup · Alpha</span>
+  </header>
+  <div class="intro">
+    <h1>Configure your server</h1>
+    <p>Install MeshWall on a fresh test host or review an existing MeshCentral installation. Use localhost or an authorized SSH tunnel.</p>
+  </div>
+  <ol class="steps" id="fresh-steps" aria-label="Fresh setup stages">
+    <li>01 · Compatibility</li>
+    <li>02 · Administrator</li>
+    <li>03 · Verification</li>
+  </ol>
+  <section>
+    <div class="section-head">
+      <h2>Compatibility</h2>
+      <button id="check" type="button">Run preflight</button>
+    </div>
+    <div id="checks"></div>
+    <p id="note"></p>
+    <details id="adoption">
+      <summary>Review existing MeshCentral</summary>
+      <p id="discovery" role="status"></p>
+      <ul id="candidates" hidden aria-label="Detected installation directories"></ul>
+      <form id="adoption-root">
+        <label>Installation directory
+          <input id="root" required maxlength="1024" autocomplete="off" spellcheck="false" aria-describedby="root-hint">
+        </label>
+        <p class="hint" id="root-hint">Enter the absolute path to the directory containing node_modules and meshcentral-data.</p>
+        <button type="submit" id="preview" disabled>Preview adoption</button>
+      </form>
+      <p id="adoption-status" role="status"></p>
+      <div id="adoption-review" hidden>
+        <h3>Changes to review</h3>
+        <p id="preview-target"></p>
+        <details>
+          <summary id="file-summary">Static UI files</summary>
+          <ul id="preview-files"></ul>
+        </details>
+        <h3>Confirm the existing service</h3>
+        <p id="service-guide"></p>
+        <label class="check"><input id="service-confirmed" type="checkbox">
+          I administer this server and matched the service or launch process to this installation and its default paths.
+        </label>
+        <form id="backup-form" hidden>
+          <label>Private backup directory
+            <input id="backup-parent" required maxlength="1024" autocomplete="off" spellcheck="false" aria-describedby="backup-hint">
+          </label>
+          <p class="hint" id="backup-hint">Choose an existing directory outside the installation tree, with space for a full backup. Check that only authorized accounts have access.</p>
+          <button type="submit" id="check-backup">Check backup path</button>
+        </form>
+        <div id="handoff" hidden>
+          <h3>Continue in the local terminal</h3>
+          <p id="handoff-backup"></p>
+          <ol>
+            <li>In an authorized maintenance window, stop the confirmed service and verify that no engine process uses this directory.</li>
+            <li>From the reviewed checkout, run the following command with the actual paths. The apply command creates and verifies the backup before copying the UI.</li>
+          </ol>
+          <pre><code>node installers/adopt.mjs apply &lt;root&gt; &lt;private-backup-parent&gt; --engine-stopped</code></pre>
+          <p id="handoff-account"></p>
+          <p>Restart the existing service. Open its trusted HTTPS address with <code>/meshwall.html</code> and verify original login, groups and authorized devices. If anything fails, use <code>node installers/adopt.mjs status &lt;root&gt;</code> and the local <code>docs/ADOPTION.md</code> recovery steps.</p>
+        </div>
+      </div>
+    </details>
+  </section>
+  <section id="administrator">
+    <h2>Fresh administrator</h2>
+    <p>Use a unique strong password. Credentials are not stored by the setup wizard.</p>
+    <form id="setup">
+      <label>Username<input id="user" autocomplete="username" required maxlength="32" value="admin"></label>
+      <label>Password<input id="pass" type="password" autocomplete="new-password" minlength="16" maxlength="128" required></label>
+      <label>Confirm password<input id="confirm" type="password" autocomplete="new-password" minlength="16" maxlength="128" required></label>
+      <label class="check"><input id="authorized" type="checkbox" required>
+        I authorize fresh installation on this test server and understand Tailscale certificate transparency.
+      </label>
+      <button class="primary" id="start" disabled>Install and verify</button>
+    </form>
+  </section>
+  <section>
+    <h2 id="result-heading">Installation and verification</h2>
+    <p id="status" role="status">Not started.</p>
+    <div id="result"></div>
+    <details id="helpPanel" open>
+      <summary>Local help and recovery</summary>
+      <p id="helpCode"></p>
+      <p id="helpCheck"></p>
+      <p id="helpNext"></p>
+      <button id="support" type="button">Copy safe diagnostic report</button>
+      <p id="supportStatus" role="status"></p>
+    </details>
+  </section>
+  <footer>Alpha / lab evaluation. Physical server, live agent and streaming capacity validation still required.</footer>
+</main>
+<script type="module" src="/setup.js"></script>
+</body>
+</html>

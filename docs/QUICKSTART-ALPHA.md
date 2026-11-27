@@ -31,11 +31,11 @@ Open the exact URL printed by installer. Click Sign in within MeshWall; the same
 
 ## Existing MeshCentral (Linux or Windows)
 
-Use `node scripts/doctor.mjs` to scan bounded service/process evidence and common paths. Custom paths may still be missed. A detected candidate blocks fresh installation in the wizard. Confirm the actual service, root and engine version; supported adoption is the pinned npm layout (1.3.2) with existing local data/config. The wizard cannot yet apply adoption.
+Open the same local setup wizard and select **Review existing MeshCentral**. Pick a detected installation or type the absolute installation root. After preview, match the service to the root and verify its effective paths. Choose **Check backup path** with an existing private directory and follow the local terminal instructions. A detected installation blocks fresh provisioning in that wizard session. The wizard only reviews the plan. [Linux and Windows service checks and recovery](ADOPTION.md).
 
-Preview is read-only. From the trusted checkout:
+For terminal-only review, run `node scripts/doctor.mjs` for bounded discovery or enter the actual paths from the trusted checkout:
 ```bash
-node installers/adopt.mjs preview /path/to/install-root
+node installers/adopt.mjs preview "/path/to/install-root" "/path/to/private-backups"
 ```
 Stop the **identified existing** engine using its own administrative mechanism. Verify no other process uses the files; create a separate private backup parent outside the installation. On Linux run apply as the existing engine account (not root); on Windows use authorized PowerShell with a restricted backup directory:
 ```bash
@@ -49,7 +49,7 @@ If the engine is stopped and no other maintenance is active, rollback before UI 
 ```bash
 node installers/adopt.mjs rollback /path/to/install-root --engine-stopped
 ```
-Rollback removes only unchanged, verified transaction-owned files; it does not remove the database. A modified file, interrupted lock or ambiguous state requires manual inspection. Keep journal/backup, no blind retry. Hard links must be supported by the installation filesystem (e.g. ext4/NTFS). See [adoption and recovery](ADOPTION.md).
+Rollback removes only unchanged, verified transaction-owned files; it does not remove the database. A modified file, interrupted lock or ambiguous state requires manual inspection. Keep journal and backup for review before retrying. Hard links must be supported by the installation filesystem (e.g. ext4/NTFS). See [adoption and recovery](ADOPTION.md).
 
 ## Diagnostics and recovery
 ```bash

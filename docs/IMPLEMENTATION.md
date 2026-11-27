@@ -13,7 +13,7 @@ Current architecture: same-origin static modular browser application with pinned
 
 Core inventory, enrollment, device/group edits, account creation/direct viewer grant and revoke, recent events, diagnostics, view-only wall, monitor picker, quality presets, resize/order/focus/fullscreen, per-account local layouts, control reconnect with bounded retry. Sockets stop wall sessions when inventory/authorization is lost; screen reconnect remains explicit. Official upstream login, desktop, terminal, files and advanced administration remain embedded compatibility panels.
 
-Linux and Windows bootstrap and shared local setup, Windows installer candidate, adoption and local maintenance CLI are available. Offline backup/restore is proven in Linux and Windows loopback CI; UI update rollback is unit-tested. Neither is yet validated on physical target systems.
+Linux and Windows bootstrap and shared local setup, Windows installer candidate, guided read-only adoption review and local adoption/maintenance CLI are available. Offline backup/restore is proven in Linux and Windows loopback CI; UI update rollback is unit-tested. Neither is yet validated on physical target systems.
 
 ## Remaining gates
 

@@ -5,7 +5,7 @@ Current status: **Alpha / isolated lab evaluation, not production-ready.** Sourc
 | ID | Requirement | Current evidence and scope | Outstanding gate |
 | --- | --- | --- | --- |
 | P01 | Fresh setup | Shared localhost wizard, Linux/Windows bootstrap and CLI; fixture tests | Actual clean install on HG680P/B860H and Windows, safe partial recovery, enrollment end-to-end without native dependency |
-| P02 | Adopt existing | Read-only preview, verified backup, staged exclusive UI placement, journal and rollback source; real-engine loopback passed at verified baseline | Browser guided adoption, service lifecycle and physical permission/recovery verification |
+| P02 | Adopt existing | Wizard preview for detected or manual paths, operator service confirmation, backup-directory check and CLI handoff; offline CLI backup, staged placement, journal, rollback and restart coverage | Verified service identity/state, guided execution/recovery and existing physical-host permission tests |
 | P03 | Inventory | Grouped/filterable 100-tile inventory and name ordering; synthetic browser and empty real engine | Last-seen/hardware metadata, interactive sort and real enrolled devices |
 | P04 | Live wall | Layout/resize/order/focus/fullscreen/presets tested in browser; upstream generated JPEG decode | Actual agent stream, monitor switching, monitor preset persistence, adaptive quality and safe reconnect |
 | P05 | Remote access | Official embedded desktop/terminal/files panels; wall view-only | Independent native controls, allowed power operations, consent and revocation tests |
@@ -15,10 +15,10 @@ Current status: **Alpha / isolated lab evaluation, not production-ready.** Sourc
 | P09 | Private access | Bootstrap guides Tailscale login; private bind/TLS configuration and certificate unit checks | Real private TLS/agent connectivity/renewal on both OS, network management UI |
 | P10 | Modularity | Static explicit JS modules; shared setup/maintenance, platform adapters and ADRs | Automated boundary checks and ongoing contract review |
 | P11 | UI/UX | Design system, five viewports, synthetic density, keyboard/contrast tests | Independent accessibility/manual audit, missing UI states and actual screen sessions |
-| P12 | Platform parity | Both bootstrap/wizard/TLS source, Windows CI wizard fixture | Windows loopback including adoption passed at verified baseline; physical OS gates, least-privilege Windows service |
+| P12 | Platform parity | Both bootstrap/wizard/TLS source; shared guided adoption and Windows fixed-drive check; Windows loopback passed at the baseline | Physical OS lifecycle/ACL/recovery, least-privilege Windows service |
 | P13 | Skills and docs | Nine specialist skills, registry, documentation audit, CI validation and shared project memory | Keep instructions and links synchronized; actual coding-agent invocation not guaranteed |
 | P14 | 100 live streams | 100 synthetic tiles, adjustable 1–100 limit (default 4) | Real 1/10/25/50/75/100 session benchmarks, soak and resource evidence on each target |
-| P15 | Independent lifecycle assistance | Shared stage catalog, bounded service/process/common-path discovery, local doctor, setup guidance, minimal safe report and local wizard stage history; pre-Node terminal help | Broader discovery, guided adoption, transactional fresh-install recovery across all entrypoints, error-specific dashboard help, specific error diagnosis, watchdog and physical failure-injection tests |
+| P15 | Independent lifecycle assistance | Shared stage catalog, bounded service/process/common-path discovery, local doctor, setup guidance, minimal safe report and local wizard stage history; adoption-specific preview errors and handoff; pre-Node terminal help | Broader discovery, verified service and guided adoption recovery, transactional fresh-install recovery across all entrypoints, error-specific dashboard help, broader diagnosis, watchdog and physical failure-injection tests |
 
 No stable release until all gates pass; do not equate a green unit suite with verified physical performance. Repository license remains an owner decision, not a technical test. Historical implementation evidence must identify its exact commit; failed or queued current CI is not a pass.
 

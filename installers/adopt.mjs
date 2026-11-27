@@ -4,9 +4,9 @@ import {previewAdoption,adopt,adoptionStatus,rollbackAdoption} from "./adoption.
 import {guidance} from "./support/catalog.mjs";
 const [cmd,root,parent,flag,...rest]=process.argv.slice(2),source=fileURLToPath(new URL("../apps/web/public/",import.meta.url));
 try{
- if(cmd==="preview"&&root&&!parent)console.log(JSON.stringify(await previewAdoption(root,source),null,2));
+ if(cmd==="preview"&&root&&!flag&&!rest.length)console.log(JSON.stringify(await previewAdoption(root,source,parent),null,2));
  else if(cmd==="status"&&root&&!parent)console.log(JSON.stringify(await adoptionStatus(root),null,2));
  else if(cmd==="apply"&&root&&parent&&flag==="--engine-stopped"&&!rest.length){if(process.platform!=="win32"&&process.getuid?.()===0)throw Error("Run as existing engine service account, not root.");console.log(JSON.stringify(await adopt(root,source,parent),null,2));console.log("Restart the known service and verify HTTPS, login, groups and authorized agents. Do not remove backup.");}
  else if(cmd==="rollback"&&root&&parent==="--engine-stopped"&&!flag&&!rest.length){if(process.platform!=="win32"&&process.getuid?.()===0)throw Error("Run as existing engine service account, not root.");console.log(JSON.stringify(await rollbackAdoption(root),null,2));console.log("Restart original server and verify login.");}
- else throw Error("Usage: adopt.mjs preview <root> | status <root> | apply <root> <private-backup-parent> --engine-stopped | rollback <root> --engine-stopped");
+ else throw Error("Usage: adopt.mjs preview <root> [private-backup-parent] | status <root> | apply <root> <private-backup-parent> --engine-stopped | rollback <root> --engine-stopped");
 }catch(e){console.error(e.message);console.error(guidance("adoption").next);process.exitCode=1;}
