@@ -1,0 +1,16 @@
+node_modules/
+dist/
+coverage/
+.env
+.env.*
+!.env.example
+*.log
+*.db
+*.db-wal
+*.db-shm
+*.sqlite*
+*.pem
+*.key
+meshcentral-data/
+backups/
+.DS_Store
