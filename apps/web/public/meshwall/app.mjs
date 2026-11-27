@@ -39,8 +39,11 @@ function stats(){$("total").textContent=user?devices.length:"—";$("online").te
 function render(){stats();if(page==="wall")wall.render();if(page==="devices")management.renderDevices();if(page==="groups")management.renderGroups();}
 function setPage(p){if(!Object.hasOwn(pages,p))return;if(page==="wall"&&p!=="wall")wall.stopAll();page=p;for(const name of Object.keys(pages))$(name).hidden=name!==p;for(const b of document.querySelectorAll("nav [data-page]")){b.classList.toggle("active",b.dataset.page===p);if(b.dataset.page===p)b.setAttribute("aria-current","page");else b.removeAttribute("aria-current");}$("title").textContent=pages[p];$("pageDescription").textContent=descriptions[p];admin.onPage(p);render();}
 for(const b of document.querySelectorAll("[data-page]"))b.onclick=()=>setPage(b.dataset.page);
-function navCollapsed(value){document.body.classList.toggle("nav-collapsed",value);$("navToggle").setAttribute("aria-expanded",String(!value));$("navToggle").setAttribute("aria-label",value?"Expand navigation":"Collapse navigation");try{localStorage.setItem("meshwall-nav-collapsed",String(value));}catch{}}
-let collapsed=false;try{collapsed=localStorage.getItem("meshwall-nav-collapsed")==="true";}catch{}navCollapsed(collapsed);$("navToggle").onclick=()=>navCollapsed(!document.body.classList.contains("nav-collapsed"));
+const narrowNav=matchMedia("(max-width:800px)");
+const navKey=()=>narrowNav.matches?"meshwall-nav-mobile-collapsed":"meshwall-nav-collapsed";
+function navCollapsed(value,persist=true){document.body.classList.toggle("nav-collapsed",value);$("navToggle").setAttribute("aria-expanded",String(!value));$("navToggle").setAttribute("aria-label",value?"Expand navigation":"Collapse navigation");if(persist)try{localStorage.setItem(navKey(),String(value));}catch{}}
+function restoreNav(){let value=narrowNav.matches;try{const saved=localStorage.getItem(navKey());if(saved!==null)value=saved==="true";}catch{}navCollapsed(value,false);}
+narrowNav.addEventListener("change",restoreNav);restoreNav();$("navToggle").onclick=()=>navCollapsed(!document.body.classList.contains("nav-collapsed"));
 $("refresh").onclick=()=>control.authenticated?refresh():control.start();$("login").onclick=e=>{e.preventDefault();panels.signIn();};
 $("logout").onclick=()=>{wall.stopAll();panels.close();};$("origin").textContent=location.origin;
 document.addEventListener("visibilitychange",()=>{if(document.hidden)wall.stopAll();else refresh();});window.addEventListener("pagehide",()=>{wall.stopAll();panels.close();control.close();});

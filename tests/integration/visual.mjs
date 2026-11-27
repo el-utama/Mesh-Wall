@@ -25,7 +25,8 @@ await page.routeWebSocket("wss://meshwall.test/control.ashx",ws=>{
  ws.onMessage(raw=>{const m=JSON.parse(String(raw));if(m.action==="meshes")send({action:"meshes",meshes:groups,tag:m.tag,responseid:m.responseid});if(m.action==="nodes")send({action:"nodes",nodes:inventory(),totalcount:count,responseid:m.responseid});if(m.action==="authcookie")send({action:"authcookie",cookie:"fixture-not-real",rcookie:"fixture-not-real"});if(m.action==="ping")send({action:"pong"});});
  setTimeout(()=>send({action:"userinfo",userinfo:{_id:"user//fixture",name:"Synthetic fixture"}}),10);
 });
-async function ready(n){count=n;await page.goto(origin+"/meshwall.html");await page.waitForFunction(n=>document.querySelector("#total")?.textContent===String(n),n,{timeout:15000});await page.locator('nav [data-page="wall"]').click();await page.locator("#notice").evaluate(e=>e.textContent="UI TEST FIXTURE · synthetic devices only · no agents or live streams");}
+async function navigate(name){const target=page.locator('nav [data-page="'+name+'"]');const wasHidden=!(await target.isVisible());if(wasHidden)await page.locator("#navToggle").click();await target.click();if(wasHidden)await page.locator("#navToggle").click();}
+async function ready(n){count=n;await page.goto(origin+"/meshwall.html");await page.waitForFunction(n=>document.querySelector("#total")?.textContent===String(n),n,{timeout:15000});await navigate("wall");await page.locator("#notice").evaluate(e=>e.textContent="UI TEST FIXTURE · synthetic devices only · no agents or live streams");}
 async function columns(n){await page.locator("#columns").fill(String(n));await page.locator("#columns").press("Tab");}
 async function labelFixture(){await page.locator("#notice").evaluate(e=>e.textContent="UI TEST FIXTURE · synthetic devices only · no agents or live streams");}
 async function snap(name){await labelFixture();await page.screenshot({path:join(out,name+".jpg"),type:"jpeg",quality:78,animations:"disabled"});}
@@ -37,9 +38,9 @@ try{
   const views=[[1920,1080],[1440,900],[1280,720],[768,1024],[390,844]];
   for(const [width,height] of views){
    await page.setViewportSize({width,height});await ready(100);await columns(10);
-   await page.waitForTimeout(100);await tileCheck(100,width+"x"+height);await snap("wall-"+width+"x"+height);
-   await page.locator('nav [data-page="overview"]').click();await noOverflow("overview "+width);await snap("overview-"+width);
-   await page.locator('nav [data-page="devices"]').click();await noOverflow("devices "+width);assert.equal(await page.locator("#deviceRows tr").count(),100);
+   await page.waitForTimeout(100);if(width<=800){assert.equal(await page.locator("#navToggle").getAttribute("aria-expanded"),"false");assert.ok(await page.locator("#logout").isVisible(),"Compact navigation must preserve account action");}await tileCheck(100,width+"x"+height);await snap("wall-"+width+"x"+height);
+   await navigate("overview");await noOverflow("overview "+width);await snap("overview-"+width);
+   await navigate("devices");await noOverflow("devices "+width);assert.equal(await page.locator("#deviceRows tr").count(),100);
   }
   await page.setViewportSize({width:1440,height:900});
   for(const n of [1,4,16,50,100]){await ready(n);await columns(n<=4?2:n===16?4:10);await tileCheck(n,"density "+n);await snap("density-"+n);}
@@ -56,7 +57,7 @@ try{
   await page.locator(".tile .screen").first().click();assert.equal(await page.locator("#selectedStart").isDisabled(),true);await page.locator("#inspectorClose").click();
   await page.locator("#wallStatus").selectOption("all");await page.locator("#wallGroup").selectOption("mesh//aux");assert.equal(await page.locator(".tile").count(),50);
   await page.locator("#wallGroup").selectOption("");await page.locator("#wallSearch").fill("not-found");await page.locator("#emptyWall").waitFor();await snap("empty-filter");await page.locator("#wallSearch").clear();
-  await page.locator("#layoutOptions summary").click();await page.locator("#presetName").fill("Fixture layout");await page.locator("#save").click();await page.reload();await page.waitForFunction(()=>document.querySelector("#total")?.textContent==="100");await page.locator('nav [data-page="wall"]').click();assert.equal(await page.locator("#preset").inputValue(),"Fixture layout");
+  await page.locator("#layoutOptions summary").click();await page.locator("#presetName").fill("Fixture layout");await page.locator("#save").click();await page.reload();await page.waitForFunction(()=>document.querySelector("#total")?.textContent==="100");await navigate("wall");assert.equal(await page.locator("#preset").inputValue(),"Fixture layout");
   assert.equal(await page.locator("#streams").textContent(),"0");assert.deepEqual(errors,[]);
   console.log("PASS: 5 viewports, 5 density levels, no page overflow/clipping, filters, keyboard selection, resize/reorder, focus, offline disabled, preset persistence. Synthetic fixture; zero live streams.");
   // Small representative screenshot bytes in CI log for visual review; fixture only.
