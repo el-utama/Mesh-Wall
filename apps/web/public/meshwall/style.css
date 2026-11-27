@@ -1,6 +1,6 @@
 :root {
   color-scheme: dark; font:14px/1.5 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-  --bg:#0d121c; --nav:#101824; --panel:#151e2c; --raised:#1b293a; --line:#304258; --control:#496079;
+  --bg:#0d121c; --nav:#101824; --panel:#151e2c; --raised:#1b293a; --line:#304258; --control:#647b93;
   --text:#e4edf6; --muted:#a8b9cc; --accent:#5ed6b1; --accent-ink:#08291e; --info:#8cb8f5; --warning:#f1bf65; --danger:#f28b8b;
   --s1:4px; --s2:8px; --s3:12px; --s4:16px; --s5:20px; --s6:24px; --s8:32px; --radius:8px;
 }
