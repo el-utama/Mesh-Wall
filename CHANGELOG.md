@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- Local Linux TLS renewal with expiry check, hostname/key validation, offline certificate swap and readiness rollback; corrected quickstart formatting. No unattended timer or real tailnet validation yet.
 - Synchronized bilingual README, architecture, installation, API/data, roadmap and test evidence; added Indonesian user guide. Fixed create-account action remaining disabled after a successful submission.
 - Native standard account creation and direct restricted viewer group assignment/revocation; engine validation and readback. Advanced/inherited permissions remain upstream.
 - Added guided Linux prerequisite bootstrap, Windows fresh installer candidate and reversible UI-only updates. Expanded real-engine restore and cross-platform CI coverage.

@@ -17,4 +17,4 @@ Linux bootstrap and local setup, Windows installer candidate, adoption and local
 
 ## Remaining gates
 
-Actual authorized agent desktop transport, consent/denial/revocation, multi-monitor, real setup, physical ARM64 STB and Windows host, simultaneous live capacity and soak tests. Full independent native replacement, effective permission management, GUI maintenance, engine upgrade/rollback and certificate renewal remain incomplete. Do not infer production readiness from CI. See [audit](AUDIT.md).
+Actual authorized agent desktop transport, consent/denial/revocation, multi-monitor, real setup, physical ARM64 STB and Windows host, simultaneous live capacity and soak tests. Full independent native replacement, effective permission management, GUI maintenance, engine upgrade/rollback and unattended certificate renewal remain incomplete. A local Linux renewal command with offline certificate rollback is available in source; actual Tailscale issuance/restart and Windows renewal remain unvalidated. Do not infer production readiness from CI. See [audit](AUDIT.md).

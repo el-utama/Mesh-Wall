@@ -14,4 +14,4 @@ jobs:
           node-version: '22.21.1'
       - run: npm run check
       - run: node --check installers/adopt.mjs && node --check installers/linux/config.mjs
-      - run: bash -n installers/linux/install.sh && bash -n installers/linux/bootstrap.sh
+      - run: bash -n installers/linux/install.sh && bash -n installers/linux/bootstrap.sh && bash -n installers/linux/renew-tls.sh

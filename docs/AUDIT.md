@@ -13,6 +13,7 @@
 | Modular/refactorable | Separate model/control/desktop/wall/management/admin/panel/UI modules and installer separation | Dependency checks and continued refactoring |
 | Documentation | README, ADR, installation, acceptance, audit | Current bilingual README and user guide; keep synchronized with CI evidence |
 | Maintenance and backup | Offline backup/verify/restore and UI-only update/rollback with retained recovery directories | Real engine loopback restore passed; physical host, GUI and engine update pending |
+| TLS lifecycle | Local Linux renewal command, staged replacement and rollback | Actual Tailscale issuance/restart; unattended timer and Windows renewal pending |
 | Automatic reconnect | Bounded automatic control-channel reconnect; remote screens require explicit retry | Real-device consent/denial and automatic stream resume remain pending |
 
 Audit conclusion: source is alpha for a test environment, not production-ready. No fabricated live results. See implementation notes.
