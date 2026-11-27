@@ -9,3 +9,5 @@ Read docs/PRODUCT.md, docs/AUDIT.md, docs/PLATFORM-PARITY.md and ROADMAP.md. Che
 
 ## Completion and escalation checklist
 Trace P01–P15 in docs/AUDIT.md. Check local links, commands against actual files, historical ADR status and exact CI SHA. Distinguish historical evidence and current HEAD. Keep bilingual docs synchronized; do not change visibility or license without owner approval.
+
+Before finishing substantive work, refresh PROJECT_MEMORY.md under AGENTS.md rules: tested commit and exact evidence, current decisions, remaining risks and prioritized next steps. No proprietary memory or handover dependency.

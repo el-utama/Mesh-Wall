@@ -40,3 +40,6 @@ Bantuan lokal tanpa AI: `node scripts/doctor.mjs` untuk pencarian lokasi umum da
 Adopsi server lama: [panduan preview, backup, apply dan rollback](docs/ADOPTION.md). Deteksi service/proses terbatas; konfirmasi service dan root sebelum perubahan. Wizard adopsi belum tersedia.
 
 Riwayat instalasi wizard: `node scripts/doctor.mjs history` dari akun operator yang sama. Status terakhir bukan bukti proses masih berjalan; jangan ulangi instalasi tanpa pemeriksaan.
+
+## Lanjutkan pengembangan dengan AI apa pun
+Minta AI membaca [AGENTS.md](AGENTS.md) dan [PROJECT_MEMORY.md](PROJECT_MEMORY.md), lalu memeriksa HEAD dan CI terbaru. Kedua file berada di repository dan wajib diperbarui setiap perubahan substantif. AI yang tidak otomatis membaca AGENTS.md perlu diarahkan sekali; tidak perlu membuat handover manual.

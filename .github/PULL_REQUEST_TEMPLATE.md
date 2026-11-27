@@ -22,3 +22,5 @@
 - [ ] Listed exact commit/CI results, failed/skipped/pending checks and remaining gates
 
 - [ ] User-facing steps have offline guidance, failure behavior, and verified postconditions (P15)
+
+- [ ] Updated PROJECT_MEMORY.md in the same change set: tested SHA/evidence, decisions, unresolved risks and next steps (or explained why no memory change was needed)

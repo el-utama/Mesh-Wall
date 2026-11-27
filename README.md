@@ -51,7 +51,7 @@ If Node.js >=22.21.1 and authenticated Tailscale are already available, use `sud
 | [Implementation](docs/IMPLEMENTATION.md) / [Audit](docs/AUDIT.md) | Evidence and remaining gaps |
 | [Documentation audit](docs/DOCUMENTATION-AUDIT.md) | Skill/doc review and validation scope |
 | [Roadmap](ROADMAP.md) | Milestones |
-| [Contributing](CONTRIBUTING.md) / [Agent instructions](AGENTS.md) | Development rules |
+| [Contributing](CONTRIBUTING.md) / [Agent instructions](AGENTS.md) / [Project memory](PROJECT_MEMORY.md) | Vendor-neutral continuation and development rules |
 | [Repository](docs/REPOSITORY.md) / [Changelog](CHANGELOG.md) | Metadata and history |
 | [ADR 0002](docs/adr/0002-same-origin-ui.md) | Current architectural decision |
 
@@ -62,3 +62,6 @@ Upstream: [MeshCentral](https://github.com/Ylianst/MeshCentral), [documentation]
 See [platform parity and release blockers](docs/PLATFORM-PARITY.md).
 
 Windows x64 (elevated PowerShell, WinGet optional): `.\installers\windows\bootstrap.ps1`; see quickstart for prerequisites and manual fallback.
+
+## Continue with any coding agent
+Ask the agent to read [AGENTS.md](AGENTS.md) and [PROJECT_MEMORY.md](PROJECT_MEMORY.md) first, then inspect current HEAD and CI. These are plain repository files; automatic loading depends on the AI client. No manual handover or proprietary memory is required when the agent can access the repository and follows the instructions.
