@@ -28,7 +28,7 @@ Only MeshCentral 1.3.2 verified by version guard; protocol remains untested live
 ```bash
 node installers/adopt.mjs /path/to/install-root
 ```
-The root must contain node_modules/meshcentral and meshcentral-data. It creates new customization files only and refuses collisions; inspect file ownership on Linux before restarting. On Windows use the same command with a quoted Windows path or installers/windows/adopt.ps1. Existing TLS, permissions, data and configuration are not changed. Verify consent policy before opening wall. Fresh Windows installation remains pending.
+The root must contain node_modules/meshcentral and meshcentral-data. It creates new customization files only and refuses collisions; inspect file ownership on Linux before restarting. On Windows use the same command with a quoted Windows path or installers/windows/adopt.ps1. Existing TLS, permissions, data and configuration are not changed. Verify consent policy before opening wall. Fresh Windows installation is now available as an alpha script (see below).
 
 ## Diagnostics and recovery
 ```bash
@@ -43,3 +43,6 @@ npm run check
 bash -n installers/linux/install.sh
 ```
 The local checks are not a live acceptance test. See TESTING.md and IMPLEMENTATION.md.
+
+## Fresh Windows x64 (alpha; not yet run on a Windows host)
+Install system-wide Node.js >=22.21.1, Git and Tailscale from their official installers, sign in to Tailscale and enable MagicDNS/HTTPS certificates. Open an elevated PowerShell in a trusted checkout and run ` .\installers\windows\install.ps1 `. The script refuses an existing MeshCentral service or MeshWall directory, restricts ProgramData/MeshWall to local Administrators and SYSTEM, pins MeshCentral 1.3.2, checks Tailscale certificate/key and installs the upstream Windows Service. The service uses upstream service defaults (typically LocalSystem); least-privilege Windows service configuration is still pending. It checks HTTPS without bypassing certificate validation. Do not use for production until tested on a Windows lab host. Certificate renewal is manual until the platform-specific lifecycle is implemented. On failure preserve the partial installation for diagnosis; do not rerun blindly. See [official MeshCentral Windows documentation](https://docs.meshcentral.com/install/windows/).
