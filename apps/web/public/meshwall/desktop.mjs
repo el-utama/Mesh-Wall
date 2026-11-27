@@ -9,12 +9,13 @@ export function createDesktop({control,device,canvas,cookies,profile,onState,onD
   const q=qualityProfile(profile);module.CompressionLevel=q.quality;module.ScalingLevel=q.scale;module.FrameRateTimer=q.interval;
   const relay=globalThis.CreateAgentRedirect(control,module,location.host,cookies.cookie,cookies.rcookie,new URL("./",location.href).pathname);
   relay.attemptWebRTC=false;
-  let stopped=false,connected=false,firstFrame=false;
+  let stopped=false,connected=false,firstFrame=false,lastReported=0;
   let timer=setTimeout(()=>{onState("No session / consent pending");stop();},90000);
-  const picture=module.ProcessPictureMsg;
-  module.ProcessPictureMsg=function(...args){picture.apply(module,args);if(!stopped){firstFrame=true;onFrame();}};
+  // Upstream picture decoding is asynchronous. Mark live only after canvas drawing.
+  const ctx=module.Canvas,draw=ctx.drawImage.bind(ctx);
+  ctx.drawImage=function(...args){const result=draw(...args);if(!stopped&&connected){if(!firstFrame){firstFrame=true;clearTimeout(timer);}const now=Date.now();if(!lastReported||now-lastReported>=1000){lastReported=now;onFrame();}}return result;};
   module.onDisplayinfo=(_,displays,selected)=>{if(!stopped)onDisplays(displays,selected);};
-  relay.onStateChanged=(_,state)=>{if(stopped)return;if(state===3){connected=true;clearTimeout(timer);onState("Connected · waiting for screen");module.GetDisplayNumbers();}else if(state===0){clearTimeout(timer);stopped=true;onState("Disconnected / denied");}else onState("Connecting / awaiting consent");};
+  relay.onStateChanged=(_,state)=>{if(stopped)return;if(state===3){connected=true;clearTimeout(timer);timer=setTimeout(()=>{if(!firstFrame){onState("No session / no decoded frame");stop();}},60000);onState("Connected · waiting for screen");module.GetDisplayNumbers();}else if(state===0){clearTimeout(timer);stopped=true;onState("Disconnected / denied");}else onState("Connecting / awaiting consent");};
   relay.onConsoleMessageChange=()=>{if(!stopped&&!connected)onState("Awaiting agent / consent");};
   function stop(){if(stopped)return;stopped=true;clearTimeout(timer);relay.onStateChanged=null;relay.Stop();canvas.getContext("2d")?.clearRect(0,0,canvas.width,canvas.height);}
   try{relay.Start(device.id);}catch(e){stop();throw e;}

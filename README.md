@@ -2,7 +2,7 @@
 
 **A lightweight, self-hosted MeshCentral administration interface with a customizable live screen wall, automated setup and Armbian/STB-first design.**
 
-Status: **Planning / pre-alpha**. This repository contains engineering specifications, not a working release.
+Status: **Alpha implementation / lab evaluation**. Static modular dashboard and Linux bootstrap are in source; live integration and STB capacity remain unvalidated. Not production-ready.
 
 MeshWall aims to replace the native MeshCentral dashboard for everyday administration. MeshCentral and MeshAgent remain the underlying remote management engine. The primary deployment target is Armbian on HG680P/B860H STBs, with Windows as a secondary platform.
 
@@ -37,6 +37,8 @@ MeshWall aims to replace the native MeshCentral dashboard for everyday administr
 | [Changelog](CHANGELOG.md) | Project history |
 
 ## Getting started
-There is no runnable installer yet. Follow the roadmap; do not treat example contracts as implemented APIs.
+For an isolated authorized test environment, see [Alpha quickstart](docs/QUICKSTART-ALPHA.md). Linux fresh installation requires Node >=22.21.1 and authenticated Tailscale with HTTPS certificates enabled. Existing Linux/Windows adoption is available for MeshCentral 1.3.2. The native login and some upstream panels remain temporary fallbacks. Read [implementation status](docs/IMPLEMENTATION.md) and the [request audit](docs/AUDIT.md) before use.
+
+Run `npm run check` for syntax and unit tests. Live tests are still required.
 
 Upstream: [MeshCentral](https://github.com/Ylianst/MeshCentral), [MeshCentral documentation](https://docs.meshcentral.com/), [Tailscale documentation](https://tailscale.com/kb). Independent project; licensing decision pending. Only enroll and access devices you are authorized to manage.

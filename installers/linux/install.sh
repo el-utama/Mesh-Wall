@@ -59,7 +59,7 @@ i=2; while [[ -f "$TMP/cert-$i.pem" ]]; do install -o meshwall -g meshwall -m 06
 install -o meshwall -g meshwall -m 0600 "$TMP/config.json" "$DATA/config.json"
 # Pass secret only through environment to offline upstream account creation; do not log or put in CLI args.
 cd "$APP/engine"
-out="$(runuser -u meshwall -- env HOME="$APP" meshcentral_pass="$PASS" "$NODE" "$ENGINE" --createaccount "$ADMIN")" || die "Account creation failed."
+out="$(printf '%s' "$PASS" | runuser -u meshwall -- env -i HOME="$APP" PATH=/usr/local/bin:/usr/bin:/bin "$NODE" -e 'const fs=require("node:fs"),cp=require("node:child_process");const pass=fs.readFileSync(0,"utf8");const r=cp.spawnSync(process.execPath,[process.argv[1],"--createaccount",process.argv[2]],{env:{...process.env,meshcentral_pass:pass},encoding:"utf8",stdio:["ignore","pipe","pipe"]});if(r.error||r.status!==0)process.exit(1);process.stdout.write(r.stdout||"");' "$ENGINE" "$ADMIN")" || die "Account creation failed."
 unset PASS
 grep -q '^Done\.' <<< "$out" || die "Account creation was not confirmed. Inspect offline state before retry."
 unset out

@@ -1,9 +1,11 @@
 # Changelog
 
-## Unreleased — Planning
-- Initial README in English and Indonesian.
-- Product requirements, architecture/ADR, setup and integration designs.
-- Live wall, UI, API/data, security, testing and operations specifications.
-- Roadmap, agent instructions and contribution templates.
+## 0.1.0-alpha.1 — lab evaluation
+- Same-origin modular static dashboard and upstream session integration.
+- Inventory, device groups, enrollment, adjustable live wall, monitor picker and saved layouts.
+- Linux native bootstrap, version-guarded existing installation adoption for Linux/Windows.
+- Unit/syntax checks, CI, security and request audit; live integration and capacity remain unverified.
+- Audit fixes: first decoded frame required for live state, bounded no-frame timeout, avoid placing admin password in command arguments.
 
-No application implementation, installer or validated capacity at this stage.
+## Planning
+- Bilingual README, product requirements, architecture, roadmap, security, test/operations design, issue and PR templates.

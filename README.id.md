@@ -6,4 +6,4 @@ Fitur utama: setup wizard instalasi baru atau adopsi server lama, konfigurasi Ta
 
 Arsitektur modular monolith menjaga penggunaan RAM tetap rendah dan memudahkan refactoring. Rendering layar di browser, bukan transcoding server. View-only menjadi default, dan seluruh sesi tunduk pada izin serta kebijakan persetujuan perangkat.
 
-Status: perencanaan. Belum ada installer maupun benchmark. 100 PC terdaftar adalah batas desain; 100 stream simultan perlu dibuktikan. Baca [README utama](README.md), [arsitektur](ARCHITECTURE.md) dan [roadmap](ROADMAP.md).
+Status: implementasi alpha untuk pengujian lab. Source dashboard, bootstrap Linux dan adopsi instalasi lama sudah tersedia; belum diuji pada STB atau PC nyata. 100 PC terdaftar adalah batas desain; 100 stream simultan perlu dibuktikan. Baca [panduan alpha](docs/QUICKSTART-ALPHA.md), [audit](docs/AUDIT.md), [README utama](README.md), [arsitektur](ARCHITECTURE.md) dan [roadmap](ROADMAP.md).
