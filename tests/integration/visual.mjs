@@ -22,7 +22,7 @@ await page.route(origin+"/**",async route=>{
 });
 await page.routeWebSocket("wss://meshwall.test/control.ashx",ws=>{
  const send=m=>ws.send(JSON.stringify(m));
- ws.onMessage(raw=>{const m=JSON.parse(String(raw));if(m.action==="meshes")send({action:"meshes",meshes:groups,tag:m.tag,responseid:m.responseid});if(m.action==="nodes")send({action:"nodes",nodes:inventory(),totalcount:count,responseid:m.responseid});if(m.action==="authcookie")send({action:"authcookie",cookie:"fixture-not-real",rcookie:"fixture-not-real"});if(m.action==="ping")send({action:"pong"});});
+ ws.onMessage(raw=>{const m=JSON.parse(String(raw));if(m.action==="meshes")send({action:"meshes",meshes:groups,tag:m.tag,responseid:m.responseid});if(m.action==="nodes")send({action:"nodes",nodes:inventory(),totalcount:count,responseid:m.responseid});if(m.action==="authcookie")send({action:"authcookie",cookie:"fixture-not-real",rcookie:"fixture-not-real"});if(m.action==="ping")send({action:"pong"});if(m.action==="users")send({action:"users",tag:m.tag,users:[{name:"Synthetic admin",siteadmin:4294967295,emailVerified:true}]});if(m.action==="events")send({action:"events",tag:m.tag,events:[{time:0,action:"fixture",username:"Synthetic admin",msg:"Synthetic example event"}]});if(m.action==="serverstats"&&m.interval>0)send({action:"serverstats",totalmem:2147483648,availablemem:1073741824,cpuavg:[0.15,0.1,0.05]});});
  setTimeout(()=>send({action:"userinfo",userinfo:{_id:"user//fixture",name:"Synthetic fixture"}}),10);
 });
 async function navigate(name){const target=page.locator('nav [data-page="'+name+'"]');const wasHidden=!(await target.isVisible());if(wasHidden)await page.locator("#navToggle").click();await target.click();if(wasHidden)await page.locator("#navToggle").click();}
@@ -40,7 +40,7 @@ try{
    await page.setViewportSize({width,height});await ready(100);await columns(10);
    await page.waitForTimeout(100);if(width<=800){assert.equal(await page.locator("#navToggle").getAttribute("aria-expanded"),"false");assert.ok(await page.locator("#logout").isVisible(),"Compact navigation must preserve account action");}await tileCheck(100,width+"x"+height);await snap("wall-"+width+"x"+height);
    await navigate("overview");await noOverflow("overview "+width);await snap("overview-"+width);
-   await navigate("devices");await noOverflow("devices "+width);assert.equal(await page.locator("#deviceRows tr").count(),100);
+   await navigate("devices");await noOverflow("devices "+width);assert.equal(await page.locator("#deviceRows tr").count(),100);if(width===1440||width===390){for(const section of ["groups","users","activity","settings"]){await navigate(section);if(section==="users")await page.locator("#userRows tr").waitFor();if(section==="activity")await page.locator("#eventRows tr").waitFor();await noOverflow(section+" "+width);await snap(section+"-"+width);}}
   }
   await page.setViewportSize({width:1440,height:900});
   for(const n of [1,4,16,50,100]){await ready(n);await columns(n<=4?2:n===16?4:10);await tileCheck(n,"density "+n);await snap("density-"+n);}
