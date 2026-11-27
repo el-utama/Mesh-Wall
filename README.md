@@ -12,7 +12,7 @@ MeshWall aims to replace the native dashboard for everyday administration. MeshC
 - View-only wall with 1–10 desired columns, adjustable individual tiles, drag and keyboard reordering, focus/fullscreen, monitor picker, quality presets and saved layouts. Default four concurrent sessions, configurable up to 100.
 - Standard account creation and verified direct view-only group assignment/removal. Inherited or custom rights remain managed by the official advanced panel.
 - Embedded official authentication, desktop, terminal, files and advanced administration panels; no separate public backend.
-- Linux and Windows prerequisite bootstrap, shared localhost setup wizard, Windows fresh installer candidate and existing installation adoption.
+- Linux and Windows prerequisite bootstrap, shared localhost setup wizard, Windows fresh installer candidate and existing installation adoption with offline preview, backup and rollback.
 - Offline backup/verification/restore, reversible UI-only updates and local TLS renewal on both OSes; local CLI, not privileged browser operations.
 
 100 enrolled PCs is a product cap, not a verified Tailscale entitlement or STB streaming capacity.
@@ -38,7 +38,7 @@ If Node.js >=22.21.1 and authenticated Tailscale are already available, use `sud
 | [Product](docs/PRODUCT.md) | Requirements |
 | [Architecture](ARCHITECTURE.md) | Actual module boundaries |
 | [Installation](docs/INSTALLATION.md) | Platform support and setup |
-| [Quickstart](docs/QUICKSTART-ALPHA.md) | Executable lab instructions |
+| [Quickstart](docs/QUICKSTART-ALPHA.md) / [Adoption](docs/ADOPTION.md) | Executable lab instructions and safe existing-server adoption |
 | [Integration](docs/INTEGRATION.md) | Upstream protocol contracts |
 | [Live wall](docs/MESHWALL.md) | Streaming and layout |
 | [UI](docs/UI.md) / [UI audit](docs/UI-AUDIT.md) | UX and validation |

@@ -30,13 +30,26 @@ It creates a dedicated service account, installs MeshCentral 1.3.2, configures T
 Open the exact URL printed by installer. Click Sign in within MeshWall; the same-origin upstream authentication panel keeps MFA and credentials in MeshCentral. If the panel cannot load, open the provided direct link and return to /meshwall.html. Create a group and a time-limited enrollment invitation; install the official agent only on an authorized PC. Wait until online, open MeshWall, start a single tile, approve consent on the PC, and check screen data. Increase concurrent streams gradually after measuring resources.
 
 ## Existing MeshCentral (Linux or Windows)
-Use `node scripts/doctor.mjs` for bounded common-path discovery or `node scripts/doctor.mjs discover <actual-root>` for manual validation. A detected candidate blocks fresh install in the wizard. Confirm actual service/root; the wizard cannot yet perform adoption or rollback. See [local self-support](SELF-SUPPORT.md).
 
-Only MeshCentral 1.3.2 verified by version guard; protocol remains untested live. Back up existing data and stop the engine service via its normal administrative mechanism. From repository:
+Use `node scripts/doctor.mjs` to scan bounded service/process evidence and common paths. Custom paths may still be missed. A detected candidate blocks fresh installation in the wizard. Confirm the actual service, root and engine version; supported adoption is the pinned npm layout (1.3.2) with existing local data/config. The wizard cannot yet apply adoption.
+
+Preview is read-only. From the trusted checkout:
 ```bash
-node installers/adopt.mjs /path/to/install-root
+node installers/adopt.mjs preview /path/to/install-root
 ```
-The root must contain node_modules/meshcentral and meshcentral-data. It creates new customization files only and refuses collisions; inspect file ownership on Linux before restarting. On Windows use the same command with a quoted Windows path or installers/windows/adopt.ps1. Existing TLS, permissions, data and configuration are not changed. Verify consent policy before opening wall. Fresh Windows installation is now available as an alpha script (see below).
+Stop the **identified existing** engine using its own administrative mechanism. Verify no other process uses the files; create a separate private backup parent outside the installation. On Linux run apply as the existing engine account (not root); on Windows use authorized PowerShell with a restricted backup directory:
+```bash
+node installers/adopt.mjs apply /path/to/install-root /path/to/private-backups --engine-stopped
+```
+The command creates and verifies a full supported offline backup, stages only MeshWall files, refuses collisions and retains an adoption journal. It does not change configuration, accounts, agents or TLS. Windows wrapper supports -Mode preview/status/apply/rollback, -MeshCentralRoot, -BackupParent and -EngineStopped. Restart the known engine, open its existing HTTPS origin plus /meshwall.html and verify original login, groups and authorized devices. If the adoption fails, inspect:
+```bash
+node installers/adopt.mjs status /path/to/install-root
+```
+If the engine is stopped and no other maintenance is active, rollback before UI updates/restore:
+```bash
+node installers/adopt.mjs rollback /path/to/install-root --engine-stopped
+```
+Rollback removes only unchanged, verified transaction-owned files; it does not remove the database. A modified file, interrupted lock or ambiguous state requires manual inspection. Keep journal/backup, no blind retry. Hard links must be supported by the installation filesystem (e.g. ext4/NTFS). See [adoption and recovery](ADOPTION.md).
 
 ## Diagnostics and recovery
 ```bash

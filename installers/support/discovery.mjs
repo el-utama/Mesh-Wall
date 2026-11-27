@@ -2,6 +2,7 @@
 import {lstat,readFile,realpath} from "node:fs/promises";
 import {join,resolve} from "node:path";
 import {homedir} from "node:os";
+import {serviceCandidates} from "./service-discovery.mjs";
 export function candidateRoots(platform=process.platform,env=process.env,cwd=process.cwd()){
  const home=homedir(), roots=[cwd,join(home,"meshcentral"),join(home,"MeshCentral")];
  if(platform==="linux")roots.push("/opt/meshcentral","/opt/meshwall/engine","/srv/meshcentral","/var/lib/meshcentral","/usr/local/meshcentral");
@@ -20,6 +21,7 @@ export async function inspectRoot(input){
   return {root,version:manifest.version,hasData,hasConfig,meshwall:!!ui,compatible:manifest.version==="1.3.2"&&hasData&&hasConfig};
  }catch{return null;}
 }
-export async function discover(roots=candidateRoots()){
- const found=[],seen=new Set();for(const p of roots.slice(0,32)){const r=await inspectRoot(p);if(r&&!seen.has(r.root)){seen.add(r.root);found.push(r);}}return found;
+export async function discover(roots){
+ if(roots===undefined)roots=[...await serviceCandidates(),...candidateRoots()];
+ const found=[],seen=new Set();for(const p of roots.slice(0,48)){const r=await inspectRoot(p);if(r&&!seen.has(r.root)){seen.add(r.root);found.push(r);}}return found;
 }

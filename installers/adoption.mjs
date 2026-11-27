@@ -1,7 +1,7 @@
 // Offline, non-overwriting adoption of the pinned npm layout. No service control.
 import {lstat,realpath,readFile,readdir,mkdir,writeFile,copyFile,link,rename,unlink,rmdir} from "node:fs/promises";
 import {constants} from "node:fs";
-import {join,resolve,relative,isAbsolute,dirname} from "node:path";
+import {join,resolve} from "node:path";
 import {createHash} from "node:crypto";
 import {backup,verify} from "../scripts/maintenance/lib.mjs";
 const VERSION="1.3.2";
@@ -25,8 +25,9 @@ async function manifest(c){await regularDir(c.journal);const m=JSON.parse(await 
 async function matches(p,sha){const s=await exists(p);return !s?false:s.isFile()&&!s.isSymbolicLink()&&await digest(p)===sha;}
 async function inspect(c,m){
  const stage=join(c.journal,"stage");await regularDir(stage);await regularDir(join(stage,"meshwall"));
+ const folder=join(c.pub,"meshwall");if(await exists(folder))await regularDir(folder);
  const entries=[];for(const {path,sha256} of m.files){const p=join(c.pub,path),s=join(stage,path);const a=await exists(p);if(a&&!await matches(p,sha256))throw Error("Unexpected or modified active file; preserve state: "+path);if(!await matches(s,sha256))throw Error("Staging verification failed: "+path);entries.push({path,active:!!a});}
- const folder=join(c.pub,"meshwall");if(await exists(folder)){await regularDir(folder);const allowed=new Set(FILES.filter(x=>x.startsWith("meshwall/")).map(x=>x.slice(9)));if((await readdir(folder)).some(n=>!allowed.has(n)))throw Error("Unexpected active UI files; preserve state");}
+ if(await exists(folder)){const allowed=new Set(FILES.filter(x=>x.startsWith("meshwall/")).map(x=>x.slice(9)));if((await readdir(folder)).some(n=>!allowed.has(n)))throw Error("Unexpected active UI files; preserve state");}
  return entries;
 }
 async function removeOwned(c,m){const entries=await inspect(c,m);for(const e of entries.filter(x=>x.active).reverse())await unlink(join(c.pub,e.path));if(await exists(join(c.pub,"meshwall")))await rmdir(join(c.pub,"meshwall"));return entries.filter(x=>x.active).length;}
