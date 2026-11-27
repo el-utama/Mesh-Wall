@@ -3,7 +3,7 @@ import {mayManageAccounts,isStandardAccount,newAccount,viewerGrant,VIEWER_RIGHTS
 export function createAccountView({control,getUser,getGroups,reload}){
  let accounts=[],busy=false;
  const form=$("accountForm"),grant=$("grantForm"),status=$("accountResult"),dialog=$("accountDialog");
- function clear(){accounts=[];form.reset();grant.reset();$("createAccount").disabled=true;$("grantAccount").replaceChildren();$("grantGroup").replaceChildren();$("grantSubmit").disabled=true;$("revokeSubmit").disabled=true;status.textContent="";if(dialog.open)dialog.close();}
+ function clear(){accounts=[];form.reset();grant.reset();$("accountAccess").hidden=true;$("createAccount").disabled=true;$("grantAccount").replaceChildren();$("grantGroup").replaceChildren();$("grantSubmit").disabled=true;$("revokeSubmit").disabled=true;status.textContent="";$("accountError").textContent="";if(dialog.open)dialog.close();}
  function populate(users){accounts=users;const allowed=mayManageAccounts(getUser())&&control.authenticated;$("createAccount").disabled=!allowed||busy;$("accountAccess").hidden=!allowed;const a=$("grantAccount"),g=$("grantGroup"),oldA=a.value,oldG=g.value;a.replaceChildren();g.replaceChildren();
  for(const u of accounts.filter(u=>isStandardAccount(u)&&u._id!==getUser()?._id)){const o=el("option",String(u.name));o.value=u._id;a.append(o);}
  for(const group of getGroups().filter(g=>g.mtype===2)){const o=el("option",String(group.name));o.value=group._id;g.append(o);}
