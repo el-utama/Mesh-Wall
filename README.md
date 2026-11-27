@@ -25,6 +25,7 @@ MeshWall aims to replace the native MeshCentral dashboard for everyday administr
 | [Integration](docs/INTEGRATION.md) | MeshCentral and Tailscale contracts |
 | [Live wall](docs/MESHWALL.md) | Streaming and layout |
 | [UI](docs/UI.md) | UX specification |
+| [UI/UX skill](.agents/skills/meshwall-ui-ux/SKILL.md) | Repository-local design and visual QA workflow for coding agents |
 | [API and data](docs/API-DATA.md) | API and persistence design |
 | [Testing](docs/TESTING.md) | Acceptance and performance |
 | [Operations](docs/OPERATIONS.md) | Backup, update and recovery |

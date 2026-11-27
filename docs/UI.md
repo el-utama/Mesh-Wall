@@ -5,3 +5,6 @@ Responsive static SPA with compact navigation: Overview, MeshWall, Devices, Grou
 Overview: enrolled/online/offline counts, last event, health and errors. Wall: grid/free resize, search/filter, monitor selector, layout presets, quality profiles, pause/resume, fullscreen, explicit control mode. Per-tile state and last frame time. Devices: accessible searchable table, status, group, OS, last seen, permissions and actions.
 
 Prefer consistent spacing, keyboard navigation, accessible labels, status text not color alone, light/dark themes, clear loading/empty/error states. Destructive operations require impact preview and confirmation. Diagnostics provide copyable redacted errors. Mock screens labeled demo; no invented online data. Lazy load remote modules. Avoid crowded controls at 10-column wall scale.
+
+## Design quality gate
+All UI work follows the [MeshWall UI/UX skill](../.agents/skills/meshwall-ui-ux/SKILL.md), [design system](../.agents/skills/meshwall-ui-ux/references/design-system.md) and [visual QA checklist](../.agents/skills/meshwall-ui-ux/references/visual-qa.md). These describe the target experience; existing screens must be audited against them. Use compact workstation-style layouts, screen-first tile density, shared CSS tokens and accessible interactions. Do not introduce framework or asset dependencies solely for styling.

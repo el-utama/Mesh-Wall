@@ -4,8 +4,8 @@ Read README.md, ARCHITECTURE.md, docs/PRODUCT.md, SECURITY.md and relevant ADRs 
 
 ## Non-negotiable rules
 - Preserve modular boundaries. Modules expose public contracts via index files; no deep cross-module imports, cyclic dependencies or duplicated adapters.
-- Keep React UI separate from domain logic, transport, database and privileged OS operations. Use dependency injection and typed ports; adapters implement interfaces.
-- Prefer small cohesive files and pure testable functions. No giant components, speculative frameworks or unnecessary dependencies. Static frontend build and single lightweight backend; no microservices or mandatory Docker.
+- Keep browser UI separate from domain logic, transport, database and privileged OS operations. Use dependency injection and typed ports; adapters implement interfaces.
+- Prefer small cohesive files and pure testable functions. No giant components, speculative frameworks or unnecessary dependencies. Follow the current same-origin static UI architecture (ADR 0002); introduce additional runtimes only with an ADR. No microservices or mandatory Docker.
 - MeshCentral owns agents, permissions and session protocol. Use supported interfaces; isolate version-specific compatibility code. No invented APIs, hardcoded credentials, bypass of consent, TLS checks, or unrestricted admin shell.
 - Default wall to view-only, no screen recording, respect device policy and revocation. Secrets must remain server-side. Never include live credentials in repository or logs.
 - All config mutations require schema validation, backups, atomic replacement and rollback. Privileged helper accepts only allowlisted typed operations.
@@ -14,3 +14,6 @@ Read README.md, ARCHITECTURE.md, docs/PRODUCT.md, SECURITY.md and relevant ADRs 
 - Make focused changes; review diff; avoid unrelated rewrites, destructive operations or dependency upgrades. Report commands actually run, results and remaining blockers.
 
 Before merge: lint, typecheck, tests, production build, architecture boundary checks and security review. If these scripts do not exist, state that explicitly instead of reporting success.
+
+## Mandatory UI/UX skill
+For every user-facing change (HTML, CSS, frontend behavior, setup wizard, dashboard or remote panel), read and apply `.agents/skills/meshwall-ui-ux/SKILL.md` and its relevant references. Use `docs/UI.md` as the product baseline. Inspect actual browser screenshots at relevant viewport sizes, test populated and failure states, fix defects and repeat checks. If visual verification is unavailable, disclose it as pending. Do not claim a design is complete from unit tests alone.
