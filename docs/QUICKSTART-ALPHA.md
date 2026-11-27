@@ -1,0 +1,37 @@
+# Alpha lab quickstart
+
+Not a production release. Test only on authorized machines and an isolated tailnet. The fresh installer is not yet executed on STB hardware.
+
+## Fresh Linux / Armbian
+Prerequisites: supported 64-bit Armbian/Debian with systemd, wired network, system-wide Node >=22.21.1 and npm, Tailscale installed and signed in, MagicDNS and HTTPS certificates enabled, port 8443 free, adequate disk/RAM, curl, openssl and standard Linux utilities. Check Node userspace architecture; a 64-bit kernel alone is insufficient. Do not use deprecated Node or disable TLS. Tailscale HTTPS name appears in certificate transparency logs; review privacy implications. The installer does not change tailnet ACLs.
+
+Clone this repository on the target and review installers/linux/install.sh. Run:
+
+```bash
+sudo bash installers/linux/install.sh
+```
+
+It creates a dedicated service account, installs MeshCentral 1.3.2, configures TLS using Tailscale-issued certificate, binds only to the Tailscale IPv4, disables open signup, requires remote access consent, provisions initial admin offline, installs UI files, registers the native systemd service and checks HTTPS readiness. It refuses existing or partial installations. No open public listener is intended; review tailnet grants and OS firewall. Package installation requires internet. Tailscale client install/login and certificate renewal are still manual prerequisites. Certificate renewal automation is not implemented; renew and replace leaf/chain/key under a controlled maintenance window before expiry, preserving permissions and verifying HTTPS.
+
+Open the exact URL printed by installer. Sign in at the upstream login page (MFA remains upstream), then return to /meshwall.html. Create a group and a time-limited enrollment invitation; install the official agent only on an authorized PC. Wait until online, open MeshWall, start a single tile, approve consent on the PC, and check screen data. Increase concurrent streams gradually after measuring resources.
+
+## Existing MeshCentral (Linux or Windows)
+Only MeshCentral 1.3.2 verified by version guard; protocol remains untested live. Back up existing data and stop the engine service via its normal administrative mechanism. From repository:
+```bash
+node installers/adopt.mjs /path/to/install-root
+```
+The root must contain node_modules/meshcentral and meshcentral-data. It creates new customization files only and refuses collisions; inspect file ownership on Linux before restarting. On Windows use the same command with a quoted Windows path or installers/windows/adopt.ps1. Existing TLS, permissions, data and configuration are not changed. Verify consent policy before opening wall. Fresh Windows installation remains pending.
+
+## Diagnostics and recovery
+```bash
+systemctl status meshwall-engine
+journalctl -u meshwall-engine -n 80
+```
+Redact logs before sharing. Never pass --insecure or disable certificate checks. On partial failure inspect /opt/meshwall and service state; do not rerun blindly or delete data. Stop service before consistent backup; preserve config, data, certificates, custom UI and application version. No destructive uninstall or automated restore is supplied yet.
+
+## Checks
+```bash
+npm run check
+bash -n installers/linux/install.sh
+```
+The local checks are not a live acceptance test. See TESTING.md and IMPLEMENTATION.md.
