@@ -18,5 +18,7 @@
 ## Skill / documentation / release gates
 - [ ] Applied relevant specialist skills; listed them with evidence
 - [ ] Checked both OS adapters or documented why unaffected
-- [ ] Updated P01–P14 audit, parity, documentation and changelog as applicable
+- [ ] Updated P01–P15 audit, parity, documentation and changelog as applicable
 - [ ] Listed exact commit/CI results, failed/skipped/pending checks and remaining gates
+
+- [ ] User-facing steps have offline guidance, failure behavior, and verified postconditions (P15)

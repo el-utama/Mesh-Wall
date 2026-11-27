@@ -5,6 +5,7 @@ MeshWall must support users even without ChatGPT, Codex, cloud AI or a running M
 ## Available in current source
 - Bootstrap terminal help and stage labels, including failures before Node is available; read this local Markdown file from the checkout.
 - Shared temporary setup wizard: bounded candidate discovery, compatibility checks, fresh install block when an existing candidate is found, contextual stage code and next actions, copyable minimal safe report. Setup server requires the one-time token; reports exclude raw logs, installation paths, account data and secrets. Candidate roots shown locally may be sensitive.
+- Contextual read-only help in overview, wall, devices, groups, users, activity and settings; no privileged action is exposed.
 - Independent read-only CLI (requires Node, not a running MeshCentral):
 ```bash
 node scripts/doctor.mjs
@@ -36,4 +37,4 @@ Windows: same Node command from the repository, with a quoted actual Windows roo
 Codes identify the stage, not the precise root cause. Read [troubleshooting](TROUBLESHOOTING.md), [quickstart](QUICKSTART-ALPHA.md) and [operations](OPERATIONS.md) locally. Do not share raw logs or real screen data.
 
 ## Release requirements still open
-Full service/process-based discovery and guided adoption with backup/preview and transactional rollback; persistent safe install/adoption journal and resume/recovery after power loss; specific diagnosed error codes, one-click allowlisted repairs after authorization, full in-dashboard contextual help and offline bilingual guide, service watchdog with bounded restart/health checks, structured sanitized diagnostics and verified rollback on both OSes. Do not treat stage guidance as a repair engine. No unbounded watchdog or AI required. Real failure-injection and physical host acceptance remain mandatory.
+Full service/process-based discovery and guided adoption with backup/preview and transactional rollback; persistent safe install/adoption journal and resume/recovery after power loss; specific diagnosed error codes, one-click allowlisted repairs after authorization, complete in-dashboard error-specific help and offline bilingual guide, service watchdog with bounded restart/health checks, structured sanitized diagnostics and verified rollback on both OSes. Do not treat stage guidance as a repair engine. No unbounded watchdog or AI required. Real failure-injection and physical host acceptance remain mandatory.

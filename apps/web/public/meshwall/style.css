@@ -52,3 +52,5 @@ article{min-width:0;background:var(--panel);border:1px solid var(--line);padding
 @media(max-width:340px){.nav-collapsed #sidebar{grid-template-columns:1fr}.nav-collapsed .bottom{justify-content:flex-start}.toolbar-primary .button-row button{white-space:normal}}
 
 #accountForm{display:grid;gap:8px;align-items:stretch}#accountForm .field{margin:0}#accountForm h2,#accountForm p{margin:0}#accountForm select,#grantForm select{max-width:100%}#grantForm label{min-width:0;max-width:100%}#accountError{color:var(--danger)}
+
+.local-help{margin:0 0 12px;padding:8px 12px;border:1px solid var(--line);border-radius:6px}.local-help summary{cursor:pointer;color:var(--muted);font-size:12px}.local-help p{margin:8px 0 0;overflow-wrap:anywhere}

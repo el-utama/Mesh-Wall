@@ -15,3 +15,6 @@ Read docs/TROUBLESHOOTING.md, docs/TESTING.md and the affected module. Classify 
 
 ## Completion and escalation checklist
 Critical (unauthorized access, exposed secret, data loss): stop affected operations and preserve evidence; ask operator before risky recovery. High (service outage or install failure): isolate and use supported recovery. Normal (layout, docs, tests): fix and regress. Report symptom, confirmed cause or hypothesis, fix, evidence and remaining risks.
+
+## User-facing diagnosis
+Apply P15: translate a confirmed defect into actionable offline help, stage/error code and safe next steps. Maintain installers/support/catalog.mjs and docs/SELF-SUPPORT.md. Help must remain usable without AI or a running MeshCentral; no raw secrets in support reports. Test failure before declaring the issue resolved.

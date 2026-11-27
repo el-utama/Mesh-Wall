@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- Added rule-based lifecycle guidance, bounded read-only discovery, independent doctor CLI, safe setup support report, pre-Node bootstrap hints and basic dashboard help. Added P15 self-support gate; transactional adoption/recovery and physical validation remain incomplete.
 - Audited all nine skills and Markdown docs, clarified actual vs target functionality, added P01–P14 traceability, local documentation link validation and cross-platform skill frontmatter regression coverage.
 - Added eight specialist agent skills, mandatory routing, troubleshooting playbook and registry validation; fixed Windows canonical recovery-path assertion and made Linux browser setup avoid unrelated APT updates when runtime dependencies are already available.
 - Optional Windows prerequisite bootstrap via exact WinGet package IDs and explicit consent; installer requires official system-wide executable locations. Physical validation pending.
