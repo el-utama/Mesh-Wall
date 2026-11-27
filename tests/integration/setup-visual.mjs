@@ -29,3 +29,10 @@ try{
  await page.evaluate(()=>{document.querySelector("#note").textContent="UI TEST FIXTURE — synthetic setup completion; no real server installed.";window.scrollTo(0,0);});
  const jpg=await page.screenshot({type:"jpeg",quality:40});const b64=jpg.toString("base64");for(let i=0;i<b64.length;i+=3000)console.log("MW_SETUP_VISUAL "+b64.slice(i,i+3000));
 }finally{await browser.close();server.closeAllConnections();await new Promise(r=>server.close(r));}
+// Failure-state browser fixture, separate one-time wizard.
+const failureToken=randomBytes(32).toString("hex");
+const failure=createSetupServer({token:failureToken,discover:async()=>[],preflight:()=>({ready:true,checks:[],note:"UI TEST FIXTURE"}),install:async(_,update)=>{update("service");throw Error("fixture failure");}});
+await new Promise(r=>failure.listen(0,"127.0.0.1",r));
+const failureBrowser=await chromium.launch({headless:true});
+try{const p=await failureBrowser.newPage({viewport:{width:390,height:844}});await p.goto("http://127.0.0.1:"+failure.address().port+"/#"+failureToken);await p.waitForFunction(()=>!document.querySelector("#start").disabled);await p.locator("#pass").fill("Fixture-Long-Password");await p.locator("#confirm").fill("Fixture-Long-Password");await p.locator("#authorized").check();await p.locator("#start").click();await p.waitForFunction(()=>document.querySelector("#helpCode").textContent.includes("MW-SERVICE"));assert.match(await p.locator("#helpNext").textContent(),/Preserve/);assert.ok(await p.locator("#start").isDisabled());assert.equal(await p.locator("#pass").inputValue(),"");const widths=await p.evaluate(()=>[document.documentElement.clientWidth,document.documentElement.scrollWidth]);assert.ok(widths[1]<=widths[0]+1);await p.screenshot({path:join(out,"setup-failure.jpg"),fullPage:true,type:"jpeg",quality:75});console.log("PASS: failure guidance and blocked repeat install on mobile fixture");}finally{await failureBrowser.close();failure.closeAllConnections();await new Promise(r=>failure.close(r));}
+

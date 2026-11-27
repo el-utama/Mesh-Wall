@@ -1,0 +1,39 @@
+# Local self-support — no AI required
+
+MeshWall must support users even without ChatGPT, Codex, cloud AI or a running MeshCentral service. This is a mandatory cross-platform release requirement. Offline diagnosis is local and rule-based; installing packages, Tailscale login and certificate issuance still need connectivity.
+
+## Available in current source
+- Bootstrap terminal help and stage labels, including failures before Node is available; read this local Markdown file from the checkout.
+- Shared temporary setup wizard: bounded candidate discovery, compatibility checks, fresh install block when an existing candidate is found, contextual stage code and next actions, copyable minimal safe report. Setup server requires the one-time token; reports exclude raw logs, installation paths, account data and secrets. Candidate roots shown locally may be sensitive.
+- Independent read-only CLI (requires Node, not a running MeshCentral):
+```bash
+node scripts/doctor.mjs
+node scripts/doctor.mjs discover /path/to/meshcentral
+node scripts/doctor.mjs help
+node scripts/doctor.mjs help service
+```
+Windows: same Node command from the repository, with a quoted actual Windows root, for example `node scripts/doctor.mjs discover "C:\MeshCentral"`. Discovery checks a bounded list of common paths and optional manual root. It is not a whole disk scan, process/service detection or a proof of service identity. Compatibility means expected npm layout/version 1.3.2 and data/config files, not verified working server or database. No root data is modified.
+
+## Help by step
+| Stage / code | What the user should inspect | Safe next action |
+| --- | --- | --- |
+| MW-BOOTSTRAP | OS, privileges, free disk, package source, dependency failure | Read the terminal failure; do not bypass package signatures or delete partial dependencies |
+| MW-DISCOVERY | Existing root, package version, data/config files | Confirm service identity; use manual root if custom path |
+| MW-PREFLIGHT | Node, prerequisites, tailnet login, conflicts | Resolve blockers; run preflight again |
+| MW-TLS | MagicDNS, HTTPS permission, clock | Fix tailnet settings; never use insecure TLS |
+| MW-PACKAGE | Network, disk, permissions, package manager | Preserve partial service account/directory; inspect |
+| MW-CONFIG | Ownership/ACL, write permissions, bind, configuration | Preserve config/certs before any repair |
+| MW-ADMIN | Initial account creation/promotion | Check upstream result; do not share passwords or blindly create accounts |
+| MW-SERVICE | Actual service, logs, port/dependency failures | Inspect known service locally |
+| MW-VERIFY | Private HTTPS and expected page | Verify login/agent separately; no insecure fallback |
+| MW-READY | First login and authorized test PC | Enroll one PC and verify consent/frame |
+| MW-ADOPT | Version, actual root, verified backup, stopped service | Follow quickstart; inspect copied files if failure, no automatic adoption rollback yet |
+| MW-ENROLL | Invite validity, group, agent connection | Regenerate authorized invite if necessary |
+| MW-STREAM | Consent, relay, decoded frame, resources | Stop and explicitly retry with permission; reduce active set |
+| MW-MAINT | Service identity, backup, disk, recovery path | Use supported offline maintenance |
+| MW-RECOVERY | Failed step, existing files, recovery evidence | Preserve state; authorized manual recovery if ambiguous |
+
+Codes identify the stage, not the precise root cause. Read [troubleshooting](TROUBLESHOOTING.md), [quickstart](QUICKSTART-ALPHA.md) and [operations](OPERATIONS.md) locally. Do not share raw logs or real screen data.
+
+## Release requirements still open
+Full service/process-based discovery and guided adoption with backup/preview and transactional rollback; persistent safe install/adoption journal and resume/recovery after power loss; specific diagnosed error codes, one-click allowlisted repairs after authorization, full in-dashboard contextual help and offline bilingual guide, service watchdog with bounded restart/health checks, structured sanitized diagnostics and verified rollback on both OSes. Do not treat stage guidance as a repair engine. No unbounded watchdog or AI required. Real failure-injection and physical host acceptance remain mandatory.

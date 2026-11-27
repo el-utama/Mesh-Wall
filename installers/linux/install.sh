@@ -1,12 +1,15 @@
 #!/usr/bin/env bash
 # Fresh Linux alpha install. Run only on an isolated, authorized test server.
-set -euo pipefail
+set -Eeuo pipefail
+MW_STEP=preflight
+step_help(){ printf 'MeshWall local help: node scripts/doctor.mjs help %s (from the trusted checkout); see docs/SELF-SUPPORT.md. Preserve partial state.\n' "$MW_STEP" >&2; }
+trap 'step_help' ERR
 umask 077
 APP=/opt/meshwall
 SERVICE=meshwall-engine
 VERSION=1.3.2
 SRC="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../.." && pwd)"
-die(){ printf 'ERROR: %s\n' "$*" >&2; exit 1; }
+die(){ printf 'ERROR: %s\n' "$*" >&2; step_help; exit 1; }
 [[ $EUID -eq 0 ]] || die "Run with sudo on a systemd Linux host."
 MODE=cli
 if [[ ${1:-} == --wizard && $# -eq 1 ]]; then MODE=wizard; elif [[ $# -ne 0 ]]; then die "Unknown arguments"; fi
@@ -42,6 +45,7 @@ fi
 unset PASS2
 TMP="$(mktemp -d)"
 trap 'unset PASS; rm -rf -- "$TMP"' EXIT
+MW_STEP=certificate
 printf "MW_STAGE certificate\\n"
 tailscale cert --cert-file "$TMP/fullchain.pem" --key-file "$TMP/key.pem" "$HOST" || die "Certificate issuance failed. Enable HTTPS in Tailscale and retry before installing."
 openssl x509 -in "$TMP/fullchain.pem" -noout -checkhost "$HOST" | grep -q 'does match certificate' || die "Certificate hostname mismatch."
@@ -49,6 +53,7 @@ openssl x509 -in "$TMP/fullchain.pem" -checkend 86400 -noout || die "Certificate
 # Split PEM chain into leaf and intermediate certificates for MeshCentral.
 awk -v dir="$TMP" '/-----BEGIN CERTIFICATE-----/{n++} n{print > (dir "/cert-" n ".pem")}' "$TMP/fullchain.pem"
 [[ -s "$TMP/cert-1.pem" && -s "$TMP/key.pem" ]] || die "Incomplete certificate material."
+MW_STEP=package
 printf "MW_STAGE package\\n"
 useradd --system --user-group --home-dir "$APP" --shell /usr/sbin/nologin meshwall
 install -d -o meshwall -g meshwall -m 0750 "$APP" "$APP/engine" "$APP/engine/meshcentral-data" "$APP/engine/meshcentral-web/public"
@@ -59,6 +64,7 @@ ENGINE="$APP/engine/node_modules/meshcentral"
 install -d -o meshwall -g meshwall -m 0750 "$APP/engine/meshcentral-web/public/meshwall"
 install -o meshwall -g meshwall -m 0640 "$SRC/apps/web/public/meshwall.html" "$APP/engine/meshcentral-web/public/meshwall.html"
 install -o meshwall -g meshwall -m 0640 "$SRC/apps/web/public/meshwall/"* "$APP/engine/meshcentral-web/public/meshwall/"
+MW_STEP=configuration
 printf "MW_STAGE configuration\\n"
 DATA="$APP/engine/meshcentral-data"
 install -o meshwall -g meshwall -m 0600 "$TMP/cert-1.pem" "$DATA/webserver-cert-public.crt"
@@ -66,6 +72,7 @@ install -o meshwall -g meshwall -m 0600 "$TMP/key.pem" "$DATA/webserver-cert-pri
 i=2; while [[ -f "$TMP/cert-$i.pem" ]]; do install -o meshwall -g meshwall -m 0600 "$TMP/cert-$i.pem" "$DATA/webserver-cert-chain$((i-1)).crt"; ((i+=1)); done
 "$NODE" "$SRC/installers/linux/config.mjs" "$HOST" "$IP" "$PORT" > "$TMP/config.json"
 install -o meshwall -g meshwall -m 0600 "$TMP/config.json" "$DATA/config.json"
+MW_STEP=administrator
 printf "MW_STAGE administrator\\n"
 # Pass secret only through environment to offline upstream account creation; do not log or put in CLI args.
 cd "$APP/engine"
@@ -98,9 +105,11 @@ PrivateTmp=true
 WantedBy=multi-user.target
 EOF
 install -m 0644 "$TMP/service" "/etc/systemd/system/$SERVICE.service"
+MW_STEP=service
 printf "MW_STAGE service\\n"
 systemctl daemon-reload
 systemctl enable --now "$SERVICE"
+MW_STEP=verification
 printf "MW_STAGE verification\\n"
 URL="https://$HOST:$PORT/meshwall.html"
 for _ in $(seq 1 60); do

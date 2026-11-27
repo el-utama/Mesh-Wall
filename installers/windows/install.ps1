@@ -4,6 +4,8 @@
 param([switch]$Wizard,[switch]$Preflight)
 if ($Wizard -and $Preflight) { throw 'Choose one mode.' }
 $ErrorActionPreference = 'Stop'
+$MwStep='preflight'
+trap { Write-Warning "MeshWall local help: node scripts/doctor.mjs help $MwStep (from the trusted checkout); see docs/SELF-SUPPORT.md. Preserve partial state."; throw }
 . (Join-Path $PSScriptRoot 'service.ps1')
 $root = Join-Path $env:ProgramData 'MeshWall'
 $src = (Resolve-Path (Join-Path $PSScriptRoot '..\..')).Path
@@ -55,6 +57,7 @@ $confirmation = Plain $again
 if ($adminName -cnotmatch '^[a-zA-Z][a-zA-Z0-9_.-]{2,31}$') { throw 'Invalid username.' }
 try {
  if ($password.Length -lt 16 -or $password.Length -gt 128 -or $password -cne $confirmation -or $password -notmatch '[a-zA-Z]' -or $password.StartsWith('-') -or $password -match '[\r\n\x00]') { throw 'Password does not meet requirements.' }
+ $MwStep='certificate'
  [Console]::WriteLine('MW_STAGE certificate')
  New-Item -ItemType Directory -Path $root | Out-Null
  # Restrict installation and all inherited child ACLs to local Administrators and SYSTEM.
@@ -68,9 +71,11 @@ try {
  $prepared = Join-Path $temp 'prepared'
  & $node (Join-Path $src 'scripts\maintenance\certificates.mjs') $chain $key $dnsName $prepared
  Require-Success 'Certificate validation'
+ $MwStep='package'
  [Console]::WriteLine('MW_STAGE package')
  & $npm install --prefix $root --omit=dev --no-audit --no-fund 'meshcentral@1.3.2'
  Require-Success 'MeshCentral package install'
+ $MwStep='configuration'
  [Console]::WriteLine('MW_STAGE configuration')
  $data = Join-Path $root 'meshcentral-data'
  New-Item -ItemType Directory -Path $data | Out-Null
@@ -80,6 +85,7 @@ try {
  [IO.File]::WriteAllText((Join-Path $data 'config.json'), ($json -join "`n"), [Text.UTF8Encoding]::new($false))
  & $node (Join-Path $src 'installers\adopt.mjs') $root
  Require-Success 'MeshWall static UI'
+ $MwStep='administrator'
  [Console]::WriteLine('MW_STAGE administrator')
  Push-Location $root
  try {
@@ -89,13 +95,15 @@ try {
    $out = & $node $engine --adminaccount $adminName
    Require-Success 'Administrator promotion'
    if (($out -join "`n") -notmatch '(?m)^Done\.') { throw 'Administrator promotion not confirmed.' }
-   [Console]::WriteLine('MW_STAGE service')
+   $MwStep='service'
+ [Console]::WriteLine('MW_STAGE service')
    & $node $engine --install
    Require-Success 'Upstream Windows Service installation'
  } finally { Pop-Location }
  $service = Get-MeshWallService -Root $root
  if ($service.Status -ne 'Running') { Start-Service -Name $service.Name }
  $url = "https://${dnsName}:${port}/meshwall.html"
+ $MwStep='verification'
  [Console]::WriteLine('MW_STAGE verification')
  $reachable = $false
  for ($i=0; $i -lt 60; $i++) {

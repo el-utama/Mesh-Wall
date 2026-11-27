@@ -1,9 +1,12 @@
 #!/usr/bin/env bash
 # Prepare a fresh supported Armbian/Debian/Ubuntu ARM64 or x64 host.
 # Run from a reviewed checkout, with sudo and an interactive terminal.
-set -euo pipefail
+set -Eeuo pipefail
+BOOT_STAGE=preflight
+boot_help(){ printf 'MW-BOOTSTRAP [%s]: Check the local failure above. Preserve partial files. See docs/SELF-SUPPORT.md (available without Node.js or internet).\n' "$BOOT_STAGE" >&2; }
+trap 'boot_help' ERR
 umask 022
-die(){ printf 'ERROR: %s\n' "$*" >&2; exit 1; }
+die(){ printf 'ERROR: %s\n' "$*" >&2; boot_help; exit 1; }
 [[ $EUID -eq 0 && -t 0 && -t 1 ]] || die "Run in an interactive terminal with sudo."
 [[ $# -eq 0 ]] || die "No arguments accepted."
 SRC="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../.." && pwd)"
@@ -25,6 +28,7 @@ printf 'Base OS: %s %s · architecture %s\n' "$DIST" "$CODENAME" "$ARCH"
 printf 'This prepares system packages, installs a verified Node.js release if required, installs the official Tailscale package if missing, and opens the local setup wizard. No public ingress or tailnet ACL changes.\n'
 read -r -p "Proceed on this authorized test host? [y/N] " answer
 [[ $answer == y || $answer == Y ]] || exit 1
+BOOT_STAGE=system-packages
 apt-get update
 apt-get install -y ca-certificates curl openssl xz-utils tar iproute2 util-linux passwd coreutils
 export PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
@@ -32,6 +36,7 @@ TMP="$(mktemp -d)"
 trap 'rm -rf -- "$TMP"' EXIT
 download(){ curl --proto '=https' --tlsv1.2 --fail --silent --show-error --location --retry 2 --max-time 180 "$1" --output "$2"; }
 node_ok(){ command -v node >/dev/null && command -v npm >/dev/null && node -e 'const [a,b,c]=process.versions.node.split(".").map(Number);process.exit(["arm64","x64"].includes(process.arch)&&(a>22||(a===22&&(b>21||(b===21&&c>=1))))?0:1'; }
+BOOT_STAGE=node-runtime
 if ! node_ok; then
  VERSION=v22.23.5
  ARTIFACT="node-$VERSION-linux-$ARCH.tar.xz"
@@ -52,6 +57,7 @@ if ! node_ok; then
  hash -r
 fi
 node_ok || die "Compatible Node/npm unavailable."
+BOOT_STAGE=tailscale-package
 if ! command -v tailscale >/dev/null; then
  KEY=/usr/share/keyrings/tailscale-archive-keyring.gpg
  LIST=/etc/apt/sources.list.d/tailscale.list
@@ -65,6 +71,7 @@ if ! command -v tailscale >/dev/null; then
  apt-get update
  apt-get install -y tailscale
 fi
+BOOT_STAGE=tailscale-authentication
 systemctl enable --now tailscaled
 if ! tailscale status --json | node -e 'let s="";process.stdin.on("data",c=>s+=c);process.stdin.on("end",()=>{try{process.exit(JSON.parse(s).BackendState==="Running"?0:1)}catch{process.exit(1)}})'; then
  printf 'Complete Tailscale login in the browser using the official URL printed below.\n'
@@ -72,4 +79,5 @@ if ! tailscale status --json | node -e 'let s="";process.stdin.on("data",c=>s+=c
 fi
 printf 'Enable MagicDNS and HTTPS certificates in your Tailscale admin console before completing the wizard.\n'
 rm -rf -- "$TMP"; trap - EXIT
+BOOT_STAGE=wizard
 exec node "$SRC/installers/linux/setup.mjs"

@@ -30,6 +30,8 @@ It creates a dedicated service account, installs MeshCentral 1.3.2, configures T
 Open the exact URL printed by installer. Click Sign in within MeshWall; the same-origin upstream authentication panel keeps MFA and credentials in MeshCentral. If the panel cannot load, open the provided direct link and return to /meshwall.html. Create a group and a time-limited enrollment invitation; install the official agent only on an authorized PC. Wait until online, open MeshWall, start a single tile, approve consent on the PC, and check screen data. Increase concurrent streams gradually after measuring resources.
 
 ## Existing MeshCentral (Linux or Windows)
+Use `node scripts/doctor.mjs` for bounded common-path discovery or `node scripts/doctor.mjs discover <actual-root>` for manual validation. A detected candidate blocks fresh install in the wizard. Confirm actual service/root; the wizard cannot yet perform adoption or rollback. See [local self-support](SELF-SUPPORT.md).
+
 Only MeshCentral 1.3.2 verified by version guard; protocol remains untested live. Back up existing data and stop the engine service via its normal administrative mechanism. From repository:
 ```bash
 node installers/adopt.mjs /path/to/install-root

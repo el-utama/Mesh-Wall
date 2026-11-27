@@ -43,7 +43,7 @@ If Node.js >=22.21.1 and authenticated Tailscale are already available, use `sud
 | [Live wall](docs/MESHWALL.md) | Streaming and layout |
 | [UI](docs/UI.md) / [UI audit](docs/UI-AUDIT.md) | UX and validation |
 | [Agent skills](.agents/skills/README.md) | Nine specialist development and troubleshooting skills |
-| [Troubleshooting](docs/TROUBLESHOOTING.md) | Incident diagnosis and safe recovery |
+| [Troubleshooting](docs/TROUBLESHOOTING.md) / [Local self-support](docs/SELF-SUPPORT.md) | Offline guidance and safe recovery |
 | [API and data](docs/API-DATA.md) | Actual data ownership and future design |
 | [Testing](docs/TESTING.md) / [Hardware acceptance](docs/HARDWARE-ACCEPTANCE.md) | CI and physical acceptance gates |
 | [Operations](docs/OPERATIONS.md) | Backup, restore, updates |

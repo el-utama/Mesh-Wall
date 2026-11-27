@@ -34,3 +34,5 @@ Windows: jalankan `.\installers\windows\bootstrap.ps1` dari PowerShell Administr
 [Skill teknis coding agent](.agents/skills/README.md) · [Panduan penanganan masalah](docs/TROUBLESHOOTING.md). Skill adalah panduan pengembangan, bukan sistem perbaikan otomatis aplikasi.
 
 [Audit skill dan dokumentasi](docs/DOCUMENTATION-AUDIT.md).
+
+Bantuan lokal tanpa AI: `node scripts/doctor.mjs` untuk pencarian lokasi umum dan `node scripts/doctor.mjs help` untuk panduan tahap. Lihat [self-support](docs/SELF-SUPPORT.md); pemulihan otomatis penuh belum tersedia.

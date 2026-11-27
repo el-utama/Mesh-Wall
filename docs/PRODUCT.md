@@ -32,5 +32,7 @@ Custom agents/protocol, cloud SaaS, covert surveillance, continuous recording, f
 - P13: Troubleshooting, specialist skills, current bilingual documentation, and evidence-based release review.
 - P14: 100 simultaneous real authorized screens is the capacity acceptance target, not an inferred guarantee; measure on target platforms without sacrificing permissions or stability.
 
+- P15: Offline-first user self-support at every lifecycle step, including pre-Node bootstrap, discovery, install/adoption, first login, enrollment, streaming, maintenance and recovery. Each step must offer diagnostics, actionable guidance, safe authorized recovery, and verified postconditions; no dependency on AI. Both OSes are required.
+
 ## Definition of done
 All routine workflows demonstrated on target hardware with authorized test devices, documented version support and measured performance; no mock-only success, no permission regression, and successful backup/restore.

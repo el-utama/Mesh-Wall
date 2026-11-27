@@ -18,5 +18,6 @@ Current status: **Alpha / isolated lab evaluation, not production-ready.** Sourc
 | P12 | Platform parity | Both bootstrap/wizard/TLS source, Windows CI wizard fixture | Latest Windows loopback regression and physical OS gates, least-privilege Windows service |
 | P13 | Skills and docs | Nine specialist skills, registry, documentation audit and CI validation | Keep instructions and links synchronized; actual coding-agent invocation not guaranteed |
 | P14 | 100 live streams | 100 synthetic tiles, adjustable 1–100 limit (default 4) | Real 1/10/25/50/75/100 session benchmarks, soak and resource evidence on each target |
+| P15 | Independent lifecycle assistance | Shared stage catalog, bounded discovery, local doctor, setup guidance and minimal safe report; pre-Node terminal help | Full service discovery, transactional install/adoption recovery, dashboard help, specific error diagnosis, watchdog and physical failure-injection tests |
 
 No stable release until all gates pass; do not equate a green unit suite with verified physical performance. Repository license remains an owner decision, not a technical test. Historical implementation evidence must identify its exact commit; failed or queued current CI is not a pass.
