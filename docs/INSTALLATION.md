@@ -1,25 +1,19 @@
-# Installation and setup design (not executable yet)
+# Installation and platform support — Alpha
 
-## Compatibility preflight
-Detect board, architecture (kernel AND userspace), OS release, Node runtime compatibility, RAM, storage, systemd/service manager, DNS/time, port conflicts and network. HG680P/B860H variants differ. ARM32 only if dependencies are validated. Prefer SSD/eMMC reliability and wired networking. Windows x64 secondary.
+Executable lab scripts now exist. Follow [QUICKSTART-ALPHA.md](QUICKSTART-ALPHA.md) for commands, prerequisites and recovery; do not treat this design as a production installer.
 
-## Planned bootstrap
-Linux install.sh and Windows install.ps1 are future reviewed release artifacts. Download versioned, integrity-checked packages; use least privilege. Bootstrap installs minimal MeshWall runtime and restricted setup helper. No blanket root web service. Initial wizard available via local or explicitly authorized private connection, secured by one-time setup token; expire token after initialization. No default password or public setup endpoint.
+| Platform | Implementation | Validation |
+| --- | --- | --- |
+| HG680P / B860H Armbian | 64-bit userspace, supported Debian/Ubuntu base, systemd | Physical hardware pending |
+| Linux ARM64 / x64 | bootstrap.sh, install.sh, localhost setup.mjs | Syntax/unit/loopback only; actual provisioning pending |
+| Windows x64 | elevated PowerShell install.ps1, upstream Windows Service | Windows CI parser/unit checks, real service pending |
+| Existing Linux/Windows | adopt.mjs, version guard 1.3.2 | Copy/update tests; real adoption pending |
+| ARM32 | Unsupported in current installer | Do not bypass architecture guard |
 
-## Wizard
-1. System check; report blockers and remediation, never proceed on incompatible runtime.
-2. Tailscale: detect/install supported client, guide official login; do not store auth keys in logs or browser.
-3. Fresh or existing MeshCentral: discover instance, version, config and data paths. Existing adoption is read-only by default, with a verified backup before edits.
-4. Generate proposed configuration from supported schema; review diff, validate TLS hostname and credentials, write atomically.
-5. Register and start services (systemd or Windows service); dedicated unprivileged service accounts.
-6. Create/link administrator using supported upstream methods; disable setup token, enforce authentication and least privilege.
-7. Verify engine readiness, DNS/TLS, WebSocket, authorized test agent enrollment, live screen and remote access policy.
-8. Mark setup complete only if required tests succeed. On failure show logs, safe retry, rollback and recovery guidance.
+Node >=22.21.1, pinned MeshCentral 1.3.2, Tailscale running with MagicDNS and HTTPS certificates, private network reachability and adequate free disk are required. Bootstrap may install dependencies and Node using the official SHA-256 manifest over HTTPS, and Tailscale from the official signed APT repository. No public ingress or tailnet ACL changes. Tailnet-owner login and HTTPS configuration remain explicit.
 
-## Paths (proposed)
-Linux config /etc/meshwall, state /var/lib/meshwall, logs via journal with retention; Windows ProgramData/MeshWall with restrictive ACLs. Upstream state kept separate. Exact service names/ports and engine parameters TBD after compatibility spike.
+Linux uses /opt/meshwall/engine and systemd service meshwall-engine under a dedicated account. Windows uses ProgramData/MeshWall and upstream service defaults; least privilege on Windows is still a gate. Engine HTTPS binds to the Tailscale IPv4 at port 8443 in fresh installers. Local setup port 8787 is loopback-only and temporary. No default password.
 
-## Uninstall and migration
-Stop services, revoke integration credentials, keep user data by default; explicit confirmation for purge. Export versioned backup, validate destination OS/arch and certificates before restoring. Do not copy active SQLite files without consistent snapshot. See OPERATIONS.md.
+Fresh install refuses existing or partial directories/services. Do not delete a partial installation blindly. Adoption preserves existing engine configuration; stop engine, back up, check ownership and TLS. Existing installations may have different exposure and consent settings; validate before use.
 
-No command shown here is a production installer. Verify upstream requirements at https://docs.meshcentral.com/ and https://tailscale.com/kb.
+HTTPS readiness checks only establish serving, not successful enrollment or streaming. Verify login, agent and local consent before expanding use. Certificate renewal, safe partial-install rollback, Windows service privilege hardening and physical end-to-end verification remain pending. See [operations](OPERATIONS.md).

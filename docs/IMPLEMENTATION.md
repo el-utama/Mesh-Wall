@@ -1,11 +1,20 @@
-# Implementation audit — alpha 0.1
+# Implementation status — Alpha
 
-This implementation uses a static, modular, same-origin web application served through MeshCentral's supported custom public directory. It avoids a second Node backend, browser authentication implementation, database and video transcoding on resource-constrained STBs. MeshCentral remains authoritative for auth, permissions, consent, agent operations and screen protocol. See ADR 0002.
+Current architecture: same-origin static modular browser application with pinned MeshCentral 1.3.2, Node >=22.21.1, native engine service and OS Tailscale. No independent application database or persistent privileged web backend. See [ADR 0002](adr/0002-same-origin-ui.md).
 
-Implemented in source: authenticated control socket, inventory, groups, invitation request, local per-user layout, drag/reorder, individual tile sizing, focus/fullscreen, monitor picker, quality profiles, bounded opt-in view-only sessions using upstream renderer, device links and connection diagnostics. No screen data stored. No client credentials persisted. Screens stop when leaving the wall, hiding tab, losing control connection or losing inventory visibility.
+## Evidence
 
-Not verified: real MeshCentral handshake, desktop render, group/invite, fresh bootstrap, STB compatibility, Windows, 100 simultaneous streams. MeshWall embeds same-origin upstream functional panels for login, remote control, terminal, files, user administration and engine settings, without opening the full native dashboard for normal navigation. These are compatibility integrations, not independently implemented advanced controls. Native device and group rename/move, user inventory, recent events, host RAM/load and multiple layout presets are now in source. Bounded reconnect of the control channel is available after a transient network loss. Automatic reconnect of screen sessions remains intentionally disabled before consent behavior is validated. A temporary localhost GUI setup wizard and existing installation adoption are implemented in source. Fresh Windows PowerShell installer and offline local backup/verify/restore now exist in source; actual host validation, safe setup rollback, and GUI maintenance remain incomplete.
+- [Loopback CI](https://github.com/el-utama/Mesh-Wall/actions/runs/45939091748): real MeshCentral authentication, inventory, group rename, invitation, events, saved layout, generated JPEG decoding by actual upstream renderer (fake transport), repeated renderer cleanup and offline backup/restore with restart.
+- [Account integration CI](https://github.com/el-utama/Mesh-Wall/actions/runs/45939435429): real engine standard account creation and direct membership grant/revoke.
+- [Visual CI](https://github.com/el-utama/Mesh-Wall/actions/runs/45939435484): browser fixture with 1–100 synthetic tiles, five viewport sizes, setup state tests. Latest runs are visible in Actions.
+- Unit tests cover layout, connection, validation, renderer cleanup, TLS preparation, backup/restore and UI update/rollback. Windows CI covers code and PowerShell syntax, not privileged setup.
 
-Pinned upstream candidate: MeshCentral 1.3.2, requires Node >=22.21.1 per upstream package.json. Source inspection: https://github.com/Ylianst/MeshCentral/tree/1.3.2 and https://docs.meshcentral.com/meshcentral/customization/. No live environment is available in the development session.
+## Implemented source
 
-Run npm run check with a compatible Node. Test on isolated tailnet with owned test PC(s). Do not use production credentials until integration and security tests pass.
+Core inventory, enrollment, device/group edits, account creation/direct viewer grant and revoke, recent events, diagnostics, view-only wall, monitor picker, quality presets, resize/order/focus/fullscreen, per-account local layouts, control reconnect with bounded retry. Sockets stop wall sessions when inventory/authorization is lost; screen reconnect remains explicit. Official upstream login, desktop, terminal, files and advanced administration remain embedded compatibility panels.
+
+Linux bootstrap and local setup, Windows installer candidate, adoption and local maintenance CLI are available. Offline backup/restore is proven in loopback CI; UI update rollback is unit-tested. Neither is yet validated on physical target systems.
+
+## Remaining gates
+
+Actual authorized agent desktop transport, consent/denial/revocation, multi-monitor, real setup, physical ARM64 STB and Windows host, simultaneous live capacity and soak tests. Full independent native replacement, effective permission management, GUI maintenance, engine upgrade/rollback and certificate renewal remain incomplete. Do not infer production readiness from CI. See [audit](AUDIT.md).

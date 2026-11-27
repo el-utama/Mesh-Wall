@@ -1,44 +1,40 @@
-# Architecture
+# Architecture — current alpha
 
-## Decision
-Modular monolith: one MeshWall backend process, static browser UI, separate MeshCentral engine and Tailscale OS service. A narrowly scoped privileged helper performs approved installation and service operations. No server-side video transcoding.
+The initial modular-monolith proposal (ADR 0001) is superseded for alpha by [ADR 0002](docs/adr/0002-same-origin-ui.md). MeshWall is a lightweight, same-origin static application served by pinned MeshCentral 1.3.2. There is no persistent second backend, SQLite service or server-side transcoder.
 
 ```mermaid
 flowchart TD
- UI[Browser UI] --> API[MeshWall API and session gateway]
- API --> Modules[Domain modules]
- Modules --> Contracts[Typed ports and events]
- Contracts --> MC[MeshCentral adapter]
- Contracts --> TS[Tailscale adapter]
- Contracts --> OS[Linux or Windows adapter]
- Contracts --> DB[SQLite adapter]
- MC --> Agent[Authorized MeshAgents]
- OS --> Helper[Restricted privileged helper]
+ Browser[MeshWall browser modules] --> Engine[MeshCentral HTTPS / control socket]
+ Browser --> Renderer[Upstream browser renderer]
+ Renderer --> Engine
+ Engine --> Agent[Authorized MeshAgents]
+ Engine --> Data[MeshCentral owned local data]
+ Browser --> Prefs[Per-account browser layout preferences]
+ Setup[Temporary loopback setup wizard / CLI] --> Engine
+ Maintenance[Offline local maintenance CLI] --> Data
+ Tailscale[OS Tailscale service] --- Engine
 ```
 
-## Repository layout (planned)
-```text
-apps/web/src/{core,shared,modules}
-apps/server/src/{core,modules}
-packages/{contracts,meshcentral-adapter,tailscale-adapter,streaming-engine,platform-linux,platform-windows,database}
-installers/{linux,windows}
-tests/{unit,integration,performance}
-docs/adr/
-```
+## Actual module map
 
-Domain modules: setup, auth, overview, devices, groups, wall, desktop, terminal, files, enrollment, users, audit, health, backup, settings. Each owns its routes, use cases, schemas, tests and public exports. UI module: components, hooks, services, types, tests and index. Avoid global mutable state and cross-module database access; communicate via explicit contracts or bounded in-process events.
+| Path (under apps/web/public/meshwall/) | Responsibility |
+| --- | --- |
+| app.mjs | Shell, session lifecycle, inventory orchestration |
+| control.mjs | Authenticated upstream socket, correlation, bounded request timeout |
+| model.mjs | Pure layout, inventory, quality and retry logic |
+| wall.mjs / tile-view.mjs | Tile scheduler, selected-device controls, presentation |
+| desktop.mjs | Pinned upstream view-only renderer adapter and cleanup |
+| management.mjs | Device and group management, enrollment |
+| admin.mjs / account-view.mjs / accounts.mjs | Account and group membership, activity, diagnostics; validation separated from DOM |
+| panels.mjs | Official same-origin compatibility panels |
+| ui.mjs / style.css | Shared DOM helpers and design tokens |
 
-## Dependency direction
-UI -> typed API client -> domain application service -> domain ports <- adapters. Core registers modules and lifecycle; adapters must not import UI or feature internals. Validate input at every trust boundary. Keep infrastructure failures isolated with timeouts and bounded retries.
+`installers/linux/` owns bootstrap, config generation, install and one-time local wizard. `installers/windows/` owns Windows provisioning. `installers/adopt.mjs` copies only the owned static files into a supported existing installation. `scripts/maintenance/` owns verified offline backup/restore and UI release swaps. Tests are split into unit and integration/browser fixtures.
 
-## Lifecycle
-Bootstrap detects OS and architecture; setup validates and provisions services; readiness requires authentication and an authorized session test. Runtime supervises connection health; shutdown stops new sessions and drains existing ones. Migration operations are transactional and reversible where possible.
+## Ownership and trust
 
-## Resource strategy
-Build UI off-device, lazy load features, bound queues/cache/concurrency, use SQLite with short transactions and retention, avoid redundant polling and decoding on STB. No mandatory container runtime. Pin supported engine versions. Linux systemd / Windows service adapters share a common interface.
-
-## Data ownership
-MeshCentral owns devices, groups, users and authoritative remote access. MeshWall stores UI preferences, layout, local configuration references, jobs and audit metadata. Do not copy upstream credentials into UI state. See docs/API-DATA.md.
+The engine authenticates each browser session and enforces authoritative permissions and consent. No global admin credential is substituted. Layout preferences reside in localStorage per account, not the engine database. Screen data is not recorded. The setup helper is temporary, loopback-only, token-protected; privileged maintenance stays local. Tailscale is installed as an OS service, not bundled into MeshWall.
 
 ## Evolution
-Use ADRs for changes to boundaries, security model, persistence or deployment. Add automated checks for circular/deep imports. Replace adapters without rewriting domain modules.
+
+Keep dependency direction from UI toward pure feature logic and compatibility adapters. Avoid cross-feature mutable state, duplicate authentication or speculative runtimes. A persistent privileged helper, API gateway, database migrations or platform-specific service manager are future designs requiring separate review and ADRs. No claim of TypeScript build or SQLite migration in the current plain-JavaScript implementation.

@@ -1,9 +1,30 @@
 # MeshWall — Bahasa Indonesia
 
-MeshWall dirancang menjadi pengganti antarmuka native MeshCentral untuk administrasi sehari-hari, bukan pengganti engine atau MeshAgent. Prioritas server adalah Armbian pada STB HG680P/B860H; Windows menjadi alternatif.
+MeshWall adalah dashboard pengelolaan MeshCentral yang ringan dan modular dengan live wall yang dapat dikustomisasi. Engine dan agent tetap menggunakan MeshCentral. Prioritas server: Armbian pada STB HG680P/B860H; Windows x64 sebagai alternatif.
 
-Fitur utama: setup wizard instalasi baru atau adopsi server lama, konfigurasi Tailscale, pengelolaan hingga 100 PC, live wall dengan ukuran setiap tile bebas, drag & drop, multi-monitor, fullscreen, preset layout, desktop, terminal, file manager, user, grup, izin, log audit, backup dan diagnostik.
+**Status: Alpha untuk pengujian lab, belum production-ready.** Integrasi engine dan pemulihan data sudah diuji di CI. Installer fisik, sesi agent nyata, dan 100 stream simultan masih perlu validasi.
 
-Arsitektur modular monolith menjaga penggunaan RAM tetap rendah dan memudahkan refactoring. Rendering layar di browser, bukan transcoding server. View-only menjadi default, dan seluruh sesi tunduk pada izin serta kebijakan persetujuan perangkat.
+## Fitur saat ini
 
-Status: implementasi alpha untuk pengujian lab. Source dashboard, bootstrap Linux dan adopsi instalasi lama sudah tersedia; belum diuji pada STB atau PC nyata. 100 PC terdaftar adalah batas desain; 100 stream simultan perlu dibuktikan. Baca [panduan alpha](docs/QUICKSTART-ALPHA.md), [audit](docs/AUDIT.md), [README utama](README.md), [arsitektur](ARCHITECTURE.md) dan [roadmap](ROADMAP.md).
+- Inventaris hingga 100 perangkat, filter, grup dan undangan enrollment.
+- Live wall view-only: ukuran tile individual, drag/keyboard reorder, grid responsif, pilihan monitor, fullscreen, kualitas dan preset layout.
+- Pembuatan akun standar, pemberian dan pencabutan akses view-only langsung per grup.
+- Panel resmi MeshCentral untuk autentikasi, kontrol desktop, terminal, file manager dan pengaturan lanjutan di dalam workspace.
+- Bootstrap Linux, setup wizard lokal, installer Windows kandidat, adopsi server lama.
+- Backup/restore terverifikasi dan update/rollback UI melalui CLI saat engine berhenti.
+
+Batas 100 perangkat adalah batas desain aplikasi, bukan jaminan kapasitas Tailscale atau STB. Default streaming empat sesi; naikkan hanya setelah pengujian hardware.
+
+## Instalasi lab
+
+```bash
+git clone https://github.com/el-utama/Mesh-Wall.git
+cd Mesh-Wall
+sudo bash installers/linux/bootstrap.sh
+```
+
+Gunakan sistem 64-bit yang didukung. Login Tailscale dan aktivasi HTTPS/MagicDNS tetap membutuhkan pemilik tailnet. Ikuti [quickstart](docs/QUICKSTART-ALPHA.md) untuk akses wizard, instalasi Windows atau adopsi. Jangan memasang pada server produksi tanpa validasi.
+
+## Dokumentasi
+
+[Panduan pengguna Indonesia](docs/USER-GUIDE.md) · [Arsitektur](ARCHITECTURE.md) · [Audit](docs/AUDIT.md) · [Status implementasi](docs/IMPLEMENTATION.md) · [Maintenance](docs/OPERATIONS.md) · [Roadmap](ROADMAP.md) · [Pengujian CI](https://github.com/el-utama/Mesh-Wall/actions) · [README English](README.md).

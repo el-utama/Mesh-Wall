@@ -1,4 +1,12 @@
-# API and data design (proposed, not implemented)
+# API and data
+
+## Current implementation
+
+No independent /api/v1 REST backend or SQLite database is shipped. MeshCentral owns identities, devices, groups, events, configuration, credentials and session authorization. The browser uses the same-origin authenticated control.ashx socket, correlated request IDs/tags and pinned upstream browser relay/renderer. `control.mjs` is the transport boundary; account operations use the 1.3.2 upstream adduser/addmeshuser commands and users readback, with engine validation. The direct membership preset is not a calculation of effective rights.
+
+Per-account layout presets and navigation preferences use browser localStorage; they are not server backup data. No password or screen capture is persisted by MeshWall. Local setup is a temporary token-protected loopback service with preflight/status/install operations. Offline maintenance manages engine-owned files with checksummed manifests, not an application API. See [operations](OPERATIONS.md).
+
+## Future design (not implemented)
 
 Versioned /api/v1 REST for inventory, users, groups, layout, setup jobs, health, config proposals and backups; authorized WebSocket events/session transport. Example routes: GET /devices, GET /health, GET/PUT /layouts/:id, POST /sessions, DELETE /sessions/:id, POST /setup/jobs. These are MeshWall contracts, not MeshCentral endpoints.
 

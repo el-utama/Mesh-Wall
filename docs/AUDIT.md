@@ -8,11 +8,11 @@
 | Windows | Fresh PowerShell installer and existing engine adoption script | Actual Windows service, TLS and agent validation |
 | 100 PC live wall | 100-tile cap and adjustable 1–100 session limit; default 4 | Actual 1/10/25/50/75/100 session benchmark, acceptable frame age/resources |
 | Custom tile size | Grid columns, per-tile W/H, pointer resize | Synthetic browser checks passed; live hardware pending |
-| Drag, focus, fullscreen, monitor | UI/renderer adapter source | Live browser and multi-monitor tests |
+| Drag, focus, fullscreen, monitor | UI/renderer adapter source | Synthetic layout/browser tests passed; real monitor/agent tests pending |
 | View-only, access control | Upstream session, consent defaults, no input handlers | Verify denied/revoked and consent behavior end-to-end |
 | Modular/refactorable | Separate model/control/desktop/wall/management/admin/panel/UI modules and installer separation | Dependency checks and continued refactoring |
-| Documentation | README, ADR, installation, acceptance, audit | Keep current with real evidence |
-| Maintenance and backup | Offline backup/verify/restore and UI-only update/rollback with retained recovery directories | Test service restart and rollback on physical host; GUI and engine update pending |
+| Documentation | README, ADR, installation, acceptance, audit | Current bilingual README and user guide; keep synchronized with CI evidence |
+| Maintenance and backup | Offline backup/verify/restore and UI-only update/rollback with retained recovery directories | Real engine loopback restore passed; physical host, GUI and engine update pending |
 | Automatic reconnect | Bounded automatic control-channel reconnect; remote screens require explicit retry | Real-device consent/denial and automatic stream resume remain pending |
 
 Audit conclusion: source is alpha for a test environment, not production-ready. No fabricated live results. See implementation notes.

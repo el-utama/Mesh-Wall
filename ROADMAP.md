@@ -1,13 +1,15 @@
-# Roadmap
+# Roadmap — current alpha
 
-- M0 — Specification: product, boundaries, security, acceptance, ADR. Current stage.
-- M1 — Compatibility spike: inspect HG680P/B860H Armbian OS and runtime; verify pinned MeshCentral control and relay protocols, TLS/auth, one authorized desktop session. Exit: documented real-device proof.
-- M2 — Foundation: static web shell, modular backend, typed contracts, auth and permissions, SQLite migrations, automated tests.
-- M3 — Setup: Linux bootstrap and wizard, fresh/adopt, Tailscale, config validation, rollback, health and enrollment. Exit: clean server to working device without native UI.
-- M4 — Core management: inventory, groups, users, events, agent enrollment.
-- M5 — Wall: live renderer, custom per-tile resize/drag, monitor, layout, view-only, quality scheduler; performance sweep to 100 PCs.
-- M6 — Native replacement: remote desktop, terminal, file manager, allowed power actions, administration, backup/update and audit.
-- M7 — Windows adapter, installers and migration; test OS-specific paths.
-- M8 — Production readiness: security review, soak and capacity tests, restore/rollback, support matrix and release documentation.
+| Milestone | Current state | Remaining exit gate |
+| --- | --- | --- |
+| M0 Specification | Product, security, ADR, UI skill and docs available | Keep synchronized with code |
+| M1 Compatibility | Pinned engine loopback, real upstream JPEG renderer with fake transport | Real authorized MeshAgent session on target hardware |
+| M2 Foundation | Static modular console, socket/auth, unit/browser CI | Broader boundary and security checks |
+| M3 Setup | Linux bootstrap/wizard, adoption, private TLS config | Clean STB install, safe partial setup recovery, end-to-end enrollment |
+| M4 Management | Inventory, groups, invitations, accounts, direct viewer permissions, events | Advanced roles, effective rights, enrollment revocation and additional management |
+| M5 Wall | Custom size/order/monitor/fullscreen/quality/presets, responsive 100 synthetic tiles | Physical stream, consent, multi-monitor, reconnect, capacity/soak benchmark |
+| M6 Native replacement | Same-origin official advanced panels; offline verified maintenance | Independently usable routine remote workflows, safe GUI maintenance and engine upgrade |
+| M7 Windows | Fresh installer source and cross-platform CI | Real Windows service/TLS/agent and recovery test |
+| M8 Production readiness | Not reached | Physical matrix, security review, operational recovery and release evidence |
 
-Gate each milestone on evidence. No release dates or capacity promises until tested. Track gaps and regressions as issues.
+Do not assign release dates or stable streaming capacity without measurement. See [audit](docs/AUDIT.md) for requirement-level gates and [testing](docs/TESTING.md) for evidence. CI pass is not production acceptance.

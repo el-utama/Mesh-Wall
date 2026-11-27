@@ -15,3 +15,6 @@ Audit user/device/action/time/outcome without recording screen or terminal conte
 
 ## Reporting
 Report vulnerabilities privately to the repository owner via GitHub private vulnerability reporting if enabled; otherwise request a private reporting channel without publishing exploit details. Do not open a public issue containing secrets. Supported version policy pending first release.
+
+## Current implementation boundaries
+Standard account creation sends the temporary password only to the authenticated upstream engine over HTTPS/WSS, clears form fields, and requires reset on first login. Direct viewer assignment is restricted to standard accounts and refuses existing custom memberships; effective/inherited permissions are not computed or revoked by this UI. Engine authorization remains authoritative. The local setup helper and offline maintenance are not a public administration API. Backup files can contain unencrypted secrets and must remain on restricted/encrypted storage. Actual remote consent/denial/revocation and physical platform testing remain release gates.
