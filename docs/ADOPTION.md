@@ -39,6 +39,7 @@ node installers/adopt.mjs rollback "/path/to/install-root" --engine-stopped
 | `MW-ADOPT-CONFIG` | Check JSON validity, database and path settings locally. Preserve configuration and credentials. |
 | `MW-ADOPT-BACKUP` | Select an existing private sibling or another separate directory. Verify space and permissions under the actual operator account. |
 | `MW-ADOPT-COLLISION` / `MW-ADOPT-JOURNAL` | Keep existing files. Use `status` and review [Operations](OPERATIONS.md) for update or recovery. |
+| `MW-ADOPT-REVIEW` | Run the local `preview` command for details about unsupported layout, file permissions or release files. |
 | `MW-ADOPT-LOCK`, `interrupted` or `inconsistent` | Preserve the verified backup, journal and files. Check actual operation and service state locally before a retry. Never clear a lock blindly. |
 
 An interruption can leave an incomplete journal or a lock. Automatic rollback on in-process placement failure only removes files verified as owned by that transaction. Power-loss durability and service recovery require physical validation. The stage shares file identity with the initial UI. Treat the separate verified snapshot as the backup and keep it private because it can contain secrets. A full restore can discard later changes, so review [Operations](OPERATIONS.md) first.
