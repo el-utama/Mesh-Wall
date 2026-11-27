@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- Record minimal local wizard installation stage history independent of engine or browser, with read-only doctor history and no credentials/raw logs. Not a crash-safe transaction or automatic repair.
 - Offline adoption preview, verified backup, staged exclusive UI placement, retained journal, status and ownership-checked rollback; bounded service/process discovery on both OSes. Physical and browser-driven adoption remain pending.
 - Added rule-based lifecycle guidance, bounded read-only discovery, independent doctor CLI, safe setup support report, pre-Node bootstrap hints and basic dashboard help. Added P15 self-support gate; transactional adoption/recovery and physical validation remain incomplete.
 - Audited all nine skills and Markdown docs, clarified actual vs target functionality, added P01–P14 traceability, local documentation link validation and cross-platform skill frontmatter regression coverage.

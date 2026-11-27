@@ -12,7 +12,7 @@ Same browser application, upstream engine and access control across both OS fami
 | Adopt existing | Shared transactional CLI | Shared transactional CLI / PowerShell | Actual host, service and guided wizard validation |
 | Backup/restore, UI update/rollback | Shared offline CLI, private permissions | Shared offline CLI, restricted ACLs | Real Linux loopback restore; Windows loopback restore CI added; physical service and ACL review pending |
 | TLS renewal/rollback | renew-tls.sh | renew-tls.ps1 | Shared certificate swap tests; actual issuance and restart pending |
-| Offline self-support | Shared doctor/catalog and setup help; Bash hints | Shared doctor/catalog and setup help; PowerShell hints | Broader discovery, guided rollback, specific diagnosis, physical failure injection pending |
+| Offline self-support | Shared doctor/catalog, wizard stage history and setup help; Bash hints | Shared doctor/catalog, wizard stage history and setup help; PowerShell hints | Broader discovery, guided rollback, specific diagnosis, physical failure injection pending |
 | Unattended renewal | Not implemented | Not implemented | Secure scheduled local deployment, tested recovery |
 | GUI service/maintenance, engine upgrade | Incomplete | Incomplete | Shared UI + OS adapters with bounded authorization |
 | Native replacement and actual live wall | Partial; official panels | Same | Actual consent/permissions and 100-stream evidence |

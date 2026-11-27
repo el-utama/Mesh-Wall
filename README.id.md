@@ -38,3 +38,5 @@ Windows: jalankan `.\installers\windows\bootstrap.ps1` dari PowerShell Administr
 Bantuan lokal tanpa AI: `node scripts/doctor.mjs` untuk pencarian lokasi umum dan `node scripts/doctor.mjs help` untuk panduan tahap. Lihat [self-support](docs/SELF-SUPPORT.md); pemulihan otomatis penuh belum tersedia.
 
 Adopsi server lama: [panduan preview, backup, apply dan rollback](docs/ADOPTION.md). Deteksi service/proses terbatas; konfirmasi service dan root sebelum perubahan. Wizard adopsi belum tersedia.
+
+Riwayat instalasi wizard: `node scripts/doctor.mjs history` dari akun operator yang sama. Status terakhir bukan bukti proses masih berjalan; jangan ulangi instalasi tanpa pemeriksaan.

@@ -12,8 +12,11 @@ node scripts/doctor.mjs
 node scripts/doctor.mjs discover /path/to/meshcentral
 node scripts/doctor.mjs help
 node scripts/doctor.mjs help service
+node scripts/doctor.mjs history
 ```
 Windows: same Node command from the repository, with a quoted actual Windows root, for example `node scripts/doctor.mjs discover "C:\MeshCentral"`. Discovery checks bounded service/process evidence, common paths and optional manual root. It is not a whole disk scan or proof of service identity; custom layouts may be missed. Compatibility means expected npm layout/version 1.3.2 and data/config files, not verified working server or database. No root data is modified.
+
+The actual one-time fresh setup wizard now records allowlisted stage/status timestamps in the launching operator's private .meshwall-support directory (Windows inherits the user profile ACL). Run history under the same operator account, even after wizard closure. A last recorded running status is not proof of an active process; do not resume blindly. History is not a backup or crash-safe transaction. It does not cover pre-Node/bootstrap or standalone terminal installer yet. No automatic lock clearing, restart or deletion.
 
 ## Help by step
 | Stage / code | What the user should inspect | Safe next action |
@@ -39,4 +42,4 @@ Codes identify the stage, not the precise root cause. Read [troubleshooting](TRO
 See [adoption and recovery](ADOPTION.md) for the new offline transactional CLI and limitations.
 
 ## Release requirements still open
-Broader discovery and guided browser adoption/service lifecycle; CLI preview/backup/staged rollback available; persistent fresh-install journal and safe resume/recovery after power loss; specific diagnosed error codes, one-click allowlisted repairs after authorization, complete in-dashboard error-specific help and offline bilingual guide, service watchdog with bounded restart/health checks, structured sanitized diagnostics and verified rollback on both OSes. Do not treat stage guidance as a repair engine. No unbounded watchdog or AI required. Real failure-injection and physical host acceptance remain mandatory.
+Broader discovery and guided browser adoption/service lifecycle; CLI preview/backup/staged rollback available; complete durable transaction journal for all installers and safe resume/recovery after power loss; specific diagnosed error codes, one-click allowlisted repairs after authorization, complete in-dashboard error-specific help and offline bilingual guide, service watchdog with bounded restart/health checks, structured sanitized diagnostics and verified rollback on both OSes. Do not treat stage guidance as a repair engine. No unbounded watchdog or AI required. Real failure-injection and physical host acceptance remain mandatory.
