@@ -10,7 +10,7 @@ Same browser application, upstream engine and access control across both OS fami
 | Prerequisites | bootstrap.sh | bootstrap.ps1 (WinGet official packages, manual fallback) | Actual dependency installation and login validation pending |
 | Native service | systemd, dedicated account | Upstream Windows Service, default account | Windows least-privilege service and lifecycle tests pending |
 | Adopt existing | Shared adopt.mjs | Shared adopt.mjs / PowerShell | Actual host validation |
-| Backup/restore, UI update/rollback | Shared offline CLI, private permissions | Shared offline CLI, restricted ACLs | Real Linux loopback restore; actual Windows restore and ACL review pending |
+| Backup/restore, UI update/rollback | Shared offline CLI, private permissions | Shared offline CLI, restricted ACLs | Real Linux loopback restore; Windows loopback restore CI added; physical service and ACL review pending |
 | TLS renewal/rollback | renew-tls.sh | renew-tls.ps1 | Shared certificate swap tests; actual issuance and restart pending |
 | Unattended renewal | Not implemented | Not implemented | Secure scheduled local deployment, tested recovery |
 | GUI service/maintenance, engine upgrade | Incomplete | Incomplete | Shared UI + OS adapters with bounded authorization |

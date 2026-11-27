@@ -7,6 +7,7 @@ permissions:
 jobs:
   windows:
     runs-on: windows-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -26,3 +27,11 @@ jobs:
         run: npm install --no-save --package-lock=false --no-audit --no-fund playwright@1.56.1
       - run: npx playwright install chromium
       - run: node tests/integration/setup-visual.mjs
+      - name: Real MeshCentral loopback (no service installation)
+        run: npm run integration
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: windows-setup-visual-evidence
+          path: visual-evidence/
+          retention-days: 14

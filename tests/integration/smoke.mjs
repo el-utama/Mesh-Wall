@@ -15,11 +15,14 @@ const password="Lab-"+randomBytes(20).toString("hex");
 let server,browser,backupParent;
 let logs="";
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
-async function stopEngine(){if(!server||server.exitCode!==null||server.signalCode!==null)return;const exited=new Promise(r=>server.once("exit",r));server.kill("SIGTERM");await Promise.race([exited,sleep(5000)]);if(server.exitCode===null&&server.signalCode===null){server.kill("SIGKILL");await exited;}}
+async function stopEngine(){if(!server||server.exitCode!==null||server.signalCode!==null)return;const exited=new Promise(r=>server.once("exit",r));if(process.platform==="win32"){server.stdin.end();}else server.kill("SIGTERM");await Promise.race([exited,sleep(5000)]);if(server.exitCode===null&&server.signalCode===null){server.kill("SIGKILL");await exited;}}
 function startEngine(){server=spawn(process.execPath,[engine,"--launch"],{cwd:root,stdio:["pipe","pipe","pipe"]});for(const stream of [server.stdout,server.stderr])stream.on("data",d=>{logs=(logs+d.toString()).slice(-12000)});}
 async function readyPage(page){for(let i=0;i<90;i++){if(server.exitCode!==null||server.signalCode!==null)throw Error("Engine exited");try{const r=await page.goto(origin+"/meshwall.html",{timeout:3000,waitUntil:"domcontentloaded"});if(r?.ok())return;}catch{}await sleep(1000);}throw Error("MeshWall page must be served by real MeshCentral");}
 try {
-  execFileSync("npm",["install","--prefix",root,"--omit=dev","--no-audit","--no-fund","meshcentral@1.3.2"],{stdio:"inherit",timeout:180000});
+  const npmArgs=["install","--prefix",root,"--omit=dev","--no-audit","--no-fund","meshcentral@1.3.2"];
+  if(process.env.npm_execpath)execFileSync(process.execPath,[process.env.npm_execpath,...npmArgs],{stdio:"inherit",timeout:180000});
+  else if(process.platform==="win32")throw Error("Run via npm run integration on Windows");
+  else execFileSync("npm",npmArgs,{stdio:"inherit",timeout:180000});
   const pkg=JSON.parse(await readFile(join(engine,"package.json"),"utf8"));
   assert.equal(pkg.version,"1.3.2");
   const data=join(root,"meshcentral-data");await mkdir(data);
@@ -107,5 +110,5 @@ try {
   await browser?.close();
   await stopEngine();
   if(backupParent)await rm(backupParent,{recursive:true,force:true});
-  await rm(root,{recursive:true,force:true});
+  await rm(root,{recursive:true,force:true,maxRetries:5,retryDelay:300});
 }
