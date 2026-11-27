@@ -12,3 +12,6 @@ Read docs/TROUBLESHOOTING.md, docs/TESTING.md and the affected module. Classify 
 4. Fix the root cause with a minimal change. Do not weaken assertions, skip failing checks, retry destructive operations, or use insecure TLS to hide a bug.
 5. Run targeted test, then affected platform checks and full regression. Inspect actual results. If CI infrastructure fails, validate the dependency and retry only bounded, non-destructive steps.
 6. Record root cause, fix, test evidence, remaining blockers and recovery guidance. Escalate destructive recovery or required access to the authorized operator. Never invent results or report pending as passed.
+
+## Completion and escalation checklist
+Critical (unauthorized access, exposed secret, data loss): stop affected operations and preserve evidence; ask operator before risky recovery. High (service outage or install failure): isolate and use supported recovery. Normal (layout, docs, tests): fix and regress. Report symptom, confirmed cause or hypothesis, fix, evidence and remaining risks.
