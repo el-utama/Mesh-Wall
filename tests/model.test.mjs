@@ -1,8 +1,10 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import {normalizeNodes,sanitizeLayout,orderedDevices,nextSessions,qualityProfile} from "../apps/web/public/meshwall/model.mjs";
+import {normalizeNodes,sanitizeLayout,orderedDevices,nextSessions,qualityProfile,controlRetryDelay} from "../apps/web/public/meshwall/model.mjs";
 test("inventory filters invalid IDs, deduplicates and distinguishes agent connectivity",()=>{const r=normalizeNodes({"mesh//x":[{_id:"node//a",name:"B",conn:1},{_id:"node//b",name:"A",conn:2},{_id:"node//a"},{_id:"invalid"}]},[{_id:"mesh//x",name:"Lab"}]);assert.deepEqual(r.map(x=>[x.id,x.online,x.groupName]),[["node//b",false,"Lab"],["node//a",true,"Lab"]]);assert.throws(()=>normalizeNodes({"mesh//x":null}));});
 test("layout clamps dimensions and strips duplicates",()=>{const l=sanitizeLayout({columns:50,order:["node//a","node//a","invalid"],sizes:{"node//a":{cols:-1,rows:99}}});assert.equal(l.columns,10);assert.deepEqual(l.order,["node//a"]);assert.deepEqual(l.sizes["node//a"],{cols:1,rows:6});});
 test("wall capped at 100, preserves order",()=>{const d=Array.from({length:110},(_,i)=>({id:"node//"+i}));const r=orderedDevices(d,{order:["node//5"]});assert.equal(r.length,100);assert.equal(r[0].id,"node//5");});
 test("scheduler respects active limit and offline state",()=>{const d=[{id:"a",online:true},{id:"b",online:false},{id:"c",online:true}];assert.deepEqual(nextSessions(d,new Set(["a","b","c"]),new Set(["a"]),2),["c"]);assert.deepEqual(nextSessions(d,new Set(["a","b","c"]),new Set(["a"]),1),[]);});
 test("quality presets and focused quality",()=>{assert.equal(qualityProfile("eco").interval,500);assert.equal(qualityProfile("invalid").scale,256);assert.ok(qualityProfile("eco",true).scale>qualityProfile("eco").scale);});
+
+test("control reconnection backoff is bounded",()=>{assert.deepEqual(Array.from({length:6},(_,i)=>controlRetryDelay(i)),[1000,2000,4000,8000,16000,null]);assert.equal(controlRetryDelay(-1),null);});

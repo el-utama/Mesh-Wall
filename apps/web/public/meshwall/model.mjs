@@ -9,3 +9,6 @@ export function orderedDevices(devices,layout){const byId=new Map(devices.map(d=
 export function nextSessions(devices,requested,active,limit){return devices.filter(d=>d.online&&requested.has(d.id)&&!active.has(d.id)).slice(0,Math.max(0,clampInt(limit,1,100,4)-active.size)).map(d=>d.id);}
 
 export function qualityProfile(profile,focus=false){if(focus)return {quality:55,scale:768,interval:100};return ({eco:{quality:25,scale:256,interval:500},balanced:{quality:40,scale:384,interval:250},high:{quality:55,scale:640,interval:125}})[profile]||{quality:25,scale:256,interval:500};}
+
+// Reconnect only the authenticated control channel, never a remote desktop session.
+export function controlRetryDelay(attempt){return Number.isInteger(attempt)&&attempt>=0&&attempt<5?1000*2**attempt:null;}

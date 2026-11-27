@@ -1,5 +1,5 @@
 import {Control} from "./control.mjs";
-import {normalizeNodes} from "./model.mjs";
+import {normalizeNodes,controlRetryDelay} from "./model.mjs";
 import {$} from "./ui.mjs";
 import {createWall} from "./wall.mjs";
 import {createPanels} from "./panels.mjs";
@@ -9,9 +9,13 @@ const notice=t=>$("notice").textContent=t;
 let user=null,groups=[],devices=[],cookies=null,page="overview",refreshing=false,lastInventory=0;
 const descriptions={overview:"Connection and device summary.",wall:"Monitor authorized screens and customize the wall.",devices:"Find and manage enrolled PCs.",groups:"Organize devices and create time-limited invitations.",users:"Review authorized accounts and access.",activity:"Review recent engine events.",settings:"Inspect connection and engine diagnostics."};
 const pages={overview:"Overview",wall:"MeshWall",devices:"Devices",groups:"Groups & enrollment",users:"Users & permissions",activity:"Activity",settings:"Settings / diagnostics"};
-const control=new Control(onMessage,status=>{
+let hadSession=false,retryCount=0,retryTimer=null,closing=false;
+function cancelRetry(){clearTimeout(retryTimer);retryTimer=null;}
+function retryControl(){if(!hadSession||closing||document.hidden||retryTimer||control.authenticated||panels.isLogin())return;const ms=controlRetryDelay(retryCount);if(ms===null){hadSession=false;return;}retryTimer=setTimeout(()=>{retryTimer=null;if(document.hidden||closing||!hadSession||control.authenticated)return;retryCount++;$("connection").textContent="Reconnecting…";$("connection").dataset.kind="connecting";control.start();},ms);notice("Connection lost. Retrying secure sign-in session; remote screens remain stopped.");}
+const control=new Control(onMessage,(status,reason)=>{
   $("connection").textContent=status;$("connection").dataset.kind=control.authenticated?"online":"offline";
-  if(!control.authenticated){wall.stopAll();user=null;cookies=null;devices=[];groups=[];lastInventory=0;admin.clear();$("account").textContent="Not authenticated";$("login").hidden=false;$("logout").hidden=true;if(!panels.isLogin())panels.close();render();notice("Sign in securely using the engine authentication panel. No device access without authentication.");}
+  if(control.authenticated){hadSession=true;retryCount=0;cancelRetry();}
+  if(!control.authenticated){if(reason==="revoked"||reason==="manual"){hadSession=false;cancelRetry();}wall.stopAll();user=null;cookies=null;devices=[];groups=[];lastInventory=0;admin.clear();$("account").textContent="Not authenticated";$("login").hidden=false;$("logout").hidden=true;if(!panels.isLogin())panels.close();render();notice("Sign in securely using the engine authentication panel. No device access without authentication.");if(reason==="network")retryControl();}
 });
 const panels=createPanels({control,onLoginLoad:()=>{if(!control.authenticated){control.close();control.start();}},onClose:()=>{}});
 const wall=createWall({control,getUser:()=>user,getDevices:()=>devices,getCookies:()=>cookies,getLastInventory:()=>lastInventory,isActive:()=>page==="wall",notice,onStats:stats});
@@ -44,7 +48,7 @@ const navKey=()=>narrowNav.matches?"meshwall-nav-mobile-collapsed":"meshwall-nav
 function navCollapsed(value,persist=true){document.body.classList.toggle("nav-collapsed",value);$("navToggle").setAttribute("aria-expanded",String(!value));$("navToggle").setAttribute("aria-label",value?"Expand navigation":"Collapse navigation");if(persist)try{localStorage.setItem(navKey(),String(value));}catch{}}
 function restoreNav(){let value=narrowNav.matches;try{const saved=localStorage.getItem(navKey());if(saved!==null)value=saved==="true";}catch{}navCollapsed(value,false);}
 narrowNav.addEventListener("change",restoreNav);restoreNav();$("navToggle").onclick=()=>navCollapsed(!document.body.classList.contains("nav-collapsed"));
-$("refresh").onclick=()=>control.authenticated?refresh():control.start();$("login").onclick=e=>{e.preventDefault();panels.signIn();};
-$("logout").onclick=()=>{wall.stopAll();panels.close();};$("origin").textContent=location.origin;
-document.addEventListener("visibilitychange",()=>{if(document.hidden)wall.stopAll();else refresh();});window.addEventListener("pagehide",()=>{wall.stopAll();panels.close();control.close();});
+$("refresh").onclick=()=>{if(control.authenticated)refresh();else{cancelRetry();control.start();}};$("login").onclick=e=>{e.preventDefault();hadSession=false;cancelRetry();panels.signIn();};
+$("logout").onclick=()=>{closing=true;hadSession=false;cancelRetry();wall.stopAll();panels.close();};$("origin").textContent=location.origin;
+document.addEventListener("visibilitychange",()=>{if(document.hidden){cancelRetry();wall.stopAll();}else if(control.authenticated)refresh();else retryControl();});window.addEventListener("pagehide",()=>{closing=true;hadSession=false;cancelRetry();wall.stopAll();panels.close();control.close();});
 setInterval(()=>{if(control.authenticated){if(Date.now()-lastInventory>45000)wall.stopAll();refresh();}},15000);setPage("overview");control.start();

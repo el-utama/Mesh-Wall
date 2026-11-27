@@ -7,6 +7,7 @@ import {randomBytes} from "node:crypto";
 import {spawn,execFileSync} from "node:child_process";
 import {chromium} from "playwright";
 import {backup,verify,restore} from "../../scripts/maintenance/lib.mjs";
+import {checkRenderer} from "./renderer.mjs";
 const root=await mkdtemp(join(tmpdir(),"meshwall-smoke-"));
 const engine=join(root,"node_modules/meshcentral");
 const port=18443,origin="https://localhost:"+port;
@@ -67,6 +68,7 @@ try {
   await page.locator('nav [data-page="wall"]').click();
   assert.equal(await page.locator("#columns").inputValue(),"10");assert.equal(await page.locator("#preset").inputValue(),"Ten columns");
   assert.equal(await page.locator("#streams").textContent(),"0");
+  await checkRenderer(page);
   assert.equal(appErrors.length,0,"Browser JavaScript errors: "+appErrors.join("; "));
   console.log("PASS: real MeshCentral static serving, unauthenticated denial, embedded login, inventory, create/rename group, invitation, users, events and persisted preset; no agent or desktop stream tested.");
   // Real offline backup: close browsers, stop the single --launch process, snapshot, change state, restore.

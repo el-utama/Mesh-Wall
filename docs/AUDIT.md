@@ -13,6 +13,6 @@
 | Modular/refactorable | Separate model/control/desktop/wall/management/admin/panel/UI modules and installer separation | Dependency checks and continued refactoring |
 | Documentation | README, ADR, installation, acceptance, audit | Keep current with real evidence |
 | Maintenance and backup | Offline backup/verify/restore and UI-only update/rollback with retained recovery directories | Test service restart and rollback on physical host; GUI and engine update pending |
-| Automatic reconnect | Not implemented; explicit retry to avoid repeated consent prompts | Consent-aware reconnect policy and testing |
+| Automatic reconnect | Bounded automatic control-channel reconnect; remote screens require explicit retry | Real-device consent/denial and automatic stream resume remain pending |
 
 Audit conclusion: source is alpha for a test environment, not production-ready. No fabricated live results. See implementation notes.
