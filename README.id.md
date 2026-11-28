@@ -49,5 +49,7 @@ Perbaikan file UI yang hilang pada instalasi baru memerlukan backup terverifikas
 
 Kontrol service lokal (kandidat) mendukung start/stop/restart dengan konfirmasi downtime untuk instalasi baru bawaan. Ikuti [Operations](docs/OPERATIONS.md#authorized-local-service-control-alpha-candidate); jangan hapus lock jika hasil operasi tidak pasti.
 
+CI menghindari duplikasi push/PR, membatalkan run PR lama, dan melewati tes berat hanya untuk perubahan yang aman sesuai [kebijakan pengujian](docs/TESTING.md#ci-execution-policy-candidate). Rilis tetap membutuhkan pengujian penuh di kedua platform.
+
 ## Lanjutkan pengembangan dengan AI apa pun
 Minta AI membaca [AGENTS.md](AGENTS.md) dan [PROJECT_MEMORY.md](PROJECT_MEMORY.md), lalu memeriksa HEAD dan CI terbaru. Kedua file berada di repository dan wajib diperbarui setiap perubahan substantif. AI yang tidak otomatis membaca AGENTS.md perlu diarahkan sekali; tidak perlu membuat handover manual.

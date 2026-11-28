@@ -9,3 +9,5 @@ Read docs/TESTING.md, docs/HARDWARE-ACCEPTANCE.md and docs/AUDIT.md. Map require
 
 ## Completion and escalation checklist
 Run npm run check and npm run integration with pinned Playwright installed; use visual.yml and windows.yml. Normalize CRLF/LF in text assertions and compare canonical paths. Report exact SHA, job IDs and pass/fail/skipped. Never bypass a check to make CI green.
+
+Use the conservative CI scope policy in docs/TESTING.md. Preserve all four check names; report scoped-out suites separately, fail closed on missing Git evidence, and require full regression for CI-policy changes and releases. Do not bypass required checks or change branch protection to save time.

@@ -1,7 +1,13 @@
 name: UI visual acceptance
 on:
   push:
+    branches: [main]
+    tags: ['v*']
   pull_request:
+  workflow_dispatch:
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 permissions:
   contents: read
 jobs:
@@ -12,26 +18,44 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          persist-credentials: false
       - uses: actions/setup-node@v4
         with:
           node-version: '22.21.1'
-      - run: npm install --no-save --package-lock=false --no-audit --no-fund playwright@1.56.1
-      - run: npx playwright install chromium
+      - name: Determine required test scope
+        id: scope
+        run: node scripts/ci-scope.mjs
+      - name: Cache pinned browser and npm downloads
+        if: steps.scope.outputs.visual != 'false'
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.npm/_cacache
+            ~/.cache/ms-playwright
+          key: meshwall-playwright-1.56.1-${{ runner.os }}-${{ runner.arch }}-v1
+      - if: steps.scope.outputs.visual != 'false'
+        run: npm install --no-save --package-lock=false --no-audit --no-fund playwright@1.56.1
+      - if: steps.scope.outputs.visual != 'false'
+        run: npx playwright install chromium
       - name: Verify Chromium dependencies (install only if needed)
+        if: steps.scope.outputs.visual != 'false'
         run: |
           if ! node --input-type=module -e 'import {chromium} from "playwright"; const b=await chromium.launch(); await b.close()'; then
             npx playwright install-deps chromium
             node --input-type=module -e 'import {chromium} from "playwright"; const b=await chromium.launch(); await b.close()'
           fi
       - name: Baseline screenshot
+        if: steps.scope.outputs.visual != 'false'
         run: |
           mkdir -p /tmp/meshwall-before
           git archive 0334dcf22daf1e32372d087b315077d10eba83c3 apps/web/public | tar -x -C /tmp/meshwall-before
           node tests/integration/visual.mjs /tmp/meshwall-before/apps/web/public visual-evidence --baseline
-      - run: node tests/integration/visual.mjs
-      - run: node tests/integration/setup-visual.mjs
+      - if: steps.scope.outputs.visual != 'false'
+        run: node tests/integration/visual.mjs
+      - if: steps.scope.outputs.visual != 'false'
+        run: node tests/integration/setup-visual.mjs
       - uses: actions/upload-artifact@v4
-        if: always()
+        if: always() && steps.scope.outputs.visual != 'false'
         with:
           name: meshwall-visual-evidence
           path: visual-evidence/

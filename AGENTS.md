@@ -22,7 +22,7 @@ Read relevant ADRs before coding. Prioritize resource optimization on Armbian HG
 - Add tests for changed behavior, error paths, authorization and module contracts; maintain docs, changelog and ADRs. Preserve existing data and provide migrations.
 - Make focused changes; review diff; avoid unrelated rewrites, destructive operations or dependency upgrades. Report commands actually run, results and remaining blockers.
 
-Before merge: run npm run check and relevant integration/visual/platform CI; review module boundaries and security. Additional lint/typecheck/build/secret-scan gates remain unimplemented; do not report nonexistent checks as passed.
+Before merge: run npm run check and relevant integration/visual/platform CI; honor the conservative CI scope in docs/TESTING.md. Do not equate a scoped-out suite with a pass. Manual/version-tag runs require full regression; changes to CI policy itself require all four suites; review module boundaries and security. Additional lint/typecheck/build/secret-scan gates remain unimplemented; do not report nonexistent checks as passed.
 
 ## Mandatory UI/UX skill
 For every user-facing change (HTML, CSS, frontend behavior, setup wizard, dashboard or remote panel), read and apply `.agents/skills/meshwall-ui-ux/SKILL.md` and its relevant references. Use `docs/UI.md` as the product baseline. Inspect actual browser screenshots at relevant viewport sizes, test populated and failure states, fix defects and repeat checks. If visual verification is unavailable, disclose it as pending. Do not claim a design is complete from unit tests alone.

@@ -1,7 +1,13 @@
 name: Windows compatibility checks
 on:
   push:
+    branches: [main]
+    tags: ['v*']
   pull_request:
+  workflow_dispatch:
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 permissions:
   contents: read
 jobs:
@@ -10,11 +16,19 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
       - uses: actions/setup-node@v4
         with:
           node-version: '22.21.1'
-      - run: npm run check
+      - name: Determine required test scope
+        id: scope
+        run: node scripts/ci-scope.mjs
+      - if: steps.scope.outputs.windows != 'false'
+        run: npm run check
       - name: Parse PowerShell installers (no privileged install)
+        if: steps.scope.outputs.windows != 'false'
         shell: pwsh
         run: |
           $files = Get-ChildItem installers/windows/*.ps1
@@ -23,14 +37,26 @@ jobs:
             [System.Management.Automation.Language.Parser]::ParseFile($file.FullName,[ref]$tokens,[ref]$errors) | Out-Null
             if ($errors.Count -gt 0) { $errors | Write-Error; exit 1 }
           }
-      - name: Shared wizard browser test on Windows (fixture only)
+      - name: Cache pinned browser and npm downloads
+        if: steps.scope.outputs.windows != 'false'
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/AppData/Local/npm-cache/_cacache
+            ~/AppData/Local/ms-playwright
+          key: meshwall-playwright-1.56.1-${{ runner.os }}-${{ runner.arch }}-v1
+      - name: Install pinned browser test dependency
+        if: steps.scope.outputs.windows != 'false'
         run: npm install --no-save --package-lock=false --no-audit --no-fund playwright@1.56.1
-      - run: npx playwright install chromium
-      - run: node tests/integration/setup-visual.mjs
+      - if: steps.scope.outputs.windows != 'false'
+        run: npx playwright install chromium
+      - if: steps.scope.outputs.visual != 'false'
+        run: node tests/integration/setup-visual.mjs
       - name: Real MeshCentral loopback (no service installation)
+        if: steps.scope.outputs.windows != 'false'
         run: npm run integration
       - uses: actions/upload-artifact@v4
-        if: always()
+        if: always() && steps.scope.outputs.visual != 'false'
         with:
           name: windows-setup-visual-evidence
           path: visual-evidence/
