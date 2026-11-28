@@ -53,5 +53,7 @@ CI menghindari duplikasi push/PR, membatalkan run PR lama, dan melewati tes bera
 
 Diagnosis konfigurasi dan TLS menggunakan `node scripts/doctor.mjs config-tls <install-root>` (kandidat); tidak mengubah konfigurasi atau membocorkan private key. Ikuti [Operations](docs/OPERATIONS.md#configuration-and-tls-diagnosis).
 
+Pusat bantuan pemulihan lokal (kandidat): `node scripts/doctor.mjs plan <install-root> <registered-service-name> --id`. Menentukan langkah berikutnya tanpa menjalankan perbaikan otomatis. Lihat [Operations](docs/OPERATIONS.md#local-recovery-planner-candidate).
+
 ## Lanjutkan pengembangan dengan AI apa pun
 Minta AI membaca [AGENTS.md](AGENTS.md) dan [PROJECT_MEMORY.md](PROJECT_MEMORY.md), lalu memeriksa HEAD dan CI terbaru. Kedua file berada di repository dan wajib diperbarui setiap perubahan substantif. AI yang tidak otomatis membaca AGENTS.md perlu diarahkan sekali; tidak perlu membuat handover manual.

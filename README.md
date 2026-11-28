@@ -43,6 +43,8 @@ CI uses conservative change-based scope; [testing policy](docs/TESTING.md#ci-exe
 
 Local `doctor.mjs config-tls <install-root>` candidate checks the fresh security baseline and certificate/key pairing without exposing values. See [Operations](docs/OPERATIONS.md#configuration-and-tls-diagnosis).
 
+Local recovery planner candidate: `node scripts/doctor.mjs plan <install-root> <registered-service-name>`; add `--id` for Indonesian or `--json` for sanitized evidence. See [Operations](docs/OPERATIONS.md#local-recovery-planner-candidate).
+
 ## Documentation
 
 | Document | Purpose |
