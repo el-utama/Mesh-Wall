@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import {mkdtemp,mkdir,writeFile,readFile,cp,rm,readdir} from "node:fs/promises";
+import {mkdtemp,mkdir,writeFile,readFile,cp,rm,readdir,rename,lstat} from "node:fs/promises";
 import {join,resolve} from "node:path";
 import {tmpdir} from "node:os";
 import {repairUI} from "../scripts/maintenance/repair-ui.mjs";
@@ -49,5 +49,33 @@ test("initial service failure or unverified backup prevents repair",async()=>{
   await assert.rejects(repairUI(f.root,f.source,f.parent,name,{assertStopped:async()=>{throw Error("wrong service");},snapshot:async()=>assert.fail("must not back up")}),/wrong service/);
   await assert.rejects(repairUI(f.root,f.source,f.parent,name,{assertStopped:async()=>{},verifySnapshot:async()=>{throw Error("backup invalid");},replace:async()=>assert.fail("must not replace")}),/backup invalid/);
   await assert.rejects(readFile(join(f.dest,"meshwall","app.mjs")),/ENOENT/);
+ }finally{await rm(f.base,{recursive:true,force:true});}
+});
+
+test("repair refuses stale backup evidence under lock, preserving both active data and snapshot",async()=>{
+ const f=await fixture();let calls=0;
+ try{
+  const configPath=join(f.root,"meshcentral-data","config.json");
+  await assert.rejects(repairUI(f.root,f.source,f.parent,name,{assertStopped:async()=>{if(++calls===2)await writeFile(configPath,f.config+"\n");}}),/MW-REPAIR-STALE/);
+  assert.equal(await readFile(configPath,"utf8"),f.config+"\n");
+  await assert.rejects(readFile(join(f.dest,"meshwall","app.mjs")),/ENOENT/);
+  const names=await readdir(f.parent);assert.equal(names.length,1);
+  await verify(join(f.parent,names[0]));
+  await assert.rejects(lstat(join(f.root,".meshwall-maintenance-lock")),/ENOENT/);
+ }finally{await rm(f.base,{recursive:true,force:true});}
+});
+test("failed UI rollback retains maintenance lock and recovery paths",async()=>{
+ const f=await fixture();let moves=0;
+ try{
+  const {replaceUI}=await import("../scripts/maintenance/ui-release.mjs");
+  await assert.rejects(repairUI(f.root,f.source,f.parent,name,{assertStopped:async()=>{},replace:(root,source,options)=>replaceUI(root,source,{...options,move:async(a,b)=>{
+   if(++moves>=2)throw Error("injected rename failure");return rename(a,b);
+  }})}),/MW-UI-RECOVERY/);
+  assert.equal((await lstat(join(f.root,".meshwall-maintenance-lock"))).isDirectory(),true);
+  const names=await readdir(f.root);
+  assert.ok(names.some(n=>n.startsWith(".meshwall-ui-stage-")));
+  assert.ok(names.some(n=>n.startsWith("meshwall-ui-recovery-")));
+  await assert.rejects(repairUI(f.root,f.source,f.parent,name,{assertStopped:async()=>{}}),/lock findings/);
+  assert.equal((await readdir(f.parent)).length,1);
  }finally{await rm(f.base,{recursive:true,force:true});}
 });

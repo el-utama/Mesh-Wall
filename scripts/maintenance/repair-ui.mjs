@@ -1,5 +1,5 @@
 // Narrow local repair: never overwrite different UI content; verified full backup and stopped-service guard.
-import {backup,verify} from "./lib.mjs";
+import {backup,verify,assertSnapshotMatches} from "./lib.mjs";
 import {replaceUI} from "./ui-release.mjs";
 import {diagnoseFresh} from "../../installers/support/diagnose.mjs";
 import {readFreshEndpoint} from "../../installers/support/diagnose.mjs";
@@ -7,7 +7,7 @@ import {requireStoppedAdoptionService,validServiceName} from "../../installers/s
 import {realpath,lstat} from "node:fs/promises";
 import {join,resolve} from "node:path";
 
-export async function repairUI(root,source,parent,name,{inspectFiles=diagnoseFresh,endpoint=readFreshEndpoint,assertStopped=requireStoppedAdoptionService,snapshot=backup,verifySnapshot=verify,replace=replaceUI}={}){
+export async function repairUI(root,source,parent,name,{inspectFiles=diagnoseFresh,endpoint=readFreshEndpoint,assertStopped=requireStoppedAdoptionService,snapshot=backup,verifySnapshot=verify,matchSnapshot=assertSnapshotMatches,replace=replaceUI}={}){
  if(!validServiceName(name))throw Error("MW-REPAIR-SERVICE: use the exact registered service name");
  const report=await inspectFiles(root);
  const expected=["ROOT","PACKAGE","CONFIG","CERT","KEY"];
@@ -26,7 +26,7 @@ export async function repairUI(root,source,parent,name,{inspectFiles=diagnoseFre
  const saved=await snapshot(actual,parent);
  await verifySnapshot(saved);
  try{
-  const previous=await replace(actual,source,{repair:true,assertStopped:guard});
+  const previous=await replace(actual,source,{repair:true,assertStopped:guard,assertSnapshot:async path=>matchSnapshot(path,saved)});
   return {backup:saved,previous};
  }catch(error){
   throw Error("MW-REPAIR: UI repair not completed; preserve the verified backup at "+saved+". Inspect local recovery before retrying. "+error.message);

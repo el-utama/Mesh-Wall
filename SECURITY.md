@@ -26,3 +26,5 @@ The named-service probe uses fixed local commands and treats service metadata as
 Offline `apply` and `rollback` can require a verified stopped state for a named service. The checks are snapshots of the service manager and the maintenance lock serializes MeshWall transactions. The operator keeps the engine stopped and checks for other processes using the root throughout maintenance.
 
 The narrow fresh-install UI repair command requires the exact registered stopped service, explicit confirmation and verified full separate backup. It rejects changed or unknown existing UI and adoption journals, rechecks service state before swap, and retains previous partial UI. No generic repair or automatic service control; operators must ensure exclusive offline access and restrict backups. Physical ACL and power-loss validation remain pending.
+
+Before repair swaps, compare the verified backup inventory to the active state while holding the maintenance lock. Failed UI rollback retains the lock and recovery evidence; a manual authorized recovery is required. Exclusive offline access remains mandatory; the checks are not an OS-level process lock.

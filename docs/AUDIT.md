@@ -11,7 +11,7 @@ Current status: **Alpha / isolated lab evaluation, not production-ready.** Sourc
 | P05 | Remote access | Official embedded desktop/terminal/files panels; wall view-only | Independent native controls, allowed power operations, consent and revocation tests |
 | P06 | Enrollment | Group invitation verified with real loopback | Actual agent install, revoke invite/remove device with confirmation |
 | P07 | Administration | Group/device edits, standard accounts, direct viewer grant/revoke, recent events and basic diagnostics | Effective/inherited roles, full logs/notifications, advanced native replacement |
-| P08 | Maintenance | Offline verified backup/restore and UI swap/rollback; guarded partial-UI repair candidate; local TLS renewal adapters | GUI service/config/backup, unattended TLS, engine update/rollback, real service/ACL tests |
+| P08 | Maintenance | Offline verified backup/restore and UI swap/rollback; guarded partial-UI repair candidate with stale-backup refusal and rollback-failure lock retention; local TLS renewal adapters | GUI service/config/backup, unattended TLS, engine update/rollback, real service/ACL tests |
 | P09 | Private access | Bootstrap guides Tailscale login; private bind/TLS configuration and certificate unit checks | Real private TLS/agent connectivity/renewal on both OS, network management UI |
 | P10 | Modularity | Static explicit JS modules; shared setup/maintenance, platform adapters and ADRs | Automated boundary checks and ongoing contract review |
 | P11 | UI/UX | Design system, five viewports, synthetic density, keyboard/contrast tests | Independent accessibility/manual audit, missing UI states and actual screen sessions |
