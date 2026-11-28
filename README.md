@@ -45,6 +45,8 @@ Local `doctor.mjs config-tls <install-root>` candidate checks the fresh security
 
 Local recovery planner candidate: `node scripts/doctor.mjs plan <install-root> <registered-service-name>`; add `--id` for Indonesian or `--json` for sanitized evidence. See [Operations](docs/OPERATIONS.md#local-recovery-planner-candidate).
 
+Temporary read-only maintenance browser candidate: `node scripts/maintenance-center.mjs`, see [Operations](docs/OPERATIONS.md#local-maintenance-browser-candidate). It cannot install or mutate the host.
+
 ## Documentation
 
 | Document | Purpose |

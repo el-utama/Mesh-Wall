@@ -73,3 +73,26 @@ test("adoption preview requires an authenticated same-origin request and never c
   await rm(base,{recursive:true,force:true});
  }
 });
+
+test("maintenance-only wizard authenticates, serializes diagnosis and denies mutation routes",async()=>{
+ const token="d".repeat(64),name=process.platform==="win32"?"MeshCentral":"meshwall-engine.service";
+ let calls=0,release,entered;
+ const started=new Promise(r=>entered=r),gate=new Promise(r=>release=r);
+ const server=createSetupServer({token,maintenanceOnly:true,planner:async()=>{calls++;entered();await gate;return {status:"needs-review",next:{id:"lock"},observed:{"MW-DIAG-LOCK":"blocked"}};},install:async()=>assert.fail("must not install")});
+ await new Promise(r=>server.listen(0,"127.0.0.1",r));
+ const origin="http://127.0.0.1:"+server.address().port,auth={Authorization:"Bearer "+token};
+ const post=(path,body,headers={})=>fetch(origin+path,{method:"POST",headers:{...auth,Origin:origin,"Content-Type":"application/json",...headers},body:JSON.stringify(body)});
+ const route="/api/maintenance/plan";
+ try{
+  assert.match(await(await fetch(origin)).text(),/Maintenance center/);
+  assert.equal((await post(route,{serviceName:name},{Authorization:"Bearer wrong"})).status,401);
+  assert.equal((await post(route,{serviceName:name},{Origin:"http://evil.test"})).status,403);
+  assert.equal((await post(route,{serviceName:name,root:"/other"})).status,400);
+  assert.equal((await post(route,{serviceName:"*"})).status,400);
+  assert.equal((await post("/api/install",data)).status,404);
+  assert.equal((await post("/api/adoption/preview",{root:"/other"})).status,404);
+  const pending=post(route,{serviceName:name});await started;
+  assert.equal((await post(route,{serviceName:name})).status,409);
+  release();assert.equal((await pending).status,200);assert.equal(calls,1);
+ }finally{release();server.closeAllConnections();await new Promise(r=>server.close(r));}
+});

@@ -52,6 +52,7 @@ node installers/adopt.mjs rollback "/path/to/install-root" --engine-stopped --se
 Rollback removes only unchanged, verified transaction-owned files; it does not remove the database. A modified file, interrupted lock or ambiguous state requires manual inspection. Keep journal and backup for review before retrying. Hard links must be supported by the installation filesystem (e.g. ext4/NTFS). See [adoption and recovery](ADOPTION.md).
 
 ## Diagnostics and recovery
+For the local visual read-only maintenance center, run `node scripts/maintenance-center.mjs` and open the private printed URL. See [Operations](OPERATIONS.md#local-maintenance-browser-candidate). No public listener or automatic repair.
 Start with `node scripts/doctor.mjs plan <install-root> <registered-service-name> --id` (or English without the flag). See [local recovery planner](OPERATIONS.md#local-recovery-planner-candidate); this does not execute recovery.
 Run `node scripts/doctor.mjs config-tls <install-root>` to review fresh security baseline and installed leaf/key before authorized recovery. See [Operations](OPERATIONS.md#configuration-and-tls-diagnosis); no full schema validation or automatic config replacement.
 For authorized local start/stop/restart of a default fresh install see [Operations](OPERATIONS.md#authorized-local-service-control-alpha-candidate). Do not use the service command on adopted installations or clear a retained lock blindly.

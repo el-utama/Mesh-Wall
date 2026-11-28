@@ -14,3 +14,5 @@
 #handoff li{margin:6px 0}
 #handoff pre{padding:8px 10px;border:1px solid var(--line);border-radius:6px;white-space:pre-wrap;overflow-wrap:anywhere}
 #fresh-steps[hidden]{display:none}
+
+#maintenance-result summary{cursor:pointer;font-weight:600;overflow-wrap:anywhere}#maintenance-next{color:var(--text);font-size:15px}#maintenance-evidence{margin:8px 0 16px}#maintenance-evidence dt{font-weight:600;min-width:0;overflow-wrap:anywhere}#maintenance-evidence dd{margin:0;text-align:right;min-width:0;overflow-wrap:anywhere}.maintenance-language{margin:0;max-width:100%}.maintenance-language select{font:inherit;min-height:36px;padding:6px;border:1px solid var(--control);background:var(--raised);color:var(--text);border-radius:6px}#maintenance-guide{overflow-wrap:anywhere}#maintenance-copy{margin-top:12px}
