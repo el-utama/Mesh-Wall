@@ -4,8 +4,10 @@ import {guidance,stages} from "../installers/support/catalog.mjs";
 import {readJournals} from "../installers/support/journal.mjs";
 import {diagnoseFresh} from "../installers/support/diagnose.mjs";
 import {diagnoseHealth} from "../installers/support/health.mjs";
+import {diagnoseConfigTLS} from "../installers/support/config-tls.mjs";
 const args=process.argv.slice(2);
-if(args[0]==="health"&&args.length===3){const report=await diagnoseHealth(args[1],args[2]);console.log(JSON.stringify(report,null,2));if(report.status!=="page-reachable")process.exitCode=1;}
+if(args[0]==="config-tls"&&args.length===2){const report=await diagnoseConfigTLS(args[1]);console.log(JSON.stringify(report,null,2));if(report.status!=="baseline-observed")process.exitCode=1;}
+else if(args[0]==="health"&&args.length===3){const report=await diagnoseHealth(args[1],args[2]);console.log(JSON.stringify(report,null,2));if(report.status!=="page-reachable")process.exitCode=1;}
 else if(args[0]==="diagnose"&&args.length===2){const report=await diagnoseFresh(args[1]);console.log(JSON.stringify(report,null,2));if(report.status!=="files-present")process.exitCode=1;}
 else if(args[0]==="history"&&args.length===1){try{console.log(JSON.stringify({mode:"read-only",history:readJournals(),note:"History contains recorded stages only, not proof of an active job or verified recovery. Follow the recovery note; never resume or clear locks blindly."},null,2));}catch{console.error("Local history unavailable; check operator permissions.");process.exitCode=1;}}
 else if(args[0]==="help"&&args.length<=2){if(args[1]&&!Object.hasOwn(stages,args[1])){console.error("Unknown stage. Available: "+Object.keys(stages).join(", "));process.exitCode=1;}else console.log(JSON.stringify(args[1]?guidance(args[1]):Object.keys(stages).map(x=>guidance(x)),null,2));}
@@ -13,4 +15,4 @@ else if(!args.length||args[0]==="discover"&&args.length<=2){
  const candidates=await discover(args[1]?[args[1]]:undefined);
  const [a,b,c]=process.versions.node.split(".").map(Number);
  console.log(JSON.stringify({mode:"read-only",platform:process.platform,architecture:process.arch,node:process.versions.node,nodeCompatible:a>22||(a===22&&(b>21||(b===21&&c>=1))),candidates,note:candidates.length?"Confirm the actual service and root before adoption.":"No candidate found in bounded service/process and common-path checks; custom paths may be missed. Use discover <root>."},null,2));
-}else{console.error("Usage: node scripts/doctor.mjs [discover [root] | diagnose <root> | health <root> <service-name> | help [stage] | history]");process.exitCode=1;}
+}else{console.error("Usage: node scripts/doctor.mjs [discover [root] | diagnose <root> | config-tls <root> | health <root> <service-name> | help [stage] | history]");process.exitCode=1;}

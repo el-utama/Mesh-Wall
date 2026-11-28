@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- Add sanitized fresh configuration policy and leaf/key/expiry diagnosis; retain maintenance lock and recovery directories if TLS rollback fails. Full schema, automatic configuration repair and real tailnet validation remain open.
 - Optimize CI triggers, superseded PR cancellation, conservative diff-based scope, pinned download/browser caches, and full manual/tag release regression. Preserve existing workflow/job names and cross-platform quality gates.
 - Added authorized typed local service start/stop/restart candidate for default fresh installs, identity and state checks, maintenance lock retention on uncertain results, strict post-start HTTPS evidence and shared platform fixtures. No GUI service control or automatic retry.
 - Added a narrowly scoped authorized missing-UI repair command, with verified separate backup, named stopped-service rechecks, matching-release requirement, retained prior UI and regression tests. Recheck the verified snapshot against current data under the maintenance lock and retain the lock if rollback fails. Physical recovery and power-loss acceptance remain pending.

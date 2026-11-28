@@ -39,7 +39,7 @@ async function rootEntry(path){
  if(drive.state!=="present")return drive;
  return walk(root,path.slice(root.length).split(sep).filter(Boolean),"directory");
 }
-async function json(result,validate){
+async function boundedText(result,validate){
  if(result.state!=="present")return result.state;
  if(result.info.size>limit)return "oversized";
  let handle;
@@ -56,13 +56,11 @@ async function json(result,validate){
    offset+=bytesRead;
   }
   if(offset>limit)return "oversized";
-  let value;
-  try{value=JSON.parse(buffer.subarray(0,offset).toString("utf8").replace(/^\uFEFF/,""));}
-  catch{return "invalid-json";}
-  return validate(value);
+  return validate(buffer.subarray(0,offset).toString("utf8").replace(/^\uFEFF/,""));
  }catch(error){return failure(error);}
  finally{await handle?.close();}
 }
+async function json(result,validate){return boundedText(result,text=>{let value;try{value=JSON.parse(text);}catch{return "invalid-json";}return validate(value);});}
 const object=value=>value!==null&&typeof value==="object"&&!Array.isArray(value);
 const packageState=value=>!object(value)||value.name!=="meshcentral"?"invalid-package":value.version!=="1.3.2"?"unsupported-version":"present";
 const configState=value=>object(value)?"present":"invalid-config";
@@ -121,4 +119,17 @@ export async function readFreshEndpoint(input){
   return {host,ip};
  });
  return object(endpoint)?endpoint:null;
+}
+
+// Fixed internal filenames only; callers must never include returned material in reports.
+export async function readFreshMaterial(input,kind){
+ const path=rootPath(input);
+ if(!path)return {state:"invalid-root"};
+ const root=await rootEntry(path);
+ if(root.state!=="present")return {state:root.state};
+ const name=kind==="config"?"config.json":kind==="leaf"?"webserver-cert-public.crt":kind==="key"?"webserver-cert-private.key":null;
+ if(!name)return {state:"unsafe"};
+ const entry=await walk(path,["meshcentral-data",name],"file");
+ const value=await boundedText(entry,text=>({state:"present",text}));
+ return typeof value==="string"?{state:value}:value;
 }
