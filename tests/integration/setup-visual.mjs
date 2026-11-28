@@ -171,7 +171,7 @@ try{
  const url="http://127.0.0.1:"+maintenance.address().port;
  await p.goto(url);assert.ok(await p.locator("#maintenance-run").isDisabled());
  await p.goto(url+"/#"+maintenanceToken);await p.locator("#maintenance-run").waitFor();
- await p.waitForFunction(()=>!document.querySelector("#maintenance-run").disabled);
+ await p.waitForFunction(()=>!document.querySelector("#maintenance-run").disabled && location.hash==="");
  await p.locator("#maintenance-service").fill(process.platform==="win32"?"MeshCentral":"meshwall-engine.service");
  await p.locator("#maintenance-service").press("Enter");await p.getByText("Review needed",{exact:true}).waitFor();
  await p.locator("#maintenance-language").selectOption("id");assert.equal(await p.locator("#maintenance-next").textContent(),"Langkah pemulihan uji");
@@ -186,5 +186,9 @@ try{
  assert.ok(!(await p.locator("body").textContent()).includes("fixture-private-error"));
  mode="ready";await p.locator("#maintenance-run").click();await p.getByText(/Pemeriksaan teramati/).waitFor();
  await p.locator("#maintenance-service").fill("changed");assert.ok(await p.locator("#maintenance-result").isHidden());
+ // Reopen an exact token URL in the same tab: old reports and service input must be discarded.
+ await p.goto(url+"/#"+maintenanceToken);
+ await p.waitForFunction(()=>location.hash===""&&!document.querySelector("#maintenance-run").disabled&&document.querySelector("#maintenance-service").value==="");
+ assert.ok(await p.locator("#maintenance-result").isHidden());
  assert.deepEqual(errors,[]);console.log("PASS: read-only maintenance browser, token gate, bilingual recovery, failure/stale-result handling and five viewport checks (synthetic)");
 }finally{await maintenanceBrowser.close();maintenance.closeAllConnections();await new Promise(r=>maintenance.close(r));}

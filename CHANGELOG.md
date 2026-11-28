@@ -1,7 +1,7 @@
 # Changelog
 
 ## Unreleased
-- Add temporary maintenance-only local browser mode using the existing setup server security boundary, bilingual recovery guidance, sanitized copyable evidence and isolated route/viewport tests. No browser mutation.
+- Add temporary maintenance-only local browser mode using the existing setup server security boundary, bilingual recovery guidance, sanitized copyable evidence and isolated route/viewport tests. No browser mutation. Fix same-tab reopening of the session URL and clear stale evidence.
 - Add bilingual read-only local recovery planner with prioritized diagnosis, fail-closed lock/adoption/target gating, sanitized structured output and local maintenance guidance. No privileged browser controls or automatic repair.
 - Add sanitized fresh configuration policy and leaf/key/expiry diagnosis; retain maintenance lock and recovery directories if TLS rollback fails. Full schema, automatic configuration repair and real tailnet validation remain open.
 - Optimize CI triggers, superseded PR cancellation, conservative diff-based scope, pinned download/browser caches, and full manual/tag release regression. Preserve existing workflow/job names and cross-platform quality gates.
