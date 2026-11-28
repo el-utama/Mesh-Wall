@@ -41,5 +41,7 @@ Untuk server lama, pilih **Review existing MeshCentral** di wizard lokal. Pilih 
 
 Riwayat instalasi wizard: `node scripts/doctor.mjs history` dari akun operator yang sama. Riwayat menampilkan maksimal 32 catatan tahap dan saran pemulihan sesuai status. Status terakhir bukan bukti proses masih berjalan; jangan ulangi instalasi tanpa pemeriksaan.
 
+Untuk instalasi baru yang gagal, jalankan `node scripts/doctor.mjs diagnose /opt/meshwall/engine` (Linux) atau `node scripts/doctor.mjs diagnose "C:\ProgramData\MeshWall"` (Windows, sesuaikan lokasi). Pemeriksaan hanya membaca bukti file, bukan menguji service atau TLS. Lihat [self-support](docs/SELF-SUPPORT.md).
+
 ## Lanjutkan pengembangan dengan AI apa pun
 Minta AI membaca [AGENTS.md](AGENTS.md) dan [PROJECT_MEMORY.md](PROJECT_MEMORY.md), lalu memeriksa HEAD dan CI terbaru. Kedua file berada di repository dan wajib diperbarui setiap perubahan substantif. AI yang tidak otomatis membaca AGENTS.md perlu diarahkan sekali; tidak perlu membuat handover manual.
