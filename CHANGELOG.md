@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- Added authorized typed local service start/stop/restart candidate for default fresh installs, identity and state checks, maintenance lock retention on uncertain results, strict post-start HTTPS evidence and shared platform fixtures. No GUI service control or automatic retry.
 - Added a narrowly scoped authorized missing-UI repair command, with verified separate backup, named stopped-service rechecks, matching-release requirement, retained prior UI and regression tests. Recheck the verified snapshot against current data under the maintenance lock and retain the lock if rollback fails. Physical recovery and power-loss acceptance remain pending.
 - Added read-only named-service and configured local private HTTPS health diagnostics, with strict TLS, response limits, no redirects or credentials, and status-specific guidance. Login and physical acceptance remain separate.
 - Added a read-only fresh-install file diagnosis command with specific finding codes, bounded JSON checks, unsafe-path refusal, partial-install fixtures and no secret or path output. Actual service/TLS validation and recovery remain separate.

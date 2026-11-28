@@ -35,7 +35,9 @@ Read-only fresh-install diagnosis: `node scripts/doctor.mjs diagnose /opt/meshwa
 
 For service and HTTPS checks use `node scripts/doctor.mjs health <root> <service-name>` locally. See [local self-support](docs/SELF-SUPPORT.md) for platform examples and limits.
 
-A guarded local partial-UI repair is available in the candidate source; see [Operations](docs/OPERATIONS.md#repair-missing-ui-files-fresh-installs-only) for prerequisites and limits. The repair refuses a stale backup and preserves recovery evidence on failed rollback. No generic automatic repair.
+A guarded local partial-UI repair is available; see [Operations](docs/OPERATIONS.md#repair-missing-ui-files-fresh-installs-only) for prerequisites and limits. The repair refuses a stale backup and preserves recovery evidence on failed rollback. No generic automatic repair.
+
+Authorized local service control candidate: [start/stop/restart](docs/OPERATIONS.md#authorized-local-service-control-alpha-candidate), only for default fresh installs with explicit downtime confirmation.
 
 ## Documentation
 
