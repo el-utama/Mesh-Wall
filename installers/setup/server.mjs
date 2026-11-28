@@ -4,12 +4,17 @@ import {validateAdoptionPreview,validateSetup,validToken,validReadyURL} from "./
 import {guidance,supportReport} from "../support/catalog.mjs";
 import {discover as defaultDiscover} from "../support/discovery.mjs";
 import {planAdoption} from "./adoption-plan.mjs";
+import {recoveryPlan} from "../support/recovery-plan.mjs";
+import {freshServiceTarget} from "../../scripts/maintenance/service-control.mjs";
+import {join} from "node:path";
 const dir=new URL("./",import.meta.url);
 const assets=new Map([["/",["setup.html","text/html; charset=utf-8"]],["/setup.js",["setup.js","text/javascript; charset=utf-8"]],["/setup-adoption.js",["setup-adoption.js","text/javascript; charset=utf-8"]],["/setup.css",["setup.css","text/css; charset=utf-8"]]]);
-export function createSetupServer({token,preflight,install,complete=()=>{},discover=defaultDiscover,inspectService}){
+const maintenanceAssets=new Map([["/",["maintenance.html","text/html; charset=utf-8"]],["/maintenance.js",["maintenance.js","text/javascript; charset=utf-8"]],["/setup.css",["setup.css","text/css; charset=utf-8"]]]);
+export function createSetupServer({token,preflight,install,complete=()=>{},discover=defaultDiscover,inspectService,maintenanceOnly=false,planner=recoveryPlan}){
   let state={status:"idle",stage:"preflight",message:"Ready for preflight",url:null};
   let reviewingAdoption=false,existingCandidate=false;
-  const data=new Map([...assets].map(([path,[name,type]])=>[path,{type,body:readFileSync(new URL(name,dir))}]));
+  let planning=false;
+  const data=new Map([...(maintenanceOnly?maintenanceAssets:assets)].map(([path,[name,type]])=>[path,{type,body:readFileSync(new URL(name,dir))}]));
   const json=(res,status,value)=>{res.writeHead(status,{"Content-Type":"application/json; charset=utf-8"});res.end(JSON.stringify(value));};
   const server=createServer(async(req,res)=>{
     res.setHeader("Cache-Control","no-store");res.setHeader("X-Content-Type-Options","nosniff");res.setHeader("X-Frame-Options","DENY");res.setHeader("Referrer-Policy","no-referrer");res.setHeader("Content-Security-Policy","default-src 'self'; script-src 'self'; style-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action 'self'");
@@ -18,6 +23,21 @@ export function createSetupServer({token,preflight,install,complete=()=>{},disco
     if(req.method==="GET"&&data.has(req.url)){const a=data.get(req.url);res.writeHead(200,{"Content-Type":a.type});return res.end(a.body);}
     if(!req.url?.startsWith("/api/"))return json(res,404,{error:"Not found"});
     if(!validToken(req.headers.authorization,token))return json(res,401,{error:"Invalid setup token"});
+    if(maintenanceOnly){
+      if(req.method!=="POST"||req.url!=="/api/maintenance/plan")return json(res,404,{error:"Maintenance session is read-only."});
+      if(req.headers.origin!==origin||req.headers["content-type"]!=="application/json")return json(res,403,{error:"Origin or content type rejected"});
+      if(planning)return json(res,409,{error:"Diagnosis already running"});
+      planning=true;
+      try{
+        let body="";
+        for await(const chunk of req){body+=chunk;if(Buffer.byteLength(body)>1024)return json(res,400,{error:"Invalid diagnosis request"});}
+        let input;try{input=JSON.parse(body);}catch{return json(res,400,{error:"Invalid diagnosis request"});}
+        const root=process.platform==="win32"&&process.env.ProgramData?join(process.env.ProgramData,"MeshWall"):"/opt/meshwall/engine";
+        if(!input||typeof input!=="object"||Array.isArray(input)||Object.keys(input).length!==1||!freshServiceTarget(root,input.serviceName))return json(res,400,{error:"Enter the exact registered service name for the default installation."});
+        return json(res,200,await planner(root,input.serviceName));
+      }catch{return json(res,500,{error:"Diagnosis unavailable; inspect local terminal."});}
+      finally{planning=false;}
+    }
     if(req.method==="GET"&&req.url==="/api/status")return json(res,200,{...state,help:guidance(state.stage)});
     if(req.method==="GET"&&req.url==="/api/support")return json(res,200,supportReport(state));
     if(req.method==="GET"&&req.url==="/api/discovery"){try{const candidates=await discover();existingCandidate ||= candidates.length>0;return json(res,200,{candidates,existingCandidate,help:guidance("discovery")});}catch{return json(res,500,{error:"Discovery unavailable",help:guidance("discovery")});}}

@@ -55,5 +55,7 @@ Diagnosis konfigurasi dan TLS menggunakan `node scripts/doctor.mjs config-tls <i
 
 Pusat bantuan pemulihan lokal (kandidat): `node scripts/doctor.mjs plan <install-root> <registered-service-name> --id`. Menentukan langkah berikutnya tanpa menjalankan perbaikan otomatis. Lihat [Operations](docs/OPERATIONS.md#local-recovery-planner-candidate).
 
+Pusat pemeliharaan visual lokal (kandidat): jalankan `node scripts/maintenance-center.mjs`, buka URL privat dari terminal, pilih bahasa dan jalankan diagnosis. Tidak ada perubahan host dari browser. Lihat [Operations](docs/OPERATIONS.md#local-maintenance-browser-candidate).
+
 ## Lanjutkan pengembangan dengan AI apa pun
 Minta AI membaca [AGENTS.md](AGENTS.md) dan [PROJECT_MEMORY.md](PROJECT_MEMORY.md), lalu memeriksa HEAD dan CI terbaru. Kedua file berada di repository dan wajib diperbarui setiap perubahan substantif. AI yang tidak otomatis membaca AGENTS.md perlu diarahkan sekali; tidak perlu membuat handover manual.

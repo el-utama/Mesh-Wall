@@ -155,3 +155,36 @@ try{
  await new Promise(resolve=>adoptionServer.close(resolve));
  await rm(base,{recursive:true,force:true});
 }
+
+// Maintenance-only browser: synthetic planner, no host mutation.
+const maintenanceToken=randomBytes(32).toString("hex");
+let mode="lock";
+const maintenance=createSetupServer({token:maintenanceToken,maintenanceOnly:true,planner:async()=>{
+ if(mode==="error")throw Error("fixture-private-error");
+ return {status:mode==="lock"?"needs-review":"checks-observed",next:{id:mode,en:"Fixture next step",idText:"Langkah pemulihan uji",guide:"docs/OPERATIONS.md"},observed:{"MW-DIAG-LOCK":mode==="lock"?"blocked":"clear"}};
+}});
+await new Promise(r=>maintenance.listen(0,"127.0.0.1",r));
+const maintenanceBrowser=await chromium.launch({headless:true});
+try{
+ const p=await maintenanceBrowser.newPage({viewport:{width:1440,height:900}});
+ const errors=[];p.on("pageerror",e=>errors.push(e.message));
+ const url="http://127.0.0.1:"+maintenance.address().port;
+ await p.goto(url);assert.ok(await p.locator("#maintenance-run").isDisabled());
+ await p.goto(url+"/#"+maintenanceToken);await p.locator("#maintenance-run").waitFor();
+ await p.waitForFunction(()=>!document.querySelector("#maintenance-run").disabled);
+ await p.locator("#maintenance-service").fill(process.platform==="win32"?"MeshCentral":"meshwall-engine.service");
+ await p.locator("#maintenance-service").press("Enter");await p.getByText("Review needed",{exact:true}).waitFor();
+ await p.locator("#maintenance-language").selectOption("id");assert.equal(await p.locator("#maintenance-next").textContent(),"Langkah pemulihan uji");
+ await p.locator("#maintenance-evidence-label").click();
+ for(const [width,height] of [[1920,1080],[1440,900],[1280,720],[768,1024],[390,844]]){
+  await p.setViewportSize({width,height});const [client,scroll]=await p.evaluate(()=>[document.documentElement.clientWidth,document.documentElement.scrollWidth]);
+  assert.ok(scroll<=client+1,"Maintenance overflow at "+width);
+  await p.screenshot({path:join(out,"maintenance-"+width+".jpg"),fullPage:true,type:"jpeg",quality:75});
+ }
+ mode="error";await p.locator("#maintenance-run").click();await p.getByText(/Diagnosis tidak tersedia/).waitFor();
+ assert.ok(await p.locator("#maintenance-result").isHidden());
+ assert.ok(!(await p.locator("body").textContent()).includes("fixture-private-error"));
+ mode="ready";await p.locator("#maintenance-run").click();await p.getByText(/Pemeriksaan teramati/).waitFor();
+ await p.locator("#maintenance-service").fill("changed");assert.ok(await p.locator("#maintenance-result").isHidden());
+ assert.deepEqual(errors,[]);console.log("PASS: read-only maintenance browser, token gate, bilingual recovery, failure/stale-result handling and five viewport checks (synthetic)");
+}finally{await maintenanceBrowser.close();maintenance.closeAllConnections();await new Promise(r=>maintenance.close(r));}

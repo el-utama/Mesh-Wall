@@ -25,6 +25,9 @@ Run `node scripts/doctor.mjs diagnose /opt/meshwall/engine` on Linux or `node sc
 ## Service and HTTPS health
 After file diagnosis, run `node scripts/doctor.mjs health /opt/meshwall/engine meshwall-engine.service` on Linux. On Windows run `node scripts/doctor.mjs health "C:\ProgramData\MeshWall" "MeshCentral"` using the actual registered service name. This uses the existing read-only service adapter. Only when file evidence is complete and the matching service reports running, it checks the configured fresh Tailscale IPv4 on a local interface and makes one bounded HTTPS GET to port 8443 with hostname verification, no credentials and no redirects. Reports omit service names, accounts, hostnames, IPs, paths and raw errors. `page-reachable` means a matching service registration/state and expected page were observed, not authenticated login, process ownership or agent readiness. Custom installations require their own review. No automatic restart or repair.
 
+## Local maintenance browser
+Run `node scripts/maintenance-center.mjs` from the reviewed checkout; open the printed localhost URL privately. Use the actual registered service name, select language and run diagnosis. No AI, running MeshCentral, remote access or privileged browser mutation is required. If the 15-minute session expires, close it and rerun locally; never share the token. See [operations](OPERATIONS.md#local-maintenance-browser-candidate).
+
 ## Local recovery planner
 Use `node scripts/doctor.mjs plan <install-root> <registered-service-name> --id` for one prioritized local recovery step in Indonesian, or omit `--id` for English. `--json` emits sanitized structured findings. The planner is read-only and refers to local guides; no automatic service or file mutation. It refuses to guide fresh repairs on adopted/non-default roots or while a maintenance lock exists.
 

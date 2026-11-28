@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+ <meta charset="utf-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1">
+ <title>MeshWall local maintenance</title>
+ <link rel="stylesheet" href="/setup.css">
+</head>
+<body>
+<main>
+ <header class="setup-header"><span class="brand">Mesh<span>Wall</span></span><span class="local-label">Local maintenance · Alpha</span></header>
+ <div class="intro"><h1 id="maintenance-title">Maintenance center</h1><p id="maintenance-intro">Inspect the default fresh installation even when MeshCentral is not running. No changes are made here.</p></div>
+ <section aria-labelledby="maintenance-check-heading">
+  <div class="section-head"><h2 id="maintenance-check-heading">Run diagnosis</h2><label class="maintenance-language"><span id="maintenance-language-label">Language</span><select id="maintenance-language"><option value="en">English</option><option value="id">Indonesia</option></select></label></div>
+  <form id="maintenance-form">
+   <label><span id="maintenance-service-label">Registered service name</span><input id="maintenance-service" required maxlength="128" autocomplete="off" spellcheck="false" aria-describedby="maintenance-hint"></label>
+   <p id="maintenance-hint">Linux: meshwall-engine.service. Windows: use the actual service name in Service Manager.</p>
+   <button type="submit" class="primary" id="maintenance-run" disabled>Run diagnosis</button>
+  </form>
+  <p id="maintenance-status" role="status" aria-live="polite">Enter the registered service name.</p>
+ </section>
+ <section id="maintenance-result" hidden aria-labelledby="maintenance-next-heading">
+  <h2 id="maintenance-next-heading">Recommended next step</h2>
+  <p id="maintenance-next"></p>
+  <p><span id="maintenance-guide-label">Local guide:</span> <code id="maintenance-guide"></code></p>
+  <details><summary id="maintenance-evidence-label">Observed checks</summary><dl id="maintenance-evidence"></dl></details>
+  <button type="button" id="maintenance-copy">Copy safe report</button>
+  <p id="maintenance-copy-status" role="status"></p>
+ </section>
+ <footer id="maintenance-footer">Read-only guidance, not authorization to repair. Use the reviewed local CLI and confirm downtime before any changes. Login, backup integrity and device access require separate verification.</footer>
+</main>
+<script type="module" src="/maintenance.js"></script>
+</body>
+</html>

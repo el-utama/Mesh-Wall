@@ -34,3 +34,5 @@ Typed local service controls are restricted to default fresh installations, requ
 The local config/TLS doctor reports only a known fresh security baseline and leaf/key/date/hostname evidence, not complete schema or trust validation. It never prints secret material. Custom settings require review; no automatic configuration overwrite. TLS swap rollback failure retains the maintenance lock and recovery evidence for authorized inspection.
 
 The local recovery planner only returns a static prioritized next step and allowlisted finding codes/states; it does not execute commands or authorize maintenance. A plan is point-in-time evidence and must be rechecked before any operation. Adopted/non-default targets and maintenance locks require separate review.
+
+Maintenance-only browser mode shares the setup loopback Host/origin/token/CSP boundary and only exposes read-only diagnosis for the default root. It rejects mutation endpoints and arbitrary root inputs; sessions expire in 15 minutes. No token in persistent storage. Privileged maintenance remains separate authorized CLI; do not publish the local port or token.
