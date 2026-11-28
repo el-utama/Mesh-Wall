@@ -16,17 +16,27 @@ async function hash(path){const h=createHash("sha256");for await(const chunk of 
 async function walk(base,rel,entries){if(!validRelative(rel))throw Error("Unsafe path");const full=join(base,...rel.split("/")),s=await lstat(full);if(s.isSymbolicLink())throw Error("Symbolic links are not supported: "+rel);if(s.isDirectory()){entries.push({path:rel,type:"directory"});for(const n of (await readdir(full)).sort()){if(!safeName(n))throw Error("Unsupported filename");await walk(base,rel+"/"+n,entries);}}else if(s.isFile()){entries.push({path:rel,type:"file",size:s.size,sha256:await hash(full)});}else throw Error("Special file refused: "+rel);}
 async function inventory(base){const entries=[];for(const name of roots)if(await exists(join(base,name)))await walk(base,name,entries);return entries;}
 async function checkEngine(root){const p=JSON.parse(await readFile(join(root,"node_modules/meshcentral/package.json"),"utf8"));if(p.version!==VERSION)throw Error("Unsupported MeshCentral version: "+p.version);}
-async function checkLocalDatabase(base){
- const conf=JSON.parse(await readFile(join(base,"meshcentral-data/config.json"),"utf8"));const settings=conf.settings||{};
- const unsupported=Object.keys(settings).find(k=>/^(mongodb|mongodbname|mongodbcol|mysql|mariadb|postgres|postgresql|sqlite3|acebase|dbtype|database|datapath|filespath|recordpath|recordingpath|webpath)$/i.test(k)&&settings[k]);
- if(unsupported)throw Error("External or alternate data storage requires its own backup procedure: "+unsupported);
+export async function checkLocalDatabase(base,maxBytes=Infinity){
+ const file=join(base,"meshcentral-data/config.json"),info=await lstat(file);
+ if(!info.isFile()||info.isSymbolicLink()||info.size>maxBytes)throw Error("Expected a regular config.json within the preview size limit");
+ const conf=JSON.parse((await readFile(file,"utf8")).replace(/^\uFEFF/,""));
+ if(!conf||typeof conf!=="object"||Array.isArray(conf))throw Error("Expected a configuration object");
+ const settings=Object.entries(conf).filter(([key])=>key.toLowerCase()==="settings");
+ const unsupported=settings.flatMap(([,value])=>Object.entries(value??{})).find(([key,value])=>/^(mongodb|mongodbname|mongodbcol|mysql|mariadb|postgres|postgresql|sqlite3|acebase|dbtype|database|datapath|filespath|recordpath|recordingpath|webpath)$/i.test(key)&&value);
+ if(unsupported)throw Error("External or alternate data storage requires its own backup procedure: "+unsupported[0]);
+ return conf;
 }
 async function privateDir(path){await mkdir(path,{mode:0o700});}
 async function copyEntries(src,dest,entries){for(const entry of entries){const a=join(src,...entry.path.split("/")),b=join(dest,...entry.path.split("/"));if(entry.type==="directory"){await privateDir(b);}else{await copyFile(a,b,constants.COPYFILE_EXCL);if(process.platform!=="win32")await chmod(b,0o600);}}}
 function same(a,b){return JSON.stringify(a)===JSON.stringify(b);}
 async function lock(root,fn){const path=join(root,".meshwall-maintenance-lock");await privateDir(path);try{return await fn();}finally{await rmdir(path);}}
-export async function backup(rootArg,parentArg){
+export async function backupLocation(rootArg,parentArg){
+ if(!parentArg)throw Error("A separate backup directory is required");
  const root=await rootPath(rootArg),parent=await rootPath(parentArg);if(inside(root,parent)||inside(parent,root))throw Error("Backup parent must be outside and separate from installation");
+ return {root,parent};
+}
+export async function backup(rootArg,parentArg){
+ const {root,parent}=await backupLocation(rootArg,parentArg);
  await checkEngine(root);await checkLocalDatabase(root);
  return lock(root,async()=>{const id=stamp(),staging=join(parent,".meshwall-staging-"+id),dest=join(parent,"meshwall-"+id);await privateDir(staging);
  try{const entries=await inventory(root);if(!entries.some(x=>x.path==="meshcentral-data/config.json"&&x.type==="file"))throw Error("Configuration missing");await copyEntries(root,staging,entries);

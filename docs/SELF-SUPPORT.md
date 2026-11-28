@@ -4,7 +4,7 @@ MeshWall must support users even without ChatGPT, Codex, cloud AI or a running M
 
 ## Available in current source
 - Bootstrap terminal help and stage labels, including failures before Node is available; read this local Markdown file from the checkout.
-- Shared temporary setup wizard: bounded common-path/service/process candidate discovery, compatibility checks, fresh install block in wizard and standalone installers when an existing candidate is found, contextual stage code and next actions, copyable minimal safe report. Setup server requires the one-time token; reports exclude raw logs, installation paths, account data and secrets. Candidate roots shown locally may be sensitive.
+- Shared temporary setup wizard: bounded common-path/service/process discovery, manual adoption preview, registered service inspection on both OSes, manual confirmation guidance for custom launchers, separate backup path check, fresh install guard, local terminal handoff and safe diagnostic report. Setup server requires the one-time token; reports exclude raw logs, installation paths, account data and secrets. Candidate roots shown locally may be sensitive.
 - Contextual read-only help in overview, wall, devices, groups, users, activity and settings; no privileged action is exposed.
 - Independent read-only CLI (requires Node, not a running MeshCentral):
 ```bash
@@ -31,7 +31,7 @@ The actual one-time fresh setup wizard now records allowlisted stage/status time
 | MW-SERVICE | Actual service, logs, port/dependency failures | Inspect known service locally |
 | MW-VERIFY | Private HTTPS and expected page | Verify login/agent separately; no insecure fallback |
 | MW-READY | First login and authorized test PC | Enroll one PC and verify consent/frame |
-| MW-ADOPT | Version, actual root, verified backup, stopped service | Use preview/status/apply/rollback; verify stopped service and preserve journal/backup |
+| MW-ADOPT | Version, actual root, verified backup, stopped service | Use preview/status/apply/rollback; use the named-service check before applying or rolling back a supported installation; preserve journal and backup |
 | MW-ENROLL | Invite validity, group, agent connection | Regenerate authorized invite if necessary |
 | MW-STREAM | Consent, relay, decoded frame, resources | Stop and explicitly retry with permission; reduce active set |
 | MW-MAINT | Service identity, backup, disk, recovery path | Use supported offline maintenance |
@@ -39,7 +39,7 @@ The actual one-time fresh setup wizard now records allowlisted stage/status time
 
 Codes identify the stage, not the precise root cause. Read [troubleshooting](TROUBLESHOOTING.md), [quickstart](QUICKSTART-ALPHA.md) and [operations](OPERATIONS.md) locally. Do not share raw logs or real screen data.
 
-See [adoption and recovery](ADOPTION.md) for the new offline transactional CLI and limitations.
+See [adoption and recovery](ADOPTION.md) for the local wizard and CLI, specific preview codes and Bahasa Indonesia instructions. Use status for an interrupted or inconsistent adoption and preserve the backup and journal.
 
 ## Release requirements still open
-Broader discovery and guided browser adoption/service lifecycle; CLI preview/backup/staged rollback available; complete durable transaction journal for all installers and safe resume/recovery after power loss; specific diagnosed error codes, one-click allowlisted repairs after authorization, complete in-dashboard error-specific help and offline bilingual guide, service watchdog with bounded restart/health checks, structured sanitized diagnostics and verified rollback on both OSes. Do not treat stage guidance as a repair engine. No unbounded watchdog or AI required. Real failure-injection and physical host acceptance remain mandatory.
+Broader discovery, verified service identity and service lifecycle, guided execution and recovery; complete durable transaction journal for all installers and safe resume/recovery after power loss; specific diagnosed error codes, one-click allowlisted repairs after authorization, complete in-dashboard error-specific help and offline bilingual guide, service watchdog with bounded restart/health checks, structured sanitized diagnostics and verified rollback on both OSes. Do not treat stage guidance as a repair engine. No unbounded watchdog or AI required. Real failure-injection and physical host acceptance remain mandatory.

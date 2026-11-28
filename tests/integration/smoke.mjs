@@ -7,7 +7,7 @@ import {randomBytes} from "node:crypto";
 import {spawn,execFileSync} from "node:child_process";
 import {chromium} from "playwright";
 import {backup,verify,restore} from "../../scripts/maintenance/lib.mjs";
-import {adopt,adoptionStatus} from "../../installers/adoption.mjs";
+import {adopt,adoptionStatus,rollbackAdoption} from "../../installers/adoption.mjs";
 import {checkRenderer} from "./renderer.mjs";
 const root=await mkdtemp(join(tmpdir(),"meshwall-smoke-"));
 const engine=join(root,"node_modules/meshcentral");
@@ -18,7 +18,7 @@ let logs="";
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 async function stopEngine(){if(!server||server.exitCode!==null||server.signalCode!==null)return;const exited=new Promise(r=>server.once("exit",r));if(process.platform==="win32"){server.stdin.end();}else server.kill("SIGTERM");await Promise.race([exited,sleep(5000)]);if(server.exitCode===null&&server.signalCode===null){server.kill("SIGKILL");await exited;}}
 function startEngine(){server=spawn(process.execPath,[engine,"--launch"],{cwd:root,stdio:["pipe","pipe","pipe"]});for(const stream of [server.stdout,server.stderr])stream.on("data",d=>{logs=(logs+d.toString()).slice(-12000)});}
-async function readyPage(page){for(let i=0;i<90;i++){if(server.exitCode!==null||server.signalCode!==null)throw Error("Engine exited");try{const r=await page.goto(origin+"/meshwall.html",{timeout:3000,waitUntil:"domcontentloaded"});if(r?.ok())return;}catch{}await sleep(1000);}throw Error("MeshWall page must be served by real MeshCentral");}
+async function readyPage(page,path="/meshwall.html"){for(let i=0;i<90;i++){if(server.exitCode!==null||server.signalCode!==null)throw Error("Engine exited");try{const r=await page.goto(origin+path,{timeout:3000,waitUntil:"domcontentloaded"});if(r?.ok())return;}catch{}await sleep(1000);}throw Error("Expected HTTPS page must be served by real MeshCentral: "+path);}
 try {
   const npmArgs=["install","--prefix",root,"--omit=dev","--no-audit","--no-fund","meshcentral@1.3.2"];
   if(process.env.npm_execpath)execFileSync(process.execPath,[process.env.npm_execpath,...npmArgs],{stdio:"inherit",timeout:180000});
@@ -87,6 +87,21 @@ try {
   await context.close();await stopEngine();
   backupParent=await mkdtemp(join(tmpdir(),"meshwall-backup-smoke-"));
   const snapshot=await backup(root,backupParent);await verify(snapshot);
+  // Verify adoption rollback before restore changes the original hard-link identities.
+  assert.deepEqual(await rollbackAdoption(root),{removed:14});
+  assert.equal((await adoptionStatus(root)).state,"rolled-back");
+  startEngine();
+  const native=await browser.newContext({ignoreHTTPSErrors:true});
+  const nativePage=await native.newPage();
+  await readyPage(nativePage,"/");
+  await nativePage.locator("#username").fill("labadmin");
+  await nativePage.locator("#password").fill(password);
+  await nativePage.locator("#loginButton").click();
+  await nativePage.locator('#logoutControl, [data-action="logout"]').first().waitFor({timeout:20000,state:"attached"});
+  assert.equal((await native.request.get(origin+"/meshwall.html")).status(),404);
+  assert.equal(await (await native.request.get(origin+"/original-custom.html")).text(),"original custom content");
+  await native.close();await stopEngine();
+  console.log("PASS: adoption rollback, engine restart, native login and original custom file; MeshWall path removed.");
   assert.match(cli(["--createaccount","afterbackup"],{meshcentral_pass:"Lab-"+randomBytes(20).toString("hex")}),/^Done\./m);
   const recovery=await restore(root,snapshot);
   assert.equal(relative(await realpath(root),dirname(await realpath(recovery))),"","Recovery must be an immediate child of the canonical installation root");

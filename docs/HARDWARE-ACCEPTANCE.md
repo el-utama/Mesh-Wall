@@ -9,6 +9,7 @@ Record board model (HG680P or B860H, including variant), Armbian base/version, k
 | Gate | Required evidence |
 | --- | --- |
 | Bootstrap | Successful dependency install and initial setup; no public listener; unsupported userspace rejected |
+| Existing installation | Detect or enter the original root, confirm the service and account, check backup storage and permissions, apply offline, verify existing HTTPS/login/groups/devices after restart, then test rollback on disposable lab data |
 | TLS / network | Correct hostname, private bind, valid TLS, actual agent connectivity; renewal and rollback verified |
 | Authorization | Admin and restricted account login; test view-only, consent accepted/denied, unauthorized devices hidden and access revoked |
 | Enrollment | Authorized PC can install an official agent and reconnect after reboot |
@@ -16,6 +17,7 @@ Record board model (HG680P or B860H, including variant), Armbian base/version, k
 | Lifecycle | Stop/filter/tab hide, network loss and restart release sessions; dashboard reconnect does not silently restart screen access |
 | Routine operations | Device/group edits, enrollment, account access, desktop, terminal and files through authorized paths |
 | Recovery | Verified backup, restore with restart, UI update and rollback; test on disposable lab data first |
+| Local self-support | From the local checkout, use the stage guides with the engine offline. Test a failed setup stage and interrupted adoption, retain the lock/journal/backup and confirm safe recovery with no AI dependency. |
 | Windows | Fresh install, actual service/TLS, enrollment, privileges and recovery |
 | Capacity | 1/10/25/50/75/100 real concurrent sessions, resource/latency measurements, stable sustained operation |
 

@@ -12,12 +12,16 @@ export function candidateRoots(platform=process.platform,env=process.env,cwd=pro
 export async function inspectRoot(input){
  try{
   const root=await realpath(resolve(input));const s=await lstat(root);if(!s.isDirectory())return null;
-  const pkg=join(root,"node_modules","meshcentral","package.json"),data=join(root,"meshcentral-data"),config=join(data,"config.json");
+  const modules=join(root,"node_modules"),engine=join(modules,"meshcentral");
+  for(const directory of [modules,engine]){const entry=await lstat(directory);if(!entry.isDirectory()||entry.isSymbolicLink())return null;}
+  const pkg=join(engine,"package.json"),data=join(root,"meshcentral-data"),config=join(data,"config.json");
   const p=await lstat(pkg);if(!p.isFile()||p.isSymbolicLink()||p.size>1024*1024)return null;
   const manifest=JSON.parse(await readFile(pkg,"utf8"));if(manifest.name!=="meshcentral"||typeof manifest.version!=="string"||!/^[0-9]+\.[0-9]+\.[0-9]+(?:[-+][a-z0-9.-]+)?$/i.test(manifest.version))return null;
-  const d=await lstat(data).catch(()=>null),c=await lstat(config).catch(()=>null);
-  const hasData=!!d?.isDirectory()&&!d.isSymbolicLink(),hasConfig=!!c?.isFile()&&!c.isSymbolicLink();
-  const ui=await lstat(join(root,"meshcentral-web","public","meshwall.html")).catch(()=>null);
+  const d=await lstat(data).catch(()=>null),hasData=!!d?.isDirectory()&&!d.isSymbolicLink();
+  const c=hasData?await lstat(config).catch(()=>null):null,hasConfig=!!c?.isFile()&&!c.isSymbolicLink();
+  const web=await lstat(join(root,"meshcentral-web")).catch(()=>null);
+  const pub=web?.isDirectory()&&!web.isSymbolicLink()?await lstat(join(root,"meshcentral-web","public")).catch(()=>null):null;
+  const ui=pub?.isDirectory()&&!pub.isSymbolicLink()?await lstat(join(root,"meshcentral-web","public","meshwall.html")).catch(()=>null):null;
   return {root,version:manifest.version,hasData,hasConfig,meshwall:!!ui,compatible:manifest.version==="1.3.2"&&hasData&&hasConfig};
  }catch{return null;}
 }

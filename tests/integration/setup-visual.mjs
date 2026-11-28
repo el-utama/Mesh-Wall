@@ -2,7 +2,8 @@
 // No privileged installer, Tailscale, MeshCentral agent or real credentials are used.
 import assert from "node:assert/strict";
 import {randomBytes} from "node:crypto";
-import {mkdir} from "node:fs/promises";
+import {mkdir,mkdtemp,readFile,readdir,realpath,rm,writeFile} from "node:fs/promises";
+import {tmpdir} from "node:os";
 import {join} from "node:path";
 import {chromium} from "playwright";
 import {createSetupServer} from "../../installers/linux/setup.mjs";
@@ -36,3 +37,121 @@ await new Promise(r=>failure.listen(0,"127.0.0.1",r));
 const failureBrowser=await chromium.launch({headless:true});
 try{const p=await failureBrowser.newPage({viewport:{width:390,height:844}});await p.goto("http://127.0.0.1:"+failure.address().port+"/#"+failureToken);await p.waitForFunction(()=>!document.querySelector("#start").disabled);await p.locator("#pass").fill("Fixture-Long-Password");await p.locator("#confirm").fill("Fixture-Long-Password");await p.locator("#authorized").check();await p.locator("#start").click();await p.waitForFunction(()=>document.querySelector("#helpCode").textContent.includes("MW-SERVICE"));assert.match(await p.locator("#helpNext").textContent(),/Preserve/);assert.ok(await p.locator("#start").isDisabled());assert.equal(await p.locator("#pass").inputValue(),"");const widths=await p.evaluate(()=>[document.documentElement.clientWidth,document.documentElement.scrollWidth]);assert.ok(widths[1]<=widths[0]+1);await p.screenshot({path:join(out,"setup-failure.jpg"),fullPage:true,type:"jpeg",quality:75});console.log("PASS: failure guidance and blocked repeat install on mobile fixture");}finally{await failureBrowser.close();failure.closeAllConnections();await new Promise(r=>failure.close(r));}
 
+
+// Use a disposable npm layout and actual read-only preview, with no service or credentials.
+const adoptionToken=randomBytes(32).toString("hex");
+const base=await mkdtemp(join(await realpath(tmpdir()),"mw-adoption-visual-"));
+const root=join(base,"already installed MeshCentral");
+const backupParent=join(base,"private backup");
+const packageDir=join(root,"node_modules","meshcentral");
+const dataDir=join(root,"meshcentral-data");
+const config=join(dataDir,"config.json");
+await mkdir(packageDir,{recursive:true});
+await mkdir(dataDir);
+await mkdir(backupParent);
+await writeFile(join(packageDir,"package.json"),'{"name":"meshcentral","version":"1.3.2"}');
+await writeFile(config,"{}");
+let detected=false;
+let serviceStatus="running";
+let serviceMatched=true;
+const serviceName=process.platform==="win32"?"MeshCentral":"meshcentral.service";
+const adoptionServer=createSetupServer({
+ token:adoptionToken,
+ discover:async()=>detected?[{root,version:"1.3.2",compatible:true}]:[],
+ preflight:()=>({ready:true,checks:[],note:"UI TEST FIXTURE — disposable local files; no service will run."}),
+ inspectService:async(_,name)=>serviceMatched&&name===serviceName?{status:"verified",name,state:serviceStatus,account:"fixture-operator"}:{status:"mismatch"},
+ install:async()=>assert.fail("Existing candidate must block installation")
+});
+await new Promise(resolve=>adoptionServer.listen(0,"127.0.0.1",resolve));
+const adoptionBrowser=await chromium.launch({headless:true});
+try{
+ const page=await adoptionBrowser.newPage({viewport:{width:1440,height:900}});
+ const errors=[];
+ page.on("pageerror",error=>errors.push(error.message));
+ await page.goto("http://127.0.0.1:"+adoptionServer.address().port+"/#"+adoptionToken);
+ await page.waitForFunction(()=>!document.querySelector("#preview").disabled);
+ await page.getByText("Review existing MeshCentral",{exact:true}).click();
+ await page.locator("#root").fill("relative-fixture");
+ await page.locator("#root").press("Enter");
+ await page.getByText(/MW-ADOPT-ROOT/).waitFor();
+ assert.ok(await page.locator("#adoption-review").isHidden());
+ assert.ok(await page.locator("#start").isEnabled());
+ await page.locator("#root").fill(root);
+ await page.locator("#root").press("Enter");
+ await page.getByText(/Read-only preview ready/).waitFor();
+ assert.equal(await page.locator("#preview-files li").count(),14);
+ assert.ok(await page.locator("#administrator").isHidden());
+ assert.ok(await page.locator("#fresh-steps").isHidden());
+ assert.ok(await page.locator("#backup-form").isHidden());
+ const filesDisclosure = page.locator("#file-summary");
+ await filesDisclosure.click();
+ await page.locator("#service-name").fill("unrelated.service");
+ await page.locator("#service-name").press("Enter");
+ await page.getByText(/points to a different installation/).waitFor();
+ assert.ok(await page.locator("#service-confirmed").isDisabled());
+ await page.locator("#service-name").fill(serviceName);
+ await page.locator("#service-name").press("Enter");
+ await page.getByText(/running · Account fixture-operator/).waitFor();
+ assert.ok(await page.locator("#preview-files").isVisible());
+ await filesDisclosure.click();
+ await page.locator("#service-confirmed").focus();
+ await page.keyboard.press("Space");
+ await page.locator("#backup-parent").fill(root);
+ await page.locator("#backup-parent").press("Enter");
+ await page.getByText(/MW-ADOPT-BACKUP/).waitFor();
+ assert.ok(await page.locator("#handoff").isHidden());
+ serviceStatus="stopped";
+ await page.locator("#backup-parent").fill(backupParent);
+ await page.locator("#backup-parent").press("Enter");
+ await page.locator("#handoff").waitFor();
+ assert.match(await page.locator("#service-guide").textContent(),process.platform==="win32"?/Get-CimInstance/:/systemctl/);
+ assert.match(await page.locator("#handoff").textContent(),/verify original login/i);
+ assert.match(await page.locator("#service-state").textContent(),/stopped/);
+ assert.ok(await page.locator("#handoff-service").isVisible());
+ assert.match(await page.locator("#handoff-apply").textContent(),/--engine-stopped --service <service-name>/);
+ for(const [width,height] of [[1920,1080],[1440,900],[1280,720],[768,1024],[390,844]]){
+  await page.setViewportSize({width,height});
+  const dimensions=await page.evaluate(()=>[document.documentElement.clientWidth,document.documentElement.scrollWidth]);
+  assert.ok(dimensions[1]<=dimensions[0]+1,"Adoption overflow at "+width);
+  await page.screenshot({path:join(out,"setup-adoption-"+width+".jpg"),fullPage:true,type:"jpeg",quality:75});
+ }
+ serviceMatched=false;
+ await page.locator("#check-backup").click();
+ await page.getByText(/Service verification changed/).waitFor();
+ assert.equal(await page.locator("#adoption-status").textContent(),"");
+ assert.ok(await page.locator("#handoff").isHidden());
+ assert.ok(await page.locator("#service-confirmed").isDisabled());
+ assert.equal(await page.locator("#check-service").evaluate(button=>button===document.activeElement),true);
+ await page.screenshot({path:join(out,"setup-adoption-service-changed.jpg"),fullPage:true,type:"jpeg",quality:75});
+ await page.locator("#service-name").clear();
+ await page.locator("#service-confirmed").check();
+ await page.locator("#check-backup").click();
+ await page.locator("#handoff").waitFor();
+ assert.match(await page.locator("#handoff-apply").textContent(),/--engine-stopped$/);
+ assert.ok(await page.locator("#handoff-service").isHidden());
+ await page.locator("#root").fill(root+"-changed");
+ assert.ok(await page.locator("#adoption-review").isHidden());
+ detected=true;
+ await page.locator("#check").click();
+ await page.locator("#candidates button").click();
+ assert.equal(await page.locator("#root").inputValue(),root);
+ assert.equal(await page.locator("#root").evaluate(field=>field===document.activeElement),true);
+ await mkdir(join(root,"meshcentral-web","public"),{recursive:true});
+ const collision=join(root,"meshcentral-web","public","meshwall.html");
+ await writeFile(collision,"original fixture");
+ await page.locator("#preview").click();
+ await page.getByText(/MW-ADOPT-COLLISION/).waitFor();
+ assert.ok(await page.locator("#adoption-review").isHidden());
+ assert.ok(await page.locator("#start").isDisabled());
+ assert.equal(await readFile(collision,"utf8"),"original fixture");
+ assert.equal(await readFile(config,"utf8"),"{}");
+ assert.deepEqual(await readdir(backupParent),[]);
+ assert.deepEqual(errors,[]);
+ await page.screenshot({path:join(out,"setup-adoption-blocked.jpg"),fullPage:true,type:"jpeg",quality:75});
+ console.log("PASS: guided adoption browser flow, keyboard, manual/discovered paths, protected backup choices and collision, five viewport checks; filesystem fixture only.");
+}finally{
+ await adoptionBrowser.close();
+ adoptionServer.closeAllConnections();
+ await new Promise(resolve=>adoptionServer.close(resolve));
+ await rm(base,{recursive:true,force:true});
+}

@@ -1,10 +1,13 @@
 # Changelog
 
 ## Unreleased
+- Added a named stopped-service check to local adoption and rollback. Apply rechecks after the backup and retains the verified snapshot if the service resumes. The wizard suggests the checked command for recognized services.
+- Added read-only registered service inspection for existing MeshCentral on systemd and Windows CIM/WinSW. Setup can check a service before backup-path review and recheck it while preparing the terminal handoff.
+- Added the shared existing-server review in setup, including manual roots, config and collision checks, a verified backup-directory location, service confirmation guidance and a terminal handoff. Added interrupted adoption and native login after rollback regression coverage.
 - Added model-neutral project memory and mandatory session bootstrap/update rules, with exact CI evidence, prioritized remaining work and bilingual onboarding. No runtime behavior changed.
 - Separated Windows fresh static UI installation from existing-server adoption command; shared read-only fresh-install guard and pre-Node Linux service detection reduce accidental duplicate installations.
 - Record minimal local wizard installation stage history independent of engine or browser, with read-only doctor history and no credentials/raw logs. Not a crash-safe transaction or automatic repair.
-- Offline adoption preview, verified backup, staged exclusive UI placement, retained journal, status and ownership-checked rollback; bounded service/process discovery on both OSes. Physical and browser-driven adoption remain pending.
+- Offline adoption preview, verified backup, staged exclusive UI placement, retained journal, status and ownership-checked rollback; bounded service/process discovery on both OSes. Physical adoption and browser service control remain pending.
 - Added rule-based lifecycle guidance, bounded read-only discovery, independent doctor CLI, safe setup support report, pre-Node bootstrap hints and basic dashboard help. Added P15 self-support gate; transactional adoption/recovery and physical validation remain incomplete.
 - Audited all nine skills and Markdown docs, clarified actual vs target functionality, added P01–P14 traceability, local documentation link validation and cross-platform skill frontmatter regression coverage.
 - Added eight specialist agent skills, mandatory routing, troubleshooting playbook and registry validation; fixed Windows canonical recovery-path assertion and made Linux browser setup avoid unrelated APT updates when runtime dependencies are already available.
