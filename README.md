@@ -41,6 +41,8 @@ Authorized local service control: [start/stop/restart](docs/OPERATIONS.md#author
 
 CI uses conservative change-based scope; [testing policy](docs/TESTING.md#ci-execution-policy-candidate) defines full manual/tag release checks and scoped-out suites.
 
+Local `doctor.mjs config-tls <install-root>` candidate checks the fresh security baseline and certificate/key pairing without exposing values. See [Operations](docs/OPERATIONS.md#configuration-and-tls-diagnosis).
+
 ## Documentation
 
 | Document | Purpose |

@@ -51,5 +51,7 @@ Kontrol service lokal (kandidat) mendukung start/stop/restart dengan konfirmasi 
 
 CI menghindari duplikasi push/PR, membatalkan run PR lama, dan melewati tes berat hanya untuk perubahan yang aman sesuai [kebijakan pengujian](docs/TESTING.md#ci-execution-policy-candidate). Rilis tetap membutuhkan pengujian penuh di kedua platform.
 
+Diagnosis konfigurasi dan TLS menggunakan `node scripts/doctor.mjs config-tls <install-root>` (kandidat); tidak mengubah konfigurasi atau membocorkan private key. Ikuti [Operations](docs/OPERATIONS.md#configuration-and-tls-diagnosis).
+
 ## Lanjutkan pengembangan dengan AI apa pun
 Minta AI membaca [AGENTS.md](AGENTS.md) dan [PROJECT_MEMORY.md](PROJECT_MEMORY.md), lalu memeriksa HEAD dan CI terbaru. Kedua file berada di repository dan wajib diperbarui setiap perubahan substantif. AI yang tidak otomatis membaca AGENTS.md perlu diarahkan sekali; tidak perlu membuat handover manual.
