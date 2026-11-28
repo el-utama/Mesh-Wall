@@ -11,14 +11,20 @@ async function list(p){
  return result.sort();
 }
 function inside(a,b){const p=relative(a,b);return p===""||(!isAbsolute(p)&&p!==".."&&!p.startsWith(process.platform==="win32"?"..\\":"../"));}
-export async function replaceUI(rootArg,sourceArg,{rollback=false}={}){
+export async function replaceUI(rootArg,sourceArg,{rollback=false,repair=false,assertStopped}={}){
+ if(repair&&(rollback||typeof assertStopped!=="function"))throw Error("Repair requires a stopped-service guard");
  const root=await dir(resolve(rootArg)),source=await dir(resolve(sourceArg)),p=JSON.parse(await readFile(join(root,"node_modules/meshcentral/package.json"),"utf8"));if(p.version!==version)throw Error("Engine version mismatch");
  const web=join(root,"meshcentral-web"),dest=join(web,"public");await dir(web);await dir(dest);
  if(inside(dest,source)||inside(source,dest))throw Error("Source must be separate from active public directory");
  const sourceFiles=await list(source);
  if(!rollback&&(sourceFiles.length!==allowed.size||sourceFiles.some(f=>!allowed.has(f))))throw Error("Unexpected release files; use a reviewed compatible checkout");
  if(rollback&&(!sourceFiles.includes("meshwall.html")||!sourceFiles.includes("meshwall/app.mjs")))throw Error("Invalid recovery UI");
- const existing=await list(dest);if(!existing.includes("meshwall.html")||!existing.includes("meshwall/app.mjs"))throw Error("Existing MeshWall installation required");
+ const existing=await list(dest);
+ if(repair){
+  if(await exists(join(root,".meshwall-adoption")))throw Error("Adoption journal present; review adoption recovery first");
+  if(!existing.length||existing.length>=allowed.size||existing.some(name=>!allowed.has(name)))throw Error("Repair requires a partial known MeshWall UI");
+  for(const name of existing){if(!(await readFile(join(dest,name))).equals(await readFile(join(source,name))))throw Error("Existing UI differs from reviewed release; manual review required");}
+ }else if(!existing.includes("meshwall.html")||!existing.includes("meshwall/app.mjs"))throw Error("Existing MeshWall installation required");
  const lock=join(root,".meshwall-maintenance-lock");await mkdir(lock,{mode:0o700});
  const id=randomBytes(8).toString("hex"),stage=join(root,".meshwall-ui-stage-"+id),recovery=join(root,"meshwall-ui-recovery-"+id);
  const moved=[],installed=[];
@@ -26,7 +32,12 @@ export async function replaceUI(rootArg,sourceArg,{rollback=false}={}){
   await mkdir(stage,{mode:0o700});await mkdir(recovery,{mode:0o700});await mkdir(join(stage,"meshwall"),{mode:0o700});
   for(const name of sourceFiles){const from=join(source,name),to=join(stage,name);await copyFile(from,to,constants.COPYFILE_EXCL);}
   for(const name of sourceFiles){const a=await readFile(join(source,name)),b=await readFile(join(stage,name));if(!a.equals(b))throw Error("UI copy verification failed");}
-  for(const name of ["meshwall.html","meshwall"]){await rename(join(dest,name),join(recovery,name));moved.push(name);await rename(join(stage,name),join(dest,name));installed.push(name);}
+  await assertStopped?.(root);
+  if(repair){
+   const current=await list(dest);if(JSON.stringify(current)!==JSON.stringify(existing))throw Error("Active UI changed since inspection");
+   for(const name of current){if(!(await readFile(join(dest,name))).equals(await readFile(join(stage,name))))throw Error("Active UI changed since inspection");}
+  }
+  for(const name of ["meshwall.html","meshwall"]){if(await exists(join(dest,name))){await rename(join(dest,name),join(recovery,name));moved.push(name);}else if(!repair)throw Error("Active UI path disappeared");await rename(join(stage,name),join(dest,name));installed.push(name);}
   await rmdir(stage);return recovery;
  }catch(e){try{for(const name of installed.reverse())await rename(join(dest,name),join(stage,name));for(const name of moved.reverse())await rename(join(recovery,name),join(dest,name));await rm(stage,{recursive:true,force:true});await rm(recovery,{recursive:true,force:true});}catch{throw Error("UI rollback failed; preserve "+stage+" and "+recovery);}throw e;}
  finally{await rmdir(lock).catch(()=>{});}
