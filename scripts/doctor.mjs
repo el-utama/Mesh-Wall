@@ -3,7 +3,7 @@ import {candidateRoots,discover} from "../installers/support/discovery.mjs";
 import {guidance,stages} from "../installers/support/catalog.mjs";
 import {readJournals} from "../installers/support/journal.mjs";
 const args=process.argv.slice(2);
-if(args[0]==="history"&&args.length===1){try{console.log(JSON.stringify({mode:"read-only",history:readJournals(),note:"Running means last recorded stage, not proof of an active job. Never resume or clear locks blindly."},null,2));}catch{console.error("Local history unavailable; check operator permissions.");process.exitCode=1;}}
+if(args[0]==="history"&&args.length===1){try{console.log(JSON.stringify({mode:"read-only",history:readJournals(),note:"History contains recorded stages only, not proof of an active job or verified recovery. Follow the recovery note; never resume or clear locks blindly."},null,2));}catch{console.error("Local history unavailable; check operator permissions.");process.exitCode=1;}}
 else if(args[0]==="help"&&args.length<=2){if(args[1]&&!Object.hasOwn(stages,args[1])){console.error("Unknown stage. Available: "+Object.keys(stages).join(", "));process.exitCode=1;}else console.log(JSON.stringify(args[1]?guidance(args[1]):Object.keys(stages).map(x=>guidance(x)),null,2));}
 else if(!args.length||args[0]==="discover"&&args.length<=2){
  const candidates=await discover(args[1]?[args[1]]:undefined);

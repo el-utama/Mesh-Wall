@@ -52,6 +52,7 @@ node installers/adopt.mjs rollback "/path/to/install-root" --engine-stopped --se
 Rollback removes only unchanged, verified transaction-owned files; it does not remove the database. A modified file, interrupted lock or ambiguous state requires manual inspection. Keep journal and backup for review before retrying. Hard links must be supported by the installation filesystem (e.g. ext4/NTFS). See [adoption and recovery](ADOPTION.md).
 
 ## Diagnostics and recovery
+After a wizard failure, run `node scripts/doctor.mjs history` from the same operator account (Linux: the root account that launched the wizard). Check the recorded stage trail, stage help and recovery note. A last running state may be interrupted; inspect the actual process and partial files rather than repeating installation. See [local self-support](SELF-SUPPORT.md).
 ```bash
 systemctl status meshwall-engine
 journalctl -u meshwall-engine -n 80
