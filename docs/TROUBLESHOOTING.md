@@ -5,7 +5,7 @@ For any failure, use the repository-local troubleshooting skill first; combine i
 | Symptom | First checks | Specialist |
 | --- | --- | --- |
 | Adoption preview blocked | Confirm the root, default paths, distinct private backup directory and status; see [adoption error codes](ADOPTION.md#apply-verify-and-recover-locally) | operations + platform |
-| Setup fails | OS/userspace, Node version, Tailscale login/DNS/HTTPS, port conflict, existing/partial root | platform |
+| Setup fails | OS/userspace, Node version, Tailscale login/DNS/HTTPS, port conflict, existing/partial root; use `doctor.mjs diagnose <root>` as documented in [self-support](SELF-SUPPORT.md) | platform |
 | UI blank or wrong layout | Browser errors, exact commit, network responses, viewport, CSS tokens | UI/UX + testing |
 | Cannot sign in / denied | Engine session, upstream permissions, MFA, consent, TLS | security |
 | Online PC but black screen | Agent state, relay state, decoded frame, monitor, consent; never bypass policy | streaming |

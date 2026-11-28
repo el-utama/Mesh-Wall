@@ -31,6 +31,8 @@ If Node.js >=22.21.1 and authenticated Tailscale are already available, use `sud
 
 For a failed wizard installation, use `node scripts/doctor.mjs history` under the launching operator account to review recorded stages and recovery guidance. See [local self-support](docs/SELF-SUPPORT.md); do not retry blindly.
 
+Read-only fresh-install diagnosis: `node scripts/doctor.mjs diagnose /opt/meshwall/engine` (Windows: `node scripts/doctor.mjs diagnose "C:\ProgramData\MeshWall"`). See [local self-support](docs/SELF-SUPPORT.md) for scope and recovery guidance.
+
 ## Documentation
 
 | Document | Purpose |

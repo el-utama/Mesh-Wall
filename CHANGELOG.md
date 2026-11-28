@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- Added a read-only fresh-install file diagnosis command with specific finding codes, bounded JSON checks, unsafe-path refusal, partial-install fixtures and no secret or path output. Actual service/TLS validation and recovery remain separate.
 - Retain a bounded local wizard stage trail (32 events), read legacy records and provide status-specific recovery notes in doctor history; reject malformed trails and keep secrets out of displayed history. No automatic repair or power-loss guarantee.
 - Added a named stopped-service check to local adoption and rollback. Apply rechecks after the backup and retains the verified snapshot if the service resumes. The wizard suggests the checked command for recognized services.
 - Added read-only registered service inspection for existing MeshCentral on systemd and Windows CIM/WinSW. Setup can check a service before backup-path review and recheck it while preparing the terminal handoff.
