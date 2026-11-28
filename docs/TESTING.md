@@ -10,7 +10,8 @@ Performance matrix: 1/10/25/50/75/100 enrolled and concurrent sessions, varying 
 CI target: lint, typecheck, unit/integration tests, production build, dependency/boundary checks and secret scan. CI does not replace real-device tests. Publish evidence and known gaps. No fake passing tests or claims based solely on mock data.
 
 ## Current executable checks
-- Partial fresh-install diagnostic unit fixtures cover missing roots/files, invalid/oversized JSON, incompatible packages, lock presence, symlink/junction refusal, nonregular files and sanitized nonmutating output; hosted candidate CI pending.
+- Health diagnosis candidate tests service/endpoint gating, configured private IP validation, sanitized results, strict request options, redirect rejection, response size and timeout using fixtures. Hosted CI pending; no real Tailscale or physical service test claimed.
+- Partial fresh-install diagnostic unit fixtures cover missing roots/files, invalid/oversized JSON, incompatible packages, lock presence, symlink/junction refusal, nonregular files and sanitized nonmutating output; PR #3 CI passed.
 - Wizard history unit coverage includes bounded stage events, legacy history, invalid/mismatched event rejection, sanitized output and recovery notes. Candidate CI must pass before merge.
 - `npm run check`: syntax and unit tests; Linux installer shell parsing via check.yml.
 - integration.yml: real pinned engine loopback, browser auth/group/invitation/account direct rights, actual renderer decoding generated frames with fake transport, offline adoption and rollback, native login after restart, and backup/restore. The unit suite also exercises a blocked backup, a changed service after backup, a refused rollback, and preserved partial placement when cleanup cannot verify a stopped service.

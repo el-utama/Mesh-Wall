@@ -33,6 +33,8 @@ For a failed wizard installation, use `node scripts/doctor.mjs history` under th
 
 Read-only fresh-install diagnosis: `node scripts/doctor.mjs diagnose /opt/meshwall/engine` (Windows: `node scripts/doctor.mjs diagnose "C:\ProgramData\MeshWall"`). See [local self-support](docs/SELF-SUPPORT.md) for scope and recovery guidance.
 
+For service and HTTPS checks use `node scripts/doctor.mjs health <root> <service-name>` locally. See [local self-support](docs/SELF-SUPPORT.md) for platform examples and limits.
+
 ## Documentation
 
 | Document | Purpose |

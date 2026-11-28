@@ -43,5 +43,7 @@ Riwayat instalasi wizard: `node scripts/doctor.mjs history` dari akun operator y
 
 Untuk instalasi baru yang gagal, jalankan `node scripts/doctor.mjs diagnose /opt/meshwall/engine` (Linux) atau `node scripts/doctor.mjs diagnose "C:\ProgramData\MeshWall"` (Windows, sesuaikan lokasi). Pemeriksaan hanya membaca bukti file, bukan menguji service atau TLS. Lihat [self-support](docs/SELF-SUPPORT.md).
 
+Setelah diagnosis file, gunakan `node scripts/doctor.mjs health <root> <service-name>` untuk memeriksa service dan HTTPS privat lokal. Lihat [self-support](docs/SELF-SUPPORT.md) untuk contoh kedua OS dan batas pemeriksaan. Tidak ada restart otomatis.
+
 ## Lanjutkan pengembangan dengan AI apa pun
 Minta AI membaca [AGENTS.md](AGENTS.md) dan [PROJECT_MEMORY.md](PROJECT_MEMORY.md), lalu memeriksa HEAD dan CI terbaru. Kedua file berada di repository dan wajib diperbarui setiap perubahan substantif. AI yang tidak otomatis membaca AGENTS.md perlu diarahkan sekali; tidak perlu membuat handover manual.

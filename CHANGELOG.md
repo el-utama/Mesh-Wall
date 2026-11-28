@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- Added read-only named-service and configured local private HTTPS health diagnostics, with strict TLS, response limits, no redirects or credentials, and status-specific guidance. Login and physical acceptance remain separate.
 - Added a read-only fresh-install file diagnosis command with specific finding codes, bounded JSON checks, unsafe-path refusal, partial-install fixtures and no secret or path output. Actual service/TLS validation and recovery remain separate.
 - Retain a bounded local wizard stage trail (32 events), read legacy records and provide status-specific recovery notes in doctor history; reject malformed trails and keep secrets out of displayed history. No automatic repair or power-loss guarantee.
 - Added a named stopped-service check to local adoption and rollback. Apply rechecks after the backup and retains the verified snapshot if the service resumes. The wizard suggests the checked command for recognized services.

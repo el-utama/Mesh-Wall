@@ -10,7 +10,7 @@ For any failure, use the repository-local troubleshooting skill first; combine i
 | Cannot sign in / denied | Engine session, upstream permissions, MFA, consent, TLS | security |
 | Online PC but black screen | Agent state, relay state, decoded frame, monitor, consent; never bypass policy | streaming |
 | High memory / CPU / heat | Session count, profile, browser/host metrics, sustained load | streaming |
-| Service / certificate failure | Service identity, private bind, expiry, peer fingerprint, recovery files | operations + platform |
+| Service / certificate failure | Service identity, private bind, expiry, peer fingerprint, recovery files; `doctor.mjs health <root> <service-name>` for fresh installs (see [self-support](SELF-SUPPORT.md)) | operations + platform |
 | Backup / restore fails | Stop engine, verify manifest, disk, ownership/ACL, canonical paths, recovery folder | operations |
 | CI failure | Exact SHA and failing step; separate dependency outage from code and test assertion | testing + troubleshooting |
 

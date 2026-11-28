@@ -105,3 +105,20 @@ export async function diagnoseFresh(input){
  const status=findings.every(item=>["present","clear"].includes(item.state))?"files-present":"needs-review";
  return {format:1,mode:"read-only",scope:"default-fresh-install-files",status,findings,note:"No files were changed. Certificate/key presence is not TLS validation; JSON syntax is not schema validation. Service identity, live process, HTTPS, login, permissions, backups and agent enrollment must be verified separately. Do not resume or remove files based only on this report."};
 }
+
+
+// Internal diagnostic input; never serialize this endpoint into a support report.
+export async function readFreshEndpoint(input){
+ const path=rootPath(input);
+ if(!path||(await rootEntry(path)).state!=="present")return null;
+ const config=await walk(path,["meshcentral-data","config.json"],"file");
+ const endpoint=await json(config,value=>{
+  const settings=value?.settings;
+  if(!object(settings))return null;
+  const host=settings.cert,ip=settings.portBind;
+  if(typeof host!=="string"||host.length>253||!/^[a-z0-9-]+(?:\.[a-z0-9-]+)+\.ts\.net$/i.test(host)||settings.port!==8443||
+    typeof ip!=="string"||!/^100\.(6[4-9]|[789]\d|1[01]\d|12[0-7])\.\d{1,3}\.\d{1,3}$/.test(ip)||ip.split(".").some(x=>String(Number(x))!==x||Number(x)>255))return null;
+  return {host,ip};
+ });
+ return object(endpoint)?endpoint:null;
+}
