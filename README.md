@@ -37,7 +37,9 @@ For service and HTTPS checks use `node scripts/doctor.mjs health <root> <service
 
 A guarded local partial-UI repair is available; see [Operations](docs/OPERATIONS.md#repair-missing-ui-files-fresh-installs-only) for prerequisites and limits. The repair refuses a stale backup and preserves recovery evidence on failed rollback. No generic automatic repair.
 
-Authorized local service control candidate: [start/stop/restart](docs/OPERATIONS.md#authorized-local-service-control-alpha-candidate), only for default fresh installs with explicit downtime confirmation.
+Authorized local service control: [start/stop/restart](docs/OPERATIONS.md#authorized-local-service-control-alpha-candidate), only for default fresh installs with explicit downtime confirmation.
+
+CI uses conservative change-based scope; [testing policy](docs/TESTING.md#ci-execution-policy-candidate) defines full manual/tag release checks and scoped-out suites.
 
 ## Documentation
 
