@@ -39,7 +39,7 @@ Bantuan lokal tanpa AI: `node scripts/doctor.mjs` untuk pencarian lokasi umum da
 
 Untuk server lama, pilih **Review existing MeshCentral** di wizard lokal. Pilih kandidat atau masukkan direktori sendiri, tinjau perubahan, masukkan nama service untuk melihat akun dan statusnya, lalu periksa lokasi backup. Setelah menghentikan service, gunakan opsi `--service` pada perintah adopsi atau rollback agar CLI mengecek ulang service sebelum mengubah UI. Verifikasi server dari terminal lokal. [Panduan adopsi dalam Bahasa Indonesia](docs/ADOPTION.md#ringkasan-langkah-dalam-bahasa-indonesia).
 
-Riwayat instalasi wizard: `node scripts/doctor.mjs history` dari akun operator yang sama. Status terakhir bukan bukti proses masih berjalan; jangan ulangi instalasi tanpa pemeriksaan.
+Riwayat instalasi wizard: `node scripts/doctor.mjs history` dari akun operator yang sama. Riwayat menampilkan maksimal 32 catatan tahap dan saran pemulihan sesuai status. Status terakhir bukan bukti proses masih berjalan; jangan ulangi instalasi tanpa pemeriksaan.
 
 ## Lanjutkan pengembangan dengan AI apa pun
 Minta AI membaca [AGENTS.md](AGENTS.md) dan [PROJECT_MEMORY.md](PROJECT_MEMORY.md), lalu memeriksa HEAD dan CI terbaru. Kedua file berada di repository dan wajib diperbarui setiap perubahan substantif. AI yang tidak otomatis membaca AGENTS.md perlu diarahkan sekali; tidak perlu membuat handover manual.

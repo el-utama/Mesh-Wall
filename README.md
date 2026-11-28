@@ -29,6 +29,8 @@ sudo bash installers/linux/bootstrap.sh
 
 If Node.js >=22.21.1 and authenticated Tailscale are already available, use `sudo node installers/linux/setup.mjs`. MagicDNS and HTTPS certificates must be enabled. Use the exact local wizard URL and an authorized SSH tunnel on a headless server. Windows instructions and adoption steps are in the quickstart. Do not expose setup publicly.
 
+For a failed wizard installation, use `node scripts/doctor.mjs history` under the launching operator account to review recorded stages and recovery guidance. See [local self-support](docs/SELF-SUPPORT.md); do not retry blindly.
+
 ## Documentation
 
 | Document | Purpose |
