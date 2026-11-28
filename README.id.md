@@ -45,5 +45,7 @@ Untuk instalasi baru yang gagal, jalankan `node scripts/doctor.mjs diagnose /opt
 
 Setelah diagnosis file, gunakan `node scripts/doctor.mjs health <root> <service-name>` untuk memeriksa service dan HTTPS privat lokal. Lihat [self-support](docs/SELF-SUPPORT.md) untuk contoh kedua OS dan batas pemeriksaan. Tidak ada restart otomatis.
 
+Perbaikan file UI yang hilang pada instalasi baru memerlukan backup terverifikasi, service berhenti dan konfirmasi operator. Lihat [Operations](docs/OPERATIONS.md#repair-missing-ui-files-fresh-installs-only). Backup yang tidak lagi cocok ditolak; lock dan bukti pemulihan dipertahankan jika rollback gagal. Tidak ada restart atau perbaikan generik otomatis.
+
 ## Lanjutkan pengembangan dengan AI apa pun
 Minta AI membaca [AGENTS.md](AGENTS.md) dan [PROJECT_MEMORY.md](PROJECT_MEMORY.md), lalu memeriksa HEAD dan CI terbaru. Kedua file berada di repository dan wajib diperbarui setiap perubahan substantif. AI yang tidak otomatis membaca AGENTS.md perlu diarahkan sekali; tidak perlu membuat handover manual.

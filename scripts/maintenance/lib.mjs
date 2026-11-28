@@ -51,6 +51,13 @@ export async function verify(backupArg){
  const actual=await inventory(dir);if(!same(m.entries,actual))throw Error("Backup content does not match manifest");
  if(!seen.has("meshcentral-data/config.json"))throw Error("Backup lacks config");await checkLocalDatabase(dir);return {dir,manifest:m};
 }
+// Read-only recheck for callers holding the maintenance lock immediately before a swap.
+export async function assertSnapshotMatches(rootArg,backupArg){
+ const root=await rootPath(rootArg),{dir,manifest}=await verify(backupArg);
+ if(inside(root,dir)||inside(dir,root))throw Error("Backup and install must be separate");
+ await checkEngine(root);await checkLocalDatabase(root);
+ if(!same(manifest.entries,await inventory(root)))throw Error("MW-REPAIR-STALE: installation changed since backup; preserve the backup and inspect before retrying");
+}
 export async function restore(rootArg,backupArg){
  const root=await rootPath(rootArg),{dir,manifest}=await verify(backupArg);if(inside(root,dir)||inside(dir,root))throw Error("Backup and install must be separate");await checkEngine(root);await checkLocalDatabase(root);
  return lock(root,async()=>{const id=stamp(),stage=join(root,".meshwall-restore-"+id),previous=join(root,"meshwall-recovery-"+id);await privateDir(stage);await privateDir(previous);
